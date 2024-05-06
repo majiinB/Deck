@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:deck/pages/misc/colors.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
@@ -67,7 +66,10 @@ class _MainPageState extends State<MainPage> {
         color: DeckColors.primaryColor,
       ),
       label: 'Home',
-      labelStyle: TextStyle(color: DeckColors.white),
+      labelStyle: TextStyle(
+        color: DeckColors.white,
+        fontWeight: FontWeight.w900,
+      ),
     ),
     CurvedNavigationBarItem(
       child: Icon(
@@ -75,7 +77,10 @@ class _MainPageState extends State<MainPage> {
         color: DeckColors.primaryColor,
       ),
       label: 'Tasks',
-      labelStyle: TextStyle(color: DeckColors.white),
+      labelStyle: TextStyle(
+        color: DeckColors.white,
+        fontWeight: FontWeight.w900,
+      ),
     ),
     CurvedNavigationBarItem(
       child: Icon(
@@ -83,23 +88,33 @@ class _MainPageState extends State<MainPage> {
         color: DeckColors.primaryColor,
       ),
       label: 'Flashcards',
-      labelStyle: TextStyle(color: DeckColors.white),
+      labelStyle: TextStyle(
+        color: DeckColors.white,
+        fontWeight: FontWeight.w900,
+      ),
     ),
     CurvedNavigationBarItem(
       child: Icon(
-        DeckIcons.settings,
+        DeckIcons.account,
         color: DeckColors.primaryColor,
       ),
-      label: 'Settings',
-      labelStyle: TextStyle(color: DeckColors.white),
+      label: 'Account',
+      labelStyle: TextStyle(
+        color: DeckColors.white,
+        fontWeight: FontWeight.w900,
+      ),
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: screens[index],
-      bottomNavigationBar: curvedNavigationBar(),
+    return SafeArea(
+      top: false,
+      bottom: true,
+      child: Scaffold(
+        body: screens[index],
+        bottomNavigationBar: curvedNavigationBar(),
+      ),
     );
   }
 
@@ -107,8 +122,8 @@ class _MainPageState extends State<MainPage> {
     return CurvedNavigationBar(
       key: _bottomNavigationKey,
       backgroundColor: Colors.transparent,
-      buttonBackgroundColor: DeckColors.green,
-      color: DeckColors.gray,
+      buttonBackgroundColor: DeckColors.accentColor,
+      color: DeckColors.accentColor,
       animationDuration: const Duration(milliseconds: 300),
       animationCurve: Curves.easeInOut,
       height: 80,
@@ -118,89 +133,3 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
-
-
-///
-///
-///
-///
-///
-/// N A V B A R
-
-// ignore: must_be_immutable
-// class DeckBar extends StatefulWidget implements PreferredSizeWidget {
-//   const DeckBar(
-//       {required this.currentIndex,
-//       required this.onIndexChanged,
-//       required this.goToPage,
-//       super.key});
-
-//   final int currentIndex; // Current index
-//   final ValueChanged<int> onIndexChanged;
-//   final void Function(int) goToPage;
-
-//   @override
-//   State<DeckBar> createState() => _DeckBarState();
-
-//   @override
-//   Size get preferredSize => throw UnimplementedError();
-// }
-
-// class _DeckBarState extends State<DeckBar> {
-//   final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
-
-//   final screens = [
-//     const HomePage(),
-//     const TaskPage(),
-//     const FlashcardPage(),
-//     const SettingsPage()
-//   ];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return CurvedNavigationBar(
-//       backgroundColor: Colors.transparent,
-//       color: DeckColors.accentColor,
-//       animationDuration: const Duration(milliseconds: 300),
-//       animationCurve: Curves.easeInOut,
-//       height: 80,
-      // key: _bottomNavigationKey,
-      // index: widget.currentIndex,
-      // items: const [
-      //   CurvedNavigationBarItem(
-      //     child: Icon(
-      //       DeckIcons.home,
-      //       color: DeckColors.primaryColor,
-      //     ),
-      //     label: 'Home',
-      //     labelStyle: TextStyle(color: DeckColors.white),
-      //   ),
-      //   CurvedNavigationBarItem(
-      //     child: Icon(
-      //       DeckIcons.task,
-      //       color: DeckColors.primaryColor,
-      //     ),
-      //     label: 'Tasks',
-      //     labelStyle: TextStyle(color: DeckColors.white),
-      //   ),
-      //   CurvedNavigationBarItem(
-      //     child: Icon(
-      //       DeckIcons.flashcard,
-      //       color: DeckColors.primaryColor,
-      //     ),
-      //     label: 'Flashcards',
-      //     labelStyle: TextStyle(color: DeckColors.white),
-      //   ),
-      //   CurvedNavigationBarItem(
-      //     child: Icon(
-      //       DeckIcons.settings,
-      //       color: DeckColors.primaryColor,
-      //     ),
-      //     label: 'Settings',
-      //     labelStyle: TextStyle(color: DeckColors.white),
-      //   ),
-      // ],
-      // onTap: widget.onIndexChanged,
-//     );
-//   }
-// }

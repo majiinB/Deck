@@ -1,6 +1,6 @@
 import 'package:deck/pages/misc/colors.dart';
-import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 
 ///
@@ -45,18 +45,22 @@ class _TaskAppBarState extends State<TaskAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text('Task Page'),
-      centerTitle: true,
-      foregroundColor: Colors.amber,
-      leading: GestureDetector(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: const Icon(
-          DeckIcons.backArrow,
-          size: 24,
-        ),
+      title: Text(
+        'Task Page',
+        style: GoogleFonts.nunito(
+            fontSize: 24, fontWeight: FontWeight.w900, color: DeckColors.white),
       ),
+      centerTitle: true,
+      foregroundColor: const Color.fromARGB(255, 61, 61, 61),
+      // leading: GestureDetector(
+      //   onTap: () {
+      //     Navigator.pop(context);
+      //   },
+      //   child: const Icon(
+      //     DeckIcons.backArrow,
+      //     size: 24,
+      //   ),
+      // ),
     );
   }
 }
