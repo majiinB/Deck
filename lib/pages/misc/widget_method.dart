@@ -1,4 +1,8 @@
+
+import 'dart:io';
+
 import 'package:deck/pages/misc/colors.dart';
+import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
@@ -82,3 +86,287 @@ class BackButtonAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => AppBar().preferredSize;
 }
+
+
+/*------------------ACCOUNT SETTINGS------------------*/
+//cover photo
+class BuildCoverImage extends StatefulWidget {
+  final File? CoverPhotofile;
+
+   BuildCoverImage({Key? key, this.CoverPhotofile}) : super(key: key);
+
+  @override
+  BuildCoverImageState createState() => BuildCoverImageState();
+}
+class BuildCoverImageState extends State<BuildCoverImage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: widget.CoverPhotofile != null ? null : DeckColors.coverImageColorSettings,
+      height: 200,
+      child: widget.CoverPhotofile != null
+          ? Image.file(
+        widget.CoverPhotofile!,
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.cover,
+      )
+          : const Placeholder(
+        color: DeckColors.coverImageColorSettings,
+      ),
+    );
+  }
+}
+
+//profile photo
+class BuildProfileImage extends StatefulWidget {
+  final File? profilePhotofile;
+
+   BuildProfileImage({Key? key, this.profilePhotofile}) : super(key: key);
+
+  @override
+  BuildProfileImageState createState() => BuildProfileImageState();
+}
+
+class BuildProfileImageState extends State<BuildProfileImage> {
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      backgroundColor: widget.profilePhotofile != null ? null : DeckColors.white,
+      backgroundImage: widget.profilePhotofile != null ? FileImage(widget.profilePhotofile!) : null,
+      child: widget.profilePhotofile == null ? Icon(DeckIcons.account, size: 60, color: DeckColors.backgroundColor) : null,
+      radius: 60,
+    );
+  }
+}
+
+//button
+class buildButton extends StatelessWidget{
+  final VoidCallback onPressed;
+  final String buttonText;
+  final double height, width;
+  final Color backgroundColor, textColor;
+
+  buildButton({
+    required this.onPressed,
+    required this.buttonText,
+    Key? key, required this.height, required this.width,
+    required this.backgroundColor, required this.textColor,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        height: height,
+        width: width,
+        child: TextButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+              backgroundColor: backgroundColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+              )
+          ),
+          child: Text(
+              buttonText,
+              style: GoogleFonts.nunito(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w900,
+                color: textColor,
+                // letterSpacing: 3.0,
+              )
+          ),
+        )
+    );
+  }
+}
+
+//swipe to delete
+class SwipeToDelete extends StatelessWidget {
+  final Widget child;
+  final VoidCallback onDelete;
+
+  const SwipeToDelete({
+    Key? key,
+    required this.child,
+    required this.onDelete,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: UniqueKey(),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: Colors.red,
+        ),
+        child: Icon(Icons.delete, color: Colors.white),
+      ),
+      onDismissed: (direction) {
+        onDelete();
+      },
+      child: child,
+    );
+  }
+}
+
+//container ng decks, design lang i2 nung container
+class BuildListOfDecks extends StatefulWidget {
+  final File? deckImageFile;
+  final String titleText, numberText;
+  final VoidCallback onDelete;
+
+  const BuildListOfDecks({
+    Key? key,
+    this.deckImageFile,
+    required this.titleText,
+    required this.numberText,
+    required this.onDelete,
+  }) : super(key: key);
+
+  @override
+  State<BuildListOfDecks> createState() => BuildListOfDecksState();
+}
+
+
+class BuildListOfDecksState extends State<BuildListOfDecks> {
+  @override
+  Widget build(BuildContext context) {
+    return SwipeToDelete(
+      onDelete: widget.onDelete,
+      child: Container(
+        padding: const EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          color: DeckColors.gray,
+          boxShadow: [
+            BoxShadow(
+              color: DeckColors.accentColor.withOpacity(0.5),
+              spreadRadius: 3,
+              blurRadius: 7,
+              offset: const Offset(0, 5),
+            )
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              color: widget.deckImageFile != null ? null : DeckColors.white,
+              height: 75,
+              width: 75,
+              child: widget.deckImageFile != null
+                  ? Image.file(
+                widget.deckImageFile!,
+                width: 20,
+                height: 10,
+                fit: BoxFit.cover,
+              )
+                  : const Placeholder(
+                color: DeckColors.white,
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15.0, top: 5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.titleText,
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: DeckColors.white,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 7.0),
+                      child: Container(
+                        width: 150,
+                        padding: const EdgeInsets.all(5.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
+                          color: DeckColors.coverImageColorSettings,
+                        ),
+                        child: Text(
+                          widget.numberText,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.nunito(
+                            fontSize: 16,
+                            color: DeckColors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//dialog box
+class ShowConfirmationDialog extends StatelessWidget {
+  final String title;
+  final String text;
+  final VoidCallback onConfirm;
+  final VoidCallback onCancel;
+
+  ShowConfirmationDialog({
+    required this.title,
+    required this.text,
+    required this.onConfirm,
+    required this.onCancel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(title),
+      content: Text(text),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            onCancel();
+            Navigator.of(context).pop();
+          },
+          child: const Text("No"),
+        ),
+        TextButton(
+          onPressed: () {
+            onConfirm();
+            Navigator.of(context).pop();
+          },
+          child: const Text("Yes"),
+        ),
+      ],
+    );
+  }
+}
+
+//used to show the dialog box
+void showDeleteConfirmationDialog(BuildContext context, String title, String text, VoidCallback onConfirm, VoidCallback onCancel) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return ShowConfirmationDialog(
+        title: title,
+        text: text,
+        onConfirm: onConfirm,
+        onCancel: onCancel,
+      );
+    },
+  );
+}
+
+/*------------------END OF ACCOUNT SETTINGS------------------*/
