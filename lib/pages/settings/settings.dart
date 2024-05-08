@@ -25,7 +25,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BackButtonAppBar(),
+      appBar: const BackButtonAppBar(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +70,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Positioned(
                   top: 150,
                   child: Padding(
-                    padding: EdgeInsets.only(left: 10),
+                    padding: const EdgeInsets.only(left: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -114,14 +114,14 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: deckTitles.length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 6.0),
+                    padding: const EdgeInsets.symmetric(vertical: 6.0),
                     child: BuildListOfDecks(
                       titleText: deckTitles[index],
                       numberText: deckNumbers[index],
@@ -138,10 +138,6 @@ class _SettingsPageState extends State<SettingsPage> {
                           "Delete Item",
                           "Are you sure you want to delete '$deletedTitle'?",
                               () {
-                            setState(() {//this is when the user clicks yes
-                              deckTitles.removeAt(index);
-                              deckNumbers.removeAt(index);
-                            });
                           },
                               () {
                                 setState(() {//when the user clicks no
