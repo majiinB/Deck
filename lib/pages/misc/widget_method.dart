@@ -143,84 +143,133 @@ class BuildProfileImageState extends State<BuildProfileImage> {
 }
 
 //button
-class buildButton extends StatelessWidget{
+class buildButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String buttonText;
   final double height, width, radius;
   final Color backgroundColor, textColor;
+  final IconData? icon;
+  final Color? iconColor;
+  final double? paddingIconText, size;
 
-  buildButton({
+  const buildButton({
+    Key? key,
     required this.onPressed,
     required this.buttonText,
-    Key? key, required this.height, required this.width, required this.radius,
-    required this.backgroundColor, required this.textColor,
+    required this.height,
+    required this.width,
+    required this.radius,
+    required this.backgroundColor,
+    required this.textColor,
+    this.icon, this.iconColor, this.paddingIconText, this.size,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: height,
-        width: width,
-        child: TextButton(
-          onPressed: onPressed,
-          style: ElevatedButton.styleFrom(
-              backgroundColor: backgroundColor,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(radius),
-              )
+      height: height,
+      width: width,
+      child: TextButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radius),
           ),
-          child: Text(
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null)
+              Padding(padding: EdgeInsets.only(right: paddingIconText ?? 8.0),
+              child: Icon(
+                icon,
+                color: iconColor,
+                size: size,
+              ),
+    ),
+            Text(
               buttonText,
               style: GoogleFonts.nunito(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w900,
                 color: textColor,
-                // letterSpacing: 3.0,
-              )
-          ),
-        )
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-//swipe to delete
-class SwipeToDelete extends StatelessWidget {
+//swipe to deleteAndRetrieve
+class SwipeToDeleteAndRetrieve extends StatelessWidget {
   final Widget child;
   final VoidCallback onDelete;
+  final VoidCallback? onRetrieve;
+  final bool enableRetrieve;
 
-  const SwipeToDelete({
+  const SwipeToDeleteAndRetrieve({
     Key? key,
     required this.child,
     required this.onDelete,
+    this.onRetrieve,
+    this.enableRetrieve = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
       key: UniqueKey(),
-      direction: DismissDirection.endToStart,
-      background: Container(
+      direction: enableRetrieve ? DismissDirection.horizontal : DismissDirection.endToStart,
+      background: enableRetrieve ? Container(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: DeckColors.primaryColor,
+        ),
+        child: const Icon(Icons.undo, color: DeckColors.white),
+      ) : Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
           color: Colors.red,
         ),
-        child: Icon(DeckIcons.trash_bin, color: Colors.white),
+        child: Icon(DeckIcons.trash_bin, color: DeckColors.white),
       ),
+      secondaryBackground: enableRetrieve ? Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: Colors.red, // Red background for delete
+        ),
+        child: Icon(DeckIcons.trash_bin, color: DeckColors.white),
+      ) : null,
       onDismissed: (direction) {
-        onDelete();
+        if (direction == DismissDirection.endToStart) {
+          onDelete();
+        } else if (direction == DismissDirection.startToEnd && enableRetrieve) {
+          onRetrieve?.call();
+        }
       },
       child: child,
     );
   }
 }
 
+
+
 //container ng decks, design lang i2 nung container
 class BuildListOfDecks extends StatefulWidget {
   final File? deckImageFile;
   final String titleText, numberText;
   final VoidCallback onDelete;
+  final VoidCallback? onRetrieve;
+  final bool enableSwipeToRetrieve;
 
   const BuildListOfDecks({
     Key? key,
@@ -228,31 +277,31 @@ class BuildListOfDecks extends StatefulWidget {
     required this.titleText,
     required this.numberText,
     required this.onDelete,
+    this.onRetrieve,
+    this.enableSwipeToRetrieve = true,
   }) : super(key: key);
 
   @override
   State<BuildListOfDecks> createState() => BuildListOfDecksState();
 }
 
-
 class BuildListOfDecksState extends State<BuildListOfDecks> {
+  void handleRetrieve() {
+    print('Retrieving item...');
+    widget.onRetrieve?.call(); // Call the onRetrieve callback if it's not null
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SwipeToDelete(
+    return SwipeToDeleteAndRetrieve(
       onDelete: widget.onDelete,
+      onRetrieve: widget.enableSwipeToRetrieve ? handleRetrieve : null,
+      enableRetrieve: widget.enableSwipeToRetrieve,
       child: Container(
         padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
           color: DeckColors.gray,
-          boxShadow: [
-            BoxShadow(
-              color: DeckColors.accentColor.withOpacity(0.5),
-              spreadRadius: 3,
-              blurRadius: 7,
-              offset: const Offset(0, 5),
-            )
-          ],
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -356,7 +405,7 @@ class ShowConfirmationDialog extends StatelessWidget {
 }
 
 //used to show the dialog box
-void showDeleteConfirmationDialog(BuildContext context, String title, String text, VoidCallback onConfirm, VoidCallback onCancel) {
+void showConfirmationDialog(BuildContext context, String title, String text, VoidCallback onConfirm, VoidCallback onCancel) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -484,27 +533,33 @@ class _BuildContainerState extends State<BuildContainer> {
 
 /*------------------ CHANGE PASSWORD ------------------*/
 class buildTextBox extends StatefulWidget {
-final String hintText;
-final bool showPassword;
+  final String? hintText, initialValue;
+  final bool showPassword;
+  final IconData? icon;
 
-  const buildTextBox({super.key, required this.hintText,
+
+  const buildTextBox({
+    Key? key,
+    this.hintText,
     this.showPassword = false,
-  });
+    this.icon, this.initialValue,
+  }) : super(key: key);
 
   @override
   State<buildTextBox> createState() => buildTextBoxState();
 }
 
-
 class buildTextBoxState extends State<buildTextBox> {
   bool _obscureText = true;
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      autofocus: true,
+      autofocus: false,
+      initialValue: widget.initialValue,
       style: GoogleFonts.nunito(
-          color: DeckColors.white,
-              fontSize: 16,
+        color: Colors.white,
+        fontSize: 16,
       ),
       decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(
@@ -524,25 +579,61 @@ class buildTextBoxState extends State<buildTextBox> {
         hintText: widget.hintText,
         hintStyle: GoogleFonts.nunito(
           fontSize: 16,
-          color: DeckColors.white,
+          color: Colors.white,
         ),
         filled: true,
         fillColor: DeckColors.gray,
-        contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+        contentPadding:
+        const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
         suffixIcon: widget.showPassword
             ? IconButton(
-          icon: _obscureText ? Icon(Icons.visibility_off) : Icon(Icons.visibility),
+          icon: _obscureText
+              ? Icon(Icons.visibility_off)
+              : Icon(Icons.visibility),
           onPressed: () {
             setState(() {
               _obscureText = !_obscureText;
             });
           },
-        )
-            : null,
+        ) : (widget.icon != null
+            ? Icon(widget.icon)
+            : null),
       ),
-      obscureText: _obscureText,
+      obscureText: widget.showPassword ? _obscureText : false,
     );
   }
-  }
+}
 /*------------------ END OF PASSWORD ------------------*/
 
+
+
+/*------------------ EDIT PROFILE ------------------*/
+//icon button
+class buildIconButton extends StatelessWidget{
+  final VoidCallback onPressed;
+  final IconData icon;
+  final Color iconColor, backgroundColor;
+
+  const buildIconButton({super.key,
+    required this.onPressed,
+    required this.icon,
+    required this.iconColor,
+    required this.backgroundColor
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: IconButton(
+        icon:  Icon(icon, color: iconColor),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
+}
+/*------------------ END OF EDIT PROFILE ------------------*/

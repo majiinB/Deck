@@ -18,8 +18,9 @@ class  _changePasswordState extends State<changePassword> {
     return  Scaffold(
         appBar: const BackButtonAppBar(),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 50, left: 20, right: 20),
+          padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Enter a new password below to change your password.',
@@ -52,7 +53,7 @@ class  _changePasswordState extends State<changePassword> {
                         child: buildButton(
                           onPressed: () {
                             print("save button clicked");//line to test if working ung onPressedLogic XD
-                            showDeleteConfirmationDialog(
+                            showConfirmationDialog(
                               context,
                               "Change Password",
                               "Are you sure you want to change password?",

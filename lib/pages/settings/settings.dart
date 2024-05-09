@@ -1,6 +1,7 @@
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/settings/change_password.dart';
+import 'package:deck/pages/settings/recently_deleted.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -50,7 +51,7 @@ class  _SettingPageState extends State<SettingPage> {
                     showSwitch: false,
                     onTap: () {
                       print("Recently Deleted Clicked");
-                      //Navigator.push(context, MaterialPageRoute(builder: (context) => changePassword()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => RecentlyDeletedPage()));
 
                     },
                   ),

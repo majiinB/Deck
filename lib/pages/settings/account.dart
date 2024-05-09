@@ -48,28 +48,13 @@ class  _AccountPageState extends State<AccountPage> {
                 Positioned(
                   top: 10,
                   right: 16,
-                  child: IconButton(
-                    icon: const Icon(DeckIcons.settings, color: DeckColors.gray),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => SettingPage()));
-
-                      //add more logic here
-                    },
-                  ),
-                ),
-                Positioned(
-                  top: 212,
-                  right: 16,
-                  child: buildButton(
-                    onPressed: () {
-                      print("edit profile button clicked");
-                    },
-                    buttonText: 'edit Profile',
-                    height: 40.0,
-                    width: 120.0,
-                    backgroundColor: DeckColors.white,
-                    textColor: DeckColors.backgroundColor, radius: 20.0,
-                  ),
+                  child: buildIconButton(onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SettingPage()));
+                  },
+                    icon: DeckIcons.settings,
+                    iconColor: DeckColors.white,
+                    backgroundColor: DeckColors.accentColor,
+                  )
                 ),
 
                 Positioned(
@@ -94,7 +79,7 @@ class  _AccountPageState extends State<AccountPage> {
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
-                            "pasadsasdads@gmail.com",
+                            "poledimaguibaumaalogalog@gmail.com",
                             style: GoogleFonts.nunito(
                               fontSize: 16,
                               color: DeckColors.white,
@@ -107,8 +92,28 @@ class  _AccountPageState extends State<AccountPage> {
                 ),
               ],
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 12, right: 7.0),
+                  child: buildButton(
+                    onPressed: () {
+                      // Add your onPressed logic here
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => editProfile()));
+                    },
+                    buttonText: 'edit profile',
+                    height: 40,
+                    width: 140,
+                    backgroundColor: DeckColors.white,
+                    textColor: DeckColors.backgroundColor,
+                    radius: 20.0,
+                  )
+                ),
+              ],
+            ),
             Padding(
-              padding: const EdgeInsets.only(top: 180, left: 16.0),
+              padding: const EdgeInsets.only(top: 130, left: 16.0),
               child: Text(
                 "My Decks",
                 style: GoogleFonts.nunito(
@@ -138,7 +143,7 @@ class  _AccountPageState extends State<AccountPage> {
                           deckTitles.removeAt(index);
                           deckNumbers.removeAt(index);
                         });
-                        showDeleteConfirmationDialog(
+                        showConfirmationDialog(
                           context,
                           "Delete Item",
                           "Are you sure you want to delete '$deletedTitle'?",
@@ -151,7 +156,7 @@ class  _AccountPageState extends State<AccountPage> {
                                 });
                           },
                         );
-                      },
+                      }, enableSwipeToRetrieve: false,
                     ),
                   );
                 },
