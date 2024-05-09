@@ -146,13 +146,13 @@ class BuildProfileImageState extends State<BuildProfileImage> {
 class buildButton extends StatelessWidget{
   final VoidCallback onPressed;
   final String buttonText;
-  final double height, width;
+  final double height, width, radius;
   final Color backgroundColor, textColor;
 
   buildButton({
     required this.onPressed,
     required this.buttonText,
-    Key? key, required this.height, required this.width,
+    Key? key, required this.height, required this.width, required this.radius,
     required this.backgroundColor, required this.textColor,
   }) : super(key: key);
 
@@ -166,7 +166,7 @@ class buildButton extends StatelessWidget{
           style: ElevatedButton.styleFrom(
               backgroundColor: backgroundColor,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
+                  borderRadius: BorderRadius.circular(radius),
               )
           ),
           child: Text(
@@ -480,8 +480,69 @@ class _BuildContainerState extends State<BuildContainer> {
     );
   }
 }
-
-
-
-
 /*------------------ END OF SETTINGS ------------------*/
+
+/*------------------ CHANGE PASSWORD ------------------*/
+class buildTextBox extends StatefulWidget {
+final String hintText;
+final bool showPassword;
+
+  const buildTextBox({super.key, required this.hintText,
+    this.showPassword = false,
+  });
+
+  @override
+  State<buildTextBox> createState() => buildTextBoxState();
+}
+
+
+class buildTextBoxState extends State<buildTextBox> {
+  bool _obscureText = true;
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      autofocus: true,
+      style: GoogleFonts.nunito(
+          color: DeckColors.white,
+              fontSize: 16,
+      ),
+      decoration: InputDecoration(
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: DeckColors.white,
+            width: 3.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: DeckColors.primaryColor,
+            width: 3.0,
+          ),
+        ),
+        hintText: widget.hintText,
+        hintStyle: GoogleFonts.nunito(
+          fontSize: 16,
+          color: DeckColors.white,
+        ),
+        filled: true,
+        fillColor: DeckColors.gray,
+        contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+        suffixIcon: widget.showPassword
+            ? IconButton(
+          icon: _obscureText ? Icon(Icons.visibility_off) : Icon(Icons.visibility),
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+        )
+            : null,
+      ),
+      obscureText: _obscureText,
+    );
+  }
+  }
+/*------------------ END OF PASSWORD ------------------*/
+

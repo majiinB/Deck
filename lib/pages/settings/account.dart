@@ -1,3 +1,4 @@
+import 'package:deck/pages/settings/edit_profile.dart';
 import 'package:deck/pages/settings/settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -61,15 +62,16 @@ class  _AccountPageState extends State<AccountPage> {
                   right: 16,
                   child: buildButton(
                     onPressed: () {
-                      // Logic here
+                      print("edit profile button clicked");
                     },
-                    buttonText: 'edit profile',
+                    buttonText: 'edit Profile',
                     height: 40.0,
                     width: 120.0,
                     backgroundColor: DeckColors.white,
-                    textColor: DeckColors.backgroundColor,
+                    textColor: DeckColors.backgroundColor, radius: 20.0,
                   ),
                 ),
+
                 Positioned(
                   top: 150,
                   child: Padding(
