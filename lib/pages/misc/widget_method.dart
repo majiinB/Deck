@@ -1,4 +1,5 @@
 
+//import 'dart:ffi';
 import 'dart:io';
 
 import 'package:deck/pages/misc/colors.dart';
@@ -88,7 +89,7 @@ class BackButtonAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 
-/*------------------ACCOUNT SETTINGS------------------*/
+/*------------------ACCOUNT------------------*/
 //cover photo
 class BuildCoverImage extends StatefulWidget {
   final File? CoverPhotofile;
@@ -205,7 +206,7 @@ class SwipeToDelete extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.0),
           color: Colors.red,
         ),
-        child: Icon(Icons.delete, color: Colors.white),
+        child: Icon(DeckIcons.trash_bin, color: Colors.white),
       ),
       onDismissed: (direction) {
         onDelete();
@@ -369,4 +370,118 @@ void showDeleteConfirmationDialog(BuildContext context, String title, String tex
   );
 }
 
-/*------------------END OF ACCOUNT SETTINGS------------------*/
+/*------------------ END OF ACCOUNT ------------------*/
+
+
+/*------------------ SETTINGS ------------------*/
+
+//container
+class BuildContainer extends StatefulWidget {
+  final IconData selectedIcon;
+  final IconData? alternateIcon;
+  final String nameOfTheContainer;
+  final String? alternateText;
+  final VoidCallback? onTap;
+  final bool showSwitch, showArrow;
+
+  const BuildContainer({
+    required this.selectedIcon,
+    required this.nameOfTheContainer,
+    this.alternateIcon,
+    this.alternateText,
+    this.showSwitch = false,
+    this.showArrow = false,
+    this.onTap,
+    Key? key,
+  })  : assert(showSwitch == false || (alternateIcon != null && alternateText != null),
+  ),
+        super(key: key);
+
+  @override
+  State<BuildContainer> createState() => _BuildContainerState();
+}
+
+class _BuildContainerState extends State<BuildContainer> {
+  late bool _isToggled;
+  Color _containerColor = DeckColors.gray;
+
+  @override
+  void initState() {
+    super.initState();
+    _isToggled = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          if (widget.onTap != null) {
+            _containerColor = Colors.grey.withOpacity(0.7);
+          }
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _containerColor = DeckColors.gray;
+        });
+        widget.onTap?.call();
+      },
+      onTapCancel: () {
+        setState(() {
+          _containerColor = DeckColors.gray;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          color: _containerColor,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  _isToggled ? widget.alternateIcon! : widget.selectedIcon,
+                  color: _isToggled ? DeckColors.primaryColor : DeckColors.primaryColor,
+                  size: 40,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Text(
+                    _isToggled ? widget.alternateText! : widget.nameOfTheContainer,
+                    style: GoogleFonts.nunito(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: _isToggled ? Colors.white : DeckColors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (widget.showSwitch)
+              Switch(
+                value: _isToggled,
+                onChanged: (value) {
+                  setState(() {
+                    _isToggled = value;
+                  });
+                },
+                activeColor: DeckColors.primaryColor,
+                inactiveThumbColor: DeckColors.gray,
+              ),
+            if (widget.showArrow)
+              const Icon(Icons.arrow_right, color: DeckColors.coverImageColorSettings, size: 32,),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+/*------------------ END OF SETTINGS ------------------*/
