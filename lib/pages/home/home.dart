@@ -23,27 +23,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      appBar: const AuthBar(
-        title: 'sdsd',
+      appBar: AuthBar(
+        title: 'temporary title',
         color: DeckColors.white,
         fontSize: 24,
       ),
     );
-    // bottomNavigationBar: DeckBar(
-    //   currentIndex: index,
-    //   onIndexChanged: (int newIndex) {
-    //     setState(() {
-    //       index = newIndex;
-    //     });
-    //   },
-    //   // Pass the callback function from HomePage to DeckBar
-    //   goToPage: (int pageIndex) {
-    //     // Navigate to the specified page
-    //     setState(() {
-    //       index = pageIndex;
-    //     });
-    //   },
-    // ),
-    // );
   }
 }

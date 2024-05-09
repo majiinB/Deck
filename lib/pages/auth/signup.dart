@@ -1,3 +1,4 @@
+import 'package:deck/main.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
@@ -17,10 +18,8 @@ class SignUpPage extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            // Navigate to the second page
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => TaskPage()),
+            Navigator.of(context).push(
+              RouteGenerator.createRoute(const MainPage()),
             );
           },
           child: Text('ETO FLASHCARD'),

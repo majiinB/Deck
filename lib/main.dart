@@ -113,6 +113,7 @@ class _MainPageState extends State<MainPage> {
       top: false,
       bottom: true,
       child: Scaffold(
+        appBar: null,
         body: screens[index],
         bottomNavigationBar: curvedNavigationBar(),
       ),
