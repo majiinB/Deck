@@ -1,3 +1,4 @@
+import 'package:deck/pages/misc/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/task/task.dart';
@@ -8,7 +9,11 @@ class FlashcardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const BackButtonAppBar(),
+      appBar: const AuthBar(
+        title: 'sdsd',
+        color: DeckColors.white,
+        fontSize: 24,
+      ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {

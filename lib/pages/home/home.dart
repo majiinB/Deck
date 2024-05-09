@@ -1,3 +1,5 @@
+import 'package:deck/pages/misc/colors.dart';
+import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:flutter/material.dart';
 // import 'package:deck/pages/account/account.dart';
@@ -21,22 +23,27 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      appBar: HomeAppBar(),
-      // bottomNavigationBar: DeckBar(
-      //   currentIndex: index,
-      //   onIndexChanged: (int newIndex) {
-      //     setState(() {
-      //       index = newIndex;
-      //     });
-      //   },
-      //   // Pass the callback function from HomePage to DeckBar
-      //   goToPage: (int pageIndex) {
-      //     // Navigate to the specified page
-      //     setState(() {
-      //       index = pageIndex;
-      //     });
-      //   },
-      // ),
+      appBar: const AuthBar(
+        title: 'sdsd',
+        color: DeckColors.white,
+        fontSize: 24,
+      ),
     );
+    // bottomNavigationBar: DeckBar(
+    //   currentIndex: index,
+    //   onIndexChanged: (int newIndex) {
+    //     setState(() {
+    //       index = newIndex;
+    //     });
+    //   },
+    //   // Pass the callback function from HomePage to DeckBar
+    //   goToPage: (int pageIndex) {
+    //     // Navigate to the specified page
+    //     setState(() {
+    //       index = pageIndex;
+    //     });
+    //   },
+    // ),
+    // );
   }
 }

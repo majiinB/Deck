@@ -1,6 +1,7 @@
 import 'package:deck/pages/task/todo.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:deck/pages/misc/colors.dart';
 
 class TaskPage extends StatelessWidget {
   const TaskPage({super.key});
@@ -8,7 +9,11 @@ class TaskPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: HomeAppBar(),
+      appBar: const AuthBar(
+        title: 'sdsd',
+        color: DeckColors.white,
+        fontSize: 24,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

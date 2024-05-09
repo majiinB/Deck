@@ -6,76 +6,69 @@ import 'package:google_fonts/google_fonts.dart';
 ///
 ///
 ///
-/// A P P B A R
-
-/// DefaultHome is the Home Page by default in Deck
-class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const HomeAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      centerTitle: true,
-      title: const Text(
-        'deck',
-        style: TextStyle(fontFamily: 'Fraiche', fontSize: 24),
-      ),
-      foregroundColor: DeckColors.primaryColor,
-    );
-  }
-
-  @override
-  Size get preferredSize => AppBar().preferredSize;
-}
+/**--------------------- A P P B A R ---------------------------- */
 
 ///
 ///
-/// TaskPage is the Todo List Page in Deck
-class TaskAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const TaskAppBar({super.key});
+/// DeckBar is an AppBar with the font Nunito (used in typical routes)
+class DeckBar extends StatelessWidget implements PreferredSizeWidget {
+  const DeckBar({
+    super.key,
+    required this.title,
+    required this.color,
+    required this.fontSize,
+  });
 
-  @override
-  State<TaskAppBar> createState() => _TaskAppBarState();
+  final String title;
+  final Color color;
+  final double fontSize;
 
-  @override
-  Size get preferredSize => AppBar().preferredSize;
-}
-
-class _TaskAppBarState extends State<TaskAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(
-        'Task Page',
+        title,
         style: GoogleFonts.nunito(
-            fontSize: 24, fontWeight: FontWeight.w900, color: DeckColors.white),
+            fontSize: fontSize, fontWeight: FontWeight.w900, color: color),
       ),
       centerTitle: true,
       foregroundColor: const Color.fromARGB(255, 61, 61, 61),
-      // leading: GestureDetector(
-      //   onTap: () {
-      //     Navigator.pop(context);
-      //   },
-      //   child: const Icon(
-      //     DeckIcons.backArrow,
-      //     size: 24,
-      //   ),
-      // ),
     );
   }
+
+  @override
+  Size get preferredSize => AppBar().preferredSize;
 }
 
 ///
 ///
-/// Navbar with Back Button Plain
-class BackButtonAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const BackButtonAppBar({super.key});
+/// AuthBar is an AppBar with the font Fraiche (used in auth and main routes)
+class AuthBar extends StatelessWidget implements PreferredSizeWidget {
+  const AuthBar({
+    super.key,
+    required this.title,
+    required this.color,
+    required this.fontSize,
+  });
+  final String title;
+  final Color color;
+  final double fontSize;
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      title: const Text('Hi'),
-      foregroundColor: Colors.green,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0),
+      child: AppBar(
+        title: Text(
+          title,
+          style: TextStyle(
+            fontFamily: 'Fraiche',
+            fontSize: fontSize,
+            color: color,
+          ),
+        ),
+        centerTitle: true,
+      ),
     );
   }
 
