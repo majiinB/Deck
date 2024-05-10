@@ -4,6 +4,7 @@ import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+///updated methods as of 05/11/24 1:34AM
 ///
 ///
 /// ----------------------- S T A R T -------------------------
