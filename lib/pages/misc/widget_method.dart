@@ -100,3 +100,67 @@ class RouteGenerator {
     );
   }
 }
+
+
+
+///
+///
+///  FLOATING ACTION BAR
+///
+///
+
+class DeckFAB extends StatelessWidget {
+  final String text;
+  final Color backgroundColor;
+  final Color foregroundColor;
+  final IconData icon;
+  final Function onPressed;
+  final double fontSize;
+
+  const DeckFAB({
+    super.key,
+    required this.text,
+    required this.backgroundColor,
+    required this.foregroundColor,
+    required this.icon,
+    required this.fontSize,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return
+      Tooltip(
+        //preferBelow: false,
+        verticalOffset: -13,
+        margin: EdgeInsets.only(right: 65),
+        message: text,
+        textStyle: GoogleFonts.nunito(
+            fontSize: fontSize, fontWeight: FontWeight.w900, color: DeckColors.white
+        ),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          //borderRadius: BorderRadius.circular(8.0),
+        ),
+        child:  FloatingActionButton(
+          onPressed: () => onPressed(),
+          backgroundColor: backgroundColor,
+          foregroundColor: foregroundColor,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Text(
+              //   text,
+              //   style: TextStyle(
+              //     fontFamily: 'Fraiche',
+              //     fontSize: fontSize,
+              //     color: foregroundColor,
+              //    ),
+              // ),
+              Icon(icon),
+            ],
+          ),
+        ),
+      );
+  }
+}

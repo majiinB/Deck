@@ -1,50 +1,46 @@
-import 'package:deck/pages/task/todo.dart';
+import 'package:deck/pages/misc/deck_icons.dart';
+import 'package:deck/pages/task/add_task.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/misc/colors.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-class TaskPage extends StatelessWidget {
-  const TaskPage({super.key});
+class TaskPage extends StatefulWidget {
+ const TaskPage({super.key});
+  @override
+  _TaskPageState createState() => _TaskPageState();
+}
 
+class _TaskPageState extends State<TaskPage>{
+  // CalendarController _controller;
+  // @override
+  // void initState(){
+  //   super.initState();
+  //   _controller = CalendarController();
+  // }
+  // @override
+  // void dispose(){
+  //   super.dispose();
+  //   _controller.dispose();
+  // }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const AuthBar(
-        title: 'sdsd',
-        color: DeckColors.white,
-        fontSize: 24,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(_createRoute());
-              },
-              child: Text('SETTINGS TO AH'),
-            ),
-          ],
-        ),
-      ),
-    );
+   return Scaffold(
+     floatingActionButton: DeckFAB(
+         text: "Add Task",
+       fontSize: 12,
+       icon: DeckIcons.back_arrow, //walang plus </3
+       foregroundColor: DeckColors.primaryColor,
+       backgroundColor: DeckColors.gray,
+       onPressed: () {
+           // Navigate to the second page
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddTaskPage()),
+            );
+        },
+     ),
+     );
   }
 }
 
-Route _createRoute() {
-  return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => const TodoPage(),
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      const begin = Offset(1.0, 0.0); // Animation starts from right to left
-      const end = Offset.zero;
-      const curve = Curves.ease;
-
-      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-      return SlideTransition(
-        position: animation.drive(tween),
-        child: child,
-      );
-    },
-  );
-}
