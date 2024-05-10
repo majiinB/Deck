@@ -3,7 +3,7 @@ import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/flashcard/flashcard.dart';
 import 'package:deck/pages/home/home.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
-import 'package:deck/pages/settings/settings.dart';
+import 'package:deck/pages/settings/account.dart';
 import 'package:deck/pages/task/task.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
@@ -56,7 +56,7 @@ class _MainPageState extends State<MainPage> {
     HomePage(),
     TaskPage(),
     FlashcardPage(),
-    SettingsPage(),
+    AccountPage(),
   ];
 
   ///  Navbar Icons and Label

@@ -1,8 +1,6 @@
 import 'package:deck/pages/misc/colors.dart';
-import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:flutter/material.dart';
-// import 'package:deck/pages/account/account.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
