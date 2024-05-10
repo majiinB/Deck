@@ -21,6 +21,7 @@ class  _editProfileState extends State<editProfile> {
     return  Scaffold(
         appBar: const BackButtonAppBar(),
     body: SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -170,7 +171,7 @@ class  _editProfileState extends State<editProfile> {
                   },
                 );
               },
-              buttonText: 'Save Password',
+              buttonText: 'Save Changes',
               height: 50.0,
               width: MediaQuery.of(context).size.width,
               backgroundColor: DeckColors.primaryColor,

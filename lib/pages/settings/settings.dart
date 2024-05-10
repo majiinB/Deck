@@ -18,7 +18,7 @@ class  _SettingPageState extends State<SettingPage> {
     return  Scaffold(
         appBar: const BackButtonAppBar(),
           body: SingleChildScrollView(
-            padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
+            padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
             child: Column(
               children: <Widget>[
                 const BuildContainer(selectedIcon: Icons.light_mode,

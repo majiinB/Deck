@@ -286,16 +286,13 @@ class BuildListOfDecks extends StatefulWidget {
 }
 
 class BuildListOfDecksState extends State<BuildListOfDecks> {
-  void handleRetrieve() {
-    print('Retrieving item...');
-    widget.onRetrieve?.call(); // Call the onRetrieve callback if it's not null
-  }
+
 
   @override
   Widget build(BuildContext context) {
     return SwipeToDeleteAndRetrieve(
       onDelete: widget.onDelete,
-      onRetrieve: widget.enableSwipeToRetrieve ? handleRetrieve : null,
+      onRetrieve: widget.enableSwipeToRetrieve ?   widget.onRetrieve : null,
       enableRetrieve: widget.enableSwipeToRetrieve,
       child: Container(
         padding: const EdgeInsets.all(20.0),
