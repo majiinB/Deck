@@ -28,7 +28,7 @@ class  _editProfileState extends State<editProfile> {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              BuildCoverImage(),
+              BuildCoverImage(borderRadiusContainer: 0,borderRadiusImage: 0),
               Positioned(
                 top: 150,
                 left: 10,
@@ -37,52 +37,44 @@ class  _editProfileState extends State<editProfile> {
               Positioned(
                 top: 140,
                 right: 10,
-                  child: buildIconButton(onPressed: () {
+                  child: BuildIconButton(onPressed: () {
                     showModalBottomSheet(
                         context: context,
                         builder: (BuildContext context) {
                           return ClipRRect(
-                              borderRadius: const BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(30.0),
-                          topRight: Radius.circular(30.0),
-                          ),
-                          child: Container(
-                            height: 200,
-                            width: MediaQuery.of(context).size.width,
-                            color: DeckColors.gray,
-                            child: Column(
-                              children: [
-                                Padding(padding: EdgeInsets.only(top: 30),
-                            child: buildButton(
-                              onPressed: () {
-                                print("upload button clicked");//line to test if working ung onPressedLogic XD
-                              },
-                              buttonText: 'Upload Cover Photo',
-                              height: 70.0,
+                              topRight: Radius.circular(30.0),
+                            ),
+                            child: Container(
+                              height: 200,
                               width: MediaQuery.of(context).size.width,
-                              backgroundColor: DeckColors.gray,
-                              textColor: DeckColors.white, radius: 0.0,
-                              icon: Icons.image, iconColor: DeckColors.white, paddingIconText: 20.0, size: 32,
+                              color: DeckColors.gray,
+                              child: Column(
+                                  children: [
+                                    Padding(padding: EdgeInsets.only(top: 10),
+                                      child: BuildContentOfBottomSheet(BottomSheetButtonText: 'Upload Cover Photo',
+                                        BottomSheetButtonIcon:
+                                        Icons.image,
+                                        OnPressed: (){
+                                          print("It is working");
+                                        },
+                                      ),
+                                    ),
+                                    Padding(padding: EdgeInsets.only(top: 10),
+                                      child: BuildContentOfBottomSheet(BottomSheetButtonText: 'Remove Cover Photo',
+                                        BottomSheetButtonIcon:
+                                        Icons.remove_circle,
+                                        OnPressed: (){
+                                          print("It is working");
+                                        },
+                                      ),
+                                    ),
+                                  ]
+                              ),
                             ),
-                                ),
-                                Padding(padding: EdgeInsets.only(top: 10),
-                                  child: buildButton(
-                                    onPressed: () {
-                                      print("remove image clicked");//line to test if working ung onPressedLogic XD
-                                    },
-                                    buttonText: 'Remove Cover Photo',
-                                    height: 70.0,
-                                    width: MediaQuery.of(context).size.width,
-                                    backgroundColor: DeckColors.gray,
-                                    textColor: DeckColors.white, radius: 0.0,
-                                    icon: Icons.remove_circle, iconColor: DeckColors.white, paddingIconText: 20.0, size: 32,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                           );
-                    }
+                        }
                     );
                   },
                     icon: DeckIcons.pencil,
@@ -93,50 +85,42 @@ class  _editProfileState extends State<editProfile> {
             ],
           ),
           Padding(padding: const EdgeInsets.only(top: 25, left: 100),
-          child: buildIconButton(onPressed: () {
+          child: BuildIconButton(onPressed: () {
             showModalBottomSheet(
                 context: context,
                 builder: (BuildContext context) {
-                  return ClipRRect(
-                    borderRadius: const BorderRadius.only(
+                 return ClipRRect(
+                      borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30.0),
-                      topRight: Radius.circular(30.0),
-                    ),
-                    child: Container(
-                      height: 200,
-                      width: MediaQuery.of(context).size.width,
-                      color: DeckColors.gray,
-                      child: Column(
-                        children: [
-                          Padding(padding: EdgeInsets.only(top: 30),
-                            child: buildButton(
-                              onPressed: () {
-                                print("upload button clicked");//line to test if working ung onPressedLogic XD
-                              },
-                              buttonText: 'Upload Profile Photo',
-                              height: 70.0,
-                              width: MediaQuery.of(context).size.width,
-                              backgroundColor: DeckColors.gray,
-                              textColor: DeckColors.white, radius: 0.0,
-                              icon: Icons.image, iconColor: DeckColors.white, paddingIconText: 20.0, size: 32,
-                            ),
-                          ),
-                          Padding(padding: EdgeInsets.only(top: 10),
-                            child: buildButton(
-                              onPressed: () {
-                                print("remove image clicked");//line to test if working ung onPressedLogic XD
-                              },
-                              buttonText: 'Remove Profile Photo',
-                              height: 70.0,
-                              width: MediaQuery.of(context).size.width,
-                              backgroundColor: DeckColors.gray,
-                              textColor: DeckColors.white, radius: 0.0,
-                              icon: Icons.remove_circle, iconColor: DeckColors.white, paddingIconText: 20.0, size: 32,
-                            ),
-                          ),
-                        ],
+                  topRight: Radius.circular(30.0),
+                  ),
+                     child: Container(
+                       height: 200,
+                       width: MediaQuery.of(context).size.width,
+                       color: DeckColors.gray,
+                       child: Column(
+                    children: [
+                      Padding(padding: EdgeInsets.only(top: 10),
+                        child: BuildContentOfBottomSheet(BottomSheetButtonText: 'Upload Profile Photo',
+                          BottomSheetButtonIcon:
+                          Icons.image,
+                          OnPressed: (){
+                            print("It is working");
+                          },
+                        ),
                       ),
+                      Padding(padding: EdgeInsets.only(top: 10),
+                      child: BuildContentOfBottomSheet(BottomSheetButtonText: 'Remove Profile Photo',
+                        BottomSheetButtonIcon:
+                        Icons.remove_circle,
+                        OnPressed: (){
+                          print("It is working");
+                        },
+                      ),
+                     ),
+                  ]
                     ),
+                  ),
                   );
                 }
             );
@@ -147,16 +131,16 @@ class  _editProfileState extends State<editProfile> {
           )
           ),
           const Padding(padding: EdgeInsets.only(top: 60, left: 16, right: 16),
-          child: buildTextBox(initialValue: 'Pole', showPassword: false),
+          child: BuildTextBox(initialValue: 'Pole', showPassword: false),
           ),
           const Padding(padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-            child: buildTextBox(initialValue: 'Di - Maguiba', showPassword: false),
+            child: BuildTextBox(initialValue: 'Di - Maguiba', showPassword: false),
           ),
           const Padding(padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-            child: buildTextBox(initialValue: 'poledimaguibaumaalogalog@gmail.com', showPassword: false),
+            child: BuildTextBox(initialValue: 'poledimaguibaumaalogalog@gmail.com', showPassword: false),
           ),
           Padding(padding: const EdgeInsets.only(top: 40, left: 16, right: 16),
-            child: buildButton(
+            child: BuildButton(
               onPressed: () {
                 print("save button clicked");//line to test if working ung onPressedLogic XD
                 showConfirmationDialog(
@@ -179,7 +163,7 @@ class  _editProfileState extends State<editProfile> {
             ),
           ),
           Padding(padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: buildButton(
+            child: BuildButton(
               onPressed: () {
                 print("cancel button clicked");//line to test if working ung onPressedLogic XD
                 Navigator.pop(context);

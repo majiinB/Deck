@@ -1,6 +1,7 @@
 
 //import 'dart:ffi';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
@@ -93,8 +94,11 @@ class BackButtonAppBar extends StatelessWidget implements PreferredSizeWidget {
 //cover photo
 class BuildCoverImage extends StatefulWidget {
   final File? CoverPhotofile;
+  final double borderRadiusContainer, borderRadiusImage;
 
-   BuildCoverImage({Key? key, this.CoverPhotofile}) : super(key: key);
+   BuildCoverImage({Key? key, this.CoverPhotofile,
+     required this.borderRadiusContainer,
+     required this.borderRadiusImage}) : super(key: key);
 
   @override
   BuildCoverImageState createState() => BuildCoverImageState();
@@ -103,8 +107,13 @@ class BuildCoverImageState extends State<BuildCoverImage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: widget.CoverPhotofile != null ? null : DeckColors.coverImageColorSettings,
       height: 200,
+      decoration: BoxDecoration (
+        borderRadius: BorderRadius.circular(widget.borderRadiusContainer),
+        color: widget.CoverPhotofile != null ? null : DeckColors.coverImageColorSettings,
+      ),
+        child: ClipRRect(
+        borderRadius: BorderRadius.circular(widget.borderRadiusImage),
       child: widget.CoverPhotofile != null
           ? Image.file(
         widget.CoverPhotofile!,
@@ -115,6 +124,7 @@ class BuildCoverImageState extends State<BuildCoverImage> {
           : const Placeholder(
         color: DeckColors.coverImageColorSettings,
       ),
+        ),
     );
   }
 }
@@ -143,7 +153,7 @@ class BuildProfileImageState extends State<BuildProfileImage> {
 }
 
 //button
-class buildButton extends StatelessWidget {
+class BuildButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String buttonText;
   final double height, width, radius;
@@ -152,7 +162,7 @@ class buildButton extends StatelessWidget {
   final Color? iconColor;
   final double? paddingIconText, size;
 
-  const buildButton({
+  const BuildButton({
     Key? key,
     required this.onPressed,
     required this.buttonText,
@@ -290,72 +300,75 @@ class BuildListOfDecksState extends State<BuildListOfDecks> {
 
   @override
   Widget build(BuildContext context) {
-    return SwipeToDeleteAndRetrieve(
-      onDelete: widget.onDelete,
-      onRetrieve: widget.enableSwipeToRetrieve ?   widget.onRetrieve : null,
-      enableRetrieve: widget.enableSwipeToRetrieve,
-      child: Container(
-        padding: const EdgeInsets.all(20.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
-          color: DeckColors.gray,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              color: widget.deckImageFile != null ? null : DeckColors.white,
-              height: 75,
-              width: 75,
-              child: widget.deckImageFile != null
-                  ? Image.file(
-                widget.deckImageFile!,
-                width: 20,
-                height: 10,
-                fit: BoxFit.cover,
-              )
-                  : const Placeholder(
-                color: DeckColors.white,
+    return GestureDetector(
+
+      child: SwipeToDeleteAndRetrieve(
+        onDelete: widget.onDelete,
+        onRetrieve: widget.enableSwipeToRetrieve ?   widget.onRetrieve : null,
+        enableRetrieve: widget.enableSwipeToRetrieve,
+        child: Container(
+          padding: const EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15.0),
+            color: DeckColors.gray,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                color: widget.deckImageFile != null ? null : DeckColors.white,
+                height: 75,
+                width: 75,
+                child: widget.deckImageFile != null
+                    ? Image.file(
+                  widget.deckImageFile!,
+                  width: 20,
+                  height: 10,
+                  fit: BoxFit.cover,
+                )
+                    : const Placeholder(
+                  color: DeckColors.white,
+                ),
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 15.0, top: 5.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.titleText,
-                      style: GoogleFonts.nunito(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: DeckColors.white,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 7.0),
-                      child: Container(
-                        width: 150,
-                        padding: const EdgeInsets.all(5.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16.0),
-                          color: DeckColors.coverImageColorSettings,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15.0, top: 5.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.titleText,
+                        style: GoogleFonts.nunito(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: DeckColors.white,
                         ),
-                        child: Text(
-                          widget.numberText,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.nunito(
-                            fontSize: 16,
-                            color: DeckColors.white,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 7.0),
+                        child: Container(
+                          width: 150,
+                          padding: const EdgeInsets.all(5.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.0),
+                            color: DeckColors.coverImageColorSettings,
+                          ),
+                          child: Text(
+                            widget.numberText,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              color: DeckColors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -529,74 +542,77 @@ class _BuildContainerState extends State<BuildContainer> {
 /*------------------ END OF SETTINGS ------------------*/
 
 /*------------------ CHANGE PASSWORD ------------------*/
-class buildTextBox extends StatefulWidget {
+class BuildTextBox extends StatefulWidget {
   final String? hintText, initialValue;
   final bool showPassword;
   final IconData? icon;
+  final int? maxLines;
 
 
-  const buildTextBox({
+  const BuildTextBox({
     Key? key,
     this.hintText,
     this.showPassword = false,
     this.icon, this.initialValue,
+    this.maxLines,
   }) : super(key: key);
 
   @override
-  State<buildTextBox> createState() => buildTextBoxState();
+  State<BuildTextBox> createState() => buildTextBoxState();
 }
 
-class buildTextBoxState extends State<buildTextBox> {
+class buildTextBoxState extends State<BuildTextBox> {
   bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      autofocus: false,
-      initialValue: widget.initialValue,
-      style: GoogleFonts.nunito(
-        color: Colors.white,
-        fontSize: 16,
-      ),
-      decoration: InputDecoration(
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: const BorderSide(
-            color: DeckColors.white,
-            width: 3.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: const BorderSide(
-            color: DeckColors.primaryColor,
-            width: 3.0,
-          ),
-        ),
-        hintText: widget.hintText,
-        hintStyle: GoogleFonts.nunito(
-          fontSize: 16,
+        maxLines: widget.maxLines,
+        autofocus: false,
+        initialValue: widget.initialValue,
+        style: GoogleFonts.nunito(
           color: Colors.white,
+          fontSize: 16,
         ),
-        filled: true,
-        fillColor: DeckColors.gray,
-        contentPadding:
-        const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-        suffixIcon: widget.showPassword
-            ? IconButton(
-          icon: _obscureText
-              ? Icon(Icons.visibility_off)
-              : Icon(Icons.visibility),
-          onPressed: () {
-            setState(() {
-              _obscureText = !_obscureText;
-            });
-          },
-        ) : (widget.icon != null
-            ? Icon(widget.icon)
-            : null),
-      ),
-      obscureText: widget.showPassword ? _obscureText : false,
+        decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(
+              color: DeckColors.white,
+              width: 3.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(
+              color: DeckColors.primaryColor,
+              width: 3.0,
+            ),
+          ),
+          hintText: widget.hintText,
+          hintStyle: GoogleFonts.nunito(
+            fontSize: 16,
+            color: Colors.white,
+          ),
+          filled: true,
+          fillColor: DeckColors.gray,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+          suffixIcon: widget.showPassword
+              ? IconButton(
+            icon: _obscureText
+                ? Icon(Icons.visibility_off)
+                : Icon(Icons.visibility),
+            onPressed: () {
+              setState(() {
+                _obscureText = !_obscureText;
+              });
+            },
+          ) : (widget.icon != null
+              ? Icon(widget.icon)
+              : null),
+        ),
+        obscureText: widget.showPassword ? _obscureText : false,
     );
   }
 }
@@ -606,12 +622,12 @@ class buildTextBoxState extends State<buildTextBox> {
 
 /*------------------ EDIT PROFILE ------------------*/
 //icon button
-class buildIconButton extends StatelessWidget{
+class BuildIconButton extends StatelessWidget{
   final VoidCallback onPressed;
   final IconData icon;
   final Color iconColor, backgroundColor;
 
-  const buildIconButton({super.key,
+  const BuildIconButton({super.key,
     required this.onPressed,
     required this.icon,
     required this.iconColor,
@@ -631,6 +647,333 @@ class buildIconButton extends StatelessWidget{
       ),
     );
   }
+}
+
+class BuildContentOfBottomSheet extends StatelessWidget{
+  final String BottomSheetButtonText;
+  final IconData BottomSheetButtonIcon;
+  final VoidCallback OnPressed;
+
+  const BuildContentOfBottomSheet({super.key,
+    required this.BottomSheetButtonText,
+    required this.BottomSheetButtonIcon,
+    required this.OnPressed});
+  @override
+  Widget build(BuildContext context) {
+      return Padding(padding: EdgeInsets.only(top: 10),
+              child: BuildButton(
+                onPressed: OnPressed,
+                buttonText: BottomSheetButtonText,
+                height: 70.0,
+                width: MediaQuery.of(context).size.width,
+                backgroundColor: DeckColors.gray,
+                textColor: DeckColors.white, radius: 0.0,
+                icon: BottomSheetButtonIcon,
+                iconColor: DeckColors.white,
+                paddingIconText: 20.0, size: 32,
+              ),
+    );
+  }
 
 }
 /*------------------ END OF EDIT PROFILE ------------------*/
+
+/*------------------ FLASHCARD ------------------*/
+class BuildDeckContainer extends StatefulWidget {
+  final File? deckCoverPhoto;
+  final String titleOfDeck;
+  final VoidCallback onDelete,  onTap;
+  final VoidCallback? onRetrieve;
+  final bool enableSwipeToRetrieve;
+
+
+
+  const BuildDeckContainer({
+    Key? key,
+
+    required this.onDelete,
+    this.onRetrieve,
+    this.enableSwipeToRetrieve = true, this.deckCoverPhoto, required this.titleOfDeck,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  State<BuildDeckContainer> createState() => BuildDeckContainerState();
+}
+
+class BuildDeckContainerState extends State<BuildDeckContainer> {
+  Color _containerColor = DeckColors.gray;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          _containerColor = Colors.grey.withOpacity(0.7);
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _containerColor = DeckColors.gray;
+        });
+        if (widget.onTap != null) {
+          widget.onTap();
+        }
+      },
+      onTapCancel: () {
+        setState(() {
+          _containerColor = DeckColors.gray;
+        });
+      },
+      child: SwipeToDeleteAndRetrieve(
+        onDelete: widget.onDelete,
+        onRetrieve: widget.enableSwipeToRetrieve ? widget.onRetrieve : null,
+        enableRetrieve: widget.enableSwipeToRetrieve,
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 160,
+          padding: const EdgeInsets.only(bottom: 20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15.0),
+            color: _containerColor,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: widget.deckCoverPhoto != null ? null : DeckColors.white,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(15.0),
+                    topRight: Radius.circular(15.0),
+                  ),
+                ),
+                width: MediaQuery.of(context).size.width,
+                height: 100,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(15.0),
+                    topRight: Radius.circular(15.0),
+                  ),
+                  child: widget.deckCoverPhoto != null
+                      ? Image.file(
+                    widget.deckCoverPhoto!,
+                    width: 20,
+                    height: 10,
+                    fit: BoxFit.cover,
+                  )
+                      : const Placeholder(
+                    color: DeckColors.white,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 15.0, left: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.titleOfDeck,
+                        style: GoogleFonts.nunito(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: DeckColors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class DeckFAB extends StatelessWidget {
+  final String text;
+  final Color backgroundColor;
+  final Color foregroundColor;
+  final IconData icon;
+  final Function onPressed;
+  final double fontSize;
+  final double borderRadius; //dinagdag ko to
+
+  const DeckFAB({
+    Key? key,
+    required this.text,
+    required this.backgroundColor,
+    required this.foregroundColor,
+    required this.icon,
+    required this.fontSize,
+    required this.onPressed,
+    this.borderRadius = 30.0 //dinagdag ko to
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      verticalOffset: -13,
+      margin: EdgeInsets.only(right: 65),
+      message: text,
+      textStyle: GoogleFonts.nunito(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w900,
+        color: DeckColors.white,
+      ),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+      ),
+      child: FloatingActionButton(
+        onPressed: () => onPressed(),
+        backgroundColor: backgroundColor,
+        foregroundColor: foregroundColor,
+        child: Icon(icon),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius), //dinagdag ko to
+        ),
+      ),
+    );
+  }
+}
+
+class ifDeckEmpty extends StatelessWidget{
+  final String ifDeckEmptyText;
+  final double ifDeckEmptyheight;
+
+  const ifDeckEmpty({super.key, required this.ifDeckEmptyText,
+    required this.ifDeckEmptyheight});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: ifDeckEmptyheight,
+        child: Center(
+          child: Text(
+            ifDeckEmptyText,
+            style: GoogleFonts.nunito(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class CustomExpansionTile extends StatefulWidget {
+
+  @override
+  _CustomExpansionTileState createState() => _CustomExpansionTileState();
+}
+
+class _CustomExpansionTileState extends State<CustomExpansionTile> {
+  bool customIcon = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Theme(
+          data: ThemeData(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+          ),
+          child: ExpansionTile(
+                title: Text(
+                    'Instructions ',
+                style: GoogleFonts.nunito(
+                  color: DeckColors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                ),
+                ),
+                trailing: Icon(
+                  customIcon ?  Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded
+                ),
+              onExpansionChanged: (bool expanded){
+                  setState(() {
+                    customIcon = expanded;
+                  });
+              },
+                tilePadding: EdgeInsets.all(10),
+                backgroundColor: DeckColors.gray,
+                collapsedBackgroundColor: DeckColors.gray,
+                collapsedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+                shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: const BorderSide(color: DeckColors.gray),
+              ),
+          
+              children: <Widget>[
+                ListTile(
+                  title: Text(
+                    '1. Provide information in the "Enter Description" text field to '
+                        'guide AI in generating content for your flashcards.',
+                    style: GoogleFonts.nunito(
+                      color: DeckColors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+
+                ListTile(
+                  title: Text(
+                    '2. Next, use the "Enter Subject" and "Enter Topic" fields to assist AI in '
+                        'generating a more specific and relevant set of flashcards.',
+                    style: GoogleFonts.nunito(
+                      color: DeckColors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  title: Text(
+                    '3. Optionally, if you want to upload a PDF instead; just upload your existing PDF and '
+                        'it will prompt the application to automatically generate flashcards for you.',
+                    style: GoogleFonts.nunito(
+                      color: DeckColors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  title: Text(
+                    '4.  Ensure that you specified the number of flashcards you desire'
+                        ' for the AI to generate.',
+                    style: GoogleFonts.nunito(
+                      color: DeckColors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  title: Text(
+                    'Note: You have the ability to employ both features simultaneously. Moreover, rest assured that AI-generated flashcards content can be edited by the user.',
+                    style: GoogleFonts.nunito(
+                      color: DeckColors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+        ),
+      ],
+    );
+  }
+  }
+/*------------------ END OF FLASHCARD ------------------*/
+

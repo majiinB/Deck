@@ -41,16 +41,16 @@ class  _changePasswordState extends State<changePassword> {
                   child: Column(
                       children: [
                         const Padding(padding: EdgeInsets.only(top: 30, left: 20, right: 20),
-                          child: buildTextBox(hintText: 'Enter Old Password', showPassword: true,),
+                          child: BuildTextBox(hintText: 'Enter Old Password', showPassword: true,),
                         ),
                         const Padding(padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-                          child: buildTextBox(hintText: 'Enter New Password', showPassword: true,),
+                          child: BuildTextBox(hintText: 'Enter New Password', showPassword: true,),
                         ),
                         const Padding(padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-                          child: buildTextBox(hintText: 'Confirm New Password', showPassword: true,),
+                          child: BuildTextBox(hintText: 'Confirm New Password', showPassword: true,),
                         ),
                         Padding(padding: const EdgeInsets.only(top: 100, left: 20, right: 20),
-                        child: buildButton(
+                        child: BuildButton(
                           onPressed: () {
                             print("save button clicked");//line to test if working ung onPressedLogic XD
                             showConfirmationDialog(
@@ -73,7 +73,7 @@ class  _changePasswordState extends State<changePassword> {
                         ),
                       ),
                         Padding(padding: const EdgeInsets.only(top: 15, left: 20, right: 20),
-                          child: buildButton(
+                          child: BuildButton(
                             onPressed: () {
                               print("cancel button clicked");//line to test if working ung onPressedLogic XD
                               Navigator.pop(context);

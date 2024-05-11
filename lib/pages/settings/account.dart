@@ -36,7 +36,7 @@ class  _AccountPageState extends State<AccountPage> {
               clipBehavior: Clip.none,
               alignment: Alignment.centerLeft,
               children: [
-                BuildCoverImage(),
+                BuildCoverImage(borderRadiusContainer: 0,borderRadiusImage: 0),
                 Positioned(
                   top: 200,
                   child: Container(
@@ -48,7 +48,7 @@ class  _AccountPageState extends State<AccountPage> {
                 Positioned(
                   top: 10,
                   right: 16,
-                  child: buildIconButton(onPressed: () {
+                  child: BuildIconButton(onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => SettingPage()));
                   },
                     icon: DeckIcons.settings,
@@ -97,7 +97,7 @@ class  _AccountPageState extends State<AccountPage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 12, right: 7.0),
-                  child: buildButton(
+                  child: BuildButton(
                     onPressed: () {
                       // Add your onPressed logic here
                       Navigator.push(context, MaterialPageRoute(builder: (context) => editProfile()));
@@ -123,7 +123,12 @@ class  _AccountPageState extends State<AccountPage> {
                 ),
               ),
             ),
-            Padding(
+            if (deckTitles.isEmpty)
+              ifDeckEmpty(ifDeckEmptyText: 'No Deck(s) Available',
+                  ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.3,
+              ),
+            if (deckTitles.isNotEmpty)
+              Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ListView.builder(
                 shrinkWrap: true,

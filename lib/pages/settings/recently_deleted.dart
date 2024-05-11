@@ -46,9 +46,11 @@ class  _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            const buildTextBox(hintText: 'Search Decks', showPassword: false, icon: Icons.search,),
-           Padding(padding: EdgeInsets.only(top: 20),
-            child: buildButton(
+          if (deckTitles.isNotEmpty)
+            const BuildTextBox(hintText: 'Search Decks', showPassword: false, icon: Icons.search,),
+          if (deckTitles.isNotEmpty)
+            Padding(padding: EdgeInsets.only(top: 20),
+            child: BuildButton(
             onPressed: () {
               print("save button clicked");//line to test if working ung onPressedLogic XD
               showConfirmationDialog(
@@ -73,7 +75,12 @@ class  _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
             textColor: DeckColors.white, radius: 10.0,
           ),
            ),
-          Padding(
+          if (deckTitles.isEmpty)
+            ifDeckEmpty(ifDeckEmptyText: 'No Deck(s) Deleted',
+                ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.7
+            ),
+          if (deckTitles.isNotEmpty)
+            Padding(
             padding: const EdgeInsets.only(top: 20),
             child: ListView.builder(
               shrinkWrap: true,
