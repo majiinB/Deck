@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 ///updated methods as of 05/11/24 1:34AM
@@ -128,11 +129,12 @@ class RouteGenerator {
 class BuildButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String buttonText;
-  final double height, width, radius;
-  final Color backgroundColor, textColor;
+  final double height, width, radius, fontSize, borderWidth;
+  final Color backgroundColor, textColor, borderColor;
   final IconData? icon;
+  final String? svg;
   final Color? iconColor;
-  final double? paddingIconText, size;
+  final double? paddingIconText, size, svgHeight;
 
   const BuildButton({
     super.key,
@@ -143,10 +145,15 @@ class BuildButton extends StatelessWidget {
     required this.radius,
     required this.backgroundColor,
     required this.textColor,
+    required this.fontSize,
+    required this.borderWidth,
+    required this.borderColor,
+    this.svgHeight,
+    this.size,
     this.icon,
+    this.svg,
     this.iconColor,
     this.paddingIconText,
-    this.size,
   });
 
   @override
@@ -160,6 +167,10 @@ class BuildButton extends StatelessWidget {
           backgroundColor: backgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius),
+            side: BorderSide(
+              color: borderColor,
+              width: borderWidth, // Add borderWidth
+            ),
           ),
         ),
         child: Row(
@@ -167,17 +178,25 @@ class BuildButton extends StatelessWidget {
           children: [
             if (icon != null)
               Padding(
-                padding: EdgeInsets.only(right: paddingIconText ?? 8.0),
+                padding: EdgeInsets.only(right: paddingIconText ?? 24.0),
                 child: Icon(
                   icon,
                   color: iconColor,
                   size: size,
                 ),
               ),
+            if (svg != null)
+              Padding(
+                padding: EdgeInsets.only(right: paddingIconText ?? 24.0),
+                child: SvgPicture.asset(
+                  svg!,
+                  height: svgHeight,
+                ),
+              ),
             Text(
               buttonText,
               style: GoogleFonts.nunito(
-                fontSize: 16.0,
+                fontSize: fontSize,
                 fontWeight: FontWeight.w900,
                 color: textColor,
               ),
@@ -313,7 +332,7 @@ class SwipeToDeleteAndRetrieve extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10.0),
                 color: Colors.red,
               ),
-              child: Icon(DeckIcons.trash_bin, color: DeckColors.white),
+              child: const Icon(DeckIcons.trash_bin, color: DeckColors.white),
             ),
       secondaryBackground: enableRetrieve
           ? Container(
@@ -323,7 +342,7 @@ class SwipeToDeleteAndRetrieve extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10.0),
                 color: Colors.red, // Red background for delete
               ),
-              child: Icon(DeckIcons.trash_bin, color: DeckColors.white),
+              child: const Icon(DeckIcons.trash_bin, color: DeckColors.white),
             )
           : null,
       onDismissed: (direction) {
@@ -534,7 +553,7 @@ class BuildContainer extends StatefulWidget {
 
 class _BuildContainerState extends State<BuildContainer> {
   late bool _isToggled;
-  Color _containerColor = DeckColors.gray;
+  Color _containerColor = DeckColors.coverImageColorSettings;
 
   @override
   void initState() {

@@ -83,6 +83,9 @@ class _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                 backgroundColor: Colors.red,
                 textColor: DeckColors.white,
                 radius: 10.0,
+                fontSize: 16.0,
+                borderColor: Colors.amber,
+                borderWidth: 5,
               ),
             ),
             Padding(
