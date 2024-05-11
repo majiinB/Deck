@@ -278,7 +278,7 @@ class BuildListOfDecks extends StatefulWidget {
   final File? deckImageFile;
   final String titleText, numberText;
   final VoidCallback onDelete;
-  final VoidCallback? onRetrieve;
+  final VoidCallback? onRetrieve, onTap;
   final bool enableSwipeToRetrieve;
 
   const BuildListOfDecks({
@@ -289,6 +289,7 @@ class BuildListOfDecks extends StatefulWidget {
     required this.onDelete,
     this.onRetrieve,
     this.enableSwipeToRetrieve = true,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -296,12 +297,29 @@ class BuildListOfDecks extends StatefulWidget {
 }
 
 class BuildListOfDecksState extends State<BuildListOfDecks> {
-
+  Color _containerColor = DeckColors.gray;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-
+      onTapDown: (_) {
+        setState(() {
+          if (widget.onTap != null) {
+            _containerColor = Colors.grey.withOpacity(0.7);
+          }
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _containerColor = DeckColors.gray;
+        });
+        widget.onTap?.call();
+      },
+      onTapCancel: () {
+        setState(() {
+          _containerColor = DeckColors.gray;
+        });
+      },
       child: SwipeToDeleteAndRetrieve(
         onDelete: widget.onDelete,
         onRetrieve: widget.enableSwipeToRetrieve ?   widget.onRetrieve : null,
@@ -310,7 +328,7 @@ class BuildListOfDecksState extends State<BuildListOfDecks> {
           padding: const EdgeInsets.all(20.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15.0),
-            color: DeckColors.gray,
+            color: _containerColor,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,

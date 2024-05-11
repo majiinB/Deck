@@ -41,13 +41,13 @@ class  _changePasswordState extends State<changePassword> {
                   child: Column(
                       children: [
                         const Padding(padding: EdgeInsets.only(top: 30, left: 20, right: 20),
-                          child: BuildTextBox(hintText: 'Enter Old Password', showPassword: true,),
+                          child: BuildTextBox(hintText: 'Enter Old Password', showPassword: true, maxLines: 1),
                         ),
                         const Padding(padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-                          child: BuildTextBox(hintText: 'Enter New Password', showPassword: true,),
+                          child: BuildTextBox(hintText: 'Enter New Password', showPassword: true, maxLines: 1),
                         ),
                         const Padding(padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-                          child: BuildTextBox(hintText: 'Confirm New Password', showPassword: true,),
+                          child: BuildTextBox(hintText: 'Confirm New Password', showPassword: true, maxLines: 1),
                         ),
                         Padding(padding: const EdgeInsets.only(top: 100, left: 20, right: 20),
                         child: BuildButton(

@@ -1,3 +1,4 @@
+import 'package:deck/pages/flashcard/view_deck.dart';
 import 'package:deck/pages/settings/edit_profile.dart';
 import 'package:deck/pages/settings/settings.dart';
 import 'package:flutter/cupertino.dart';
@@ -144,15 +145,16 @@ class  _AccountPageState extends State<AccountPage> {
                         final String deletedTitle = deckTitles[index];
                         final String deletedNumber = deckNumbers[index];
 
-                        setState(() {
-                          deckTitles.removeAt(index);
-                          deckNumbers.removeAt(index);
-                        });
+
                         showConfirmationDialog(
                           context,
                           "Delete Item",
                           "Are you sure you want to delete '$deletedTitle'?",
                               () {
+                                setState(() {
+                                  deckTitles.removeAt(index);
+                                  deckNumbers.removeAt(index);
+                                });
                           },
                               () {
                                 setState(() {//when the user clicks no
@@ -161,7 +163,13 @@ class  _AccountPageState extends State<AccountPage> {
                                 });
                           },
                         );
-                      }, enableSwipeToRetrieve: false,
+                      }, enableSwipeToRetrieve: false, onTap: () {
+                      print("Clicked");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ViewDeckPage()),
+                      );
+                    },
                     ),
                   );
                 },

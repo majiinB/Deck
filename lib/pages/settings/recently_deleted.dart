@@ -96,15 +96,16 @@ class  _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                       final String deletedTitle = deckTitles[index];
                       final String deletedNumber = deckNumbers[index];
 
-                      setState(() {
-                        deckTitles.removeAt(index);
-                        deckNumbers.removeAt(index);
-                      });
+
                       showConfirmationDialog(
                         context,
                         "Delete Item",
                         "Are you sure you want to delete '$deletedTitle'?",
                             () {
+                              setState(() {
+                                deckTitles.removeAt(index);
+                                deckNumbers.removeAt(index);
+                              });
                         },
                             () {
                           setState(() {//when the user clicks no
