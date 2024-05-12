@@ -58,6 +58,13 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    packagingOptions {
+        exclude 'fonts/**' // Exclude all font files
+        // or
+        // exclude 'fonts/font_name.ttf' // Exclude specific font file
+    }
+
 }
 
 flutter {
