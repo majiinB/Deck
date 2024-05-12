@@ -19,27 +19,57 @@ class DeckBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     required this.color,
     required this.fontSize,
-  });
+    this.onPressed,
+    this.icon,
+    this.iconColor,
+  }); // Correct usage of super keyword
 
   final String title;
   final Color color;
   final double fontSize;
+  final VoidCallback? onPressed;
+  final Color? iconColor;
+  final IconData? icon; // Make IconData nullable
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> actions = [];
+    if (icon != null) {
+      // Check if icon is not null
+      actions.add(
+        InkWell(
+          onTap: onPressed,
+          borderRadius:
+          BorderRadius.circular(50), // Adjust the border radius as needed
+          child: Padding(
+            padding: const EdgeInsets.all(16.0), // Adjust padding as needed
+            child: Icon(
+              icon,
+              color: iconColor,
+            ),
+          ),
+        ),
+      );
+      actions.add(const SizedBox(width: 10));
+    }
+
     return AppBar(
       title: Text(
         title,
         style: GoogleFonts.nunito(
-            fontSize: fontSize, fontWeight: FontWeight.w900, color: color),
+          fontSize: fontSize,
+          fontWeight: FontWeight.w900,
+          color: color,
+        ),
       ),
       centerTitle: true,
       foregroundColor: const Color.fromARGB(255, 61, 61, 61),
+      actions: actions, // Use the constructed list of actions
     );
   }
 
   @override
-  Size get preferredSize => AppBar().preferredSize;
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
 ///
@@ -786,6 +816,92 @@ class BuildIconButton extends StatelessWidget {
 
 ///############################################################
 
+
+///
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ T A B  B A R ------------------
+class BuildTabBar extends StatelessWidget {
+  final List<String> titles;
+  final int length;
+  final List<Widget> tabContent;
+
+  const BuildTabBar({
+    Key? key,
+    required this.titles,
+    required this.length,
+    required this.tabContent,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: length,
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                color: DeckColors.accentColor,
+              ),
+              child: TabBar(
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                indicator: BoxDecoration(
+                  color: DeckColors.gray,
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                labelColor: DeckColors.white,
+                unselectedLabelColor: DeckColors.white,
+                tabs: buildTabs(),
+              ),
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              children: tabContent,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> buildTabs() {
+    return titles.map((title) {
+      return buildContentTabBar(title: title);
+    }).toList();
+  }
+
+  Widget buildContentTabBar({required String title}) {
+    return Tab(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.nunito(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// ------------------------- E N D ----------------------------
+/// --------------- T A B  B A R ---------------------
+
+///############################################################
+
+
 ///
 ///
 /// ----------------------- S T A R T --------------------------
@@ -850,7 +966,118 @@ class DeckFAB extends StatelessWidget {
 
 ///
 /// ----------------------- S T A R T --------------------------
+/// ------------ D E C K  S L I V E R  D E L E G A T E ------------------
+class BuildTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  BuildTabBarDelegate({required this.child});
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  double get maxExtent => 100; // Adjust the height as needed
+
+  @override
+  double get minExtent => 100; // Adjust the height as needed
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
+  }
+}
+/// ------------------------- E N D ----------------------------
+/// ---------------  D E C K  F L O A T I N G  B A R  A C T I O N  ---------------------
+
+
+///############################################################
+
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ D E C K  D A T E P I C K E R ------------------
+
+/// ------------------------- E N D ----------------------------
+/// ------------ D E C K  D A T E P I C K E R ------------------
+
+
+
+///############################################################
+///
+/// ----------------------- S T A R T --------------------------
 /// ------------ D E C K  T A S K T I L E ------------------
+
+class BuildListOfTask extends StatefulWidget {
+  final String title;
+  final VoidCallback onDelete;
+  final VoidCallback? onRetrieve;
+  final bool enableSwipeToRetrieve;
+
+  const BuildListOfTask({
+    super.key,
+    required this.title,
+    required this.onDelete,
+    this.onRetrieve,
+    this.enableSwipeToRetrieve = true,
+  });
+
+  @override
+  State<BuildListOfTask> createState() => BuildListOfTaskState();
+}
+
+class BuildListOfTaskState extends State<BuildListOfTask> {
+  @override
+  Widget build(BuildContext context) {
+    return SwipeToDeleteAndRetrieve(
+      onDelete: widget.onDelete,
+      onRetrieve: widget.enableSwipeToRetrieve ? widget.onRetrieve : null,
+      enableRetrieve: widget.enableSwipeToRetrieve,
+      child: Container(
+        padding: const EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          color: DeckColors.gray,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15.0, top: 5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: DeckColors.white,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 7.0),
+                      child: Container(
+                        width: 150,
+                        padding: const EdgeInsets.all(5.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
+                          color: DeckColors.coverImageColorSettings,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 
 
 
