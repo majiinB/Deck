@@ -40,14 +40,18 @@ class  _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-        appBar: const BackButtonAppBar(),
+      appBar: const AuthBar(
+        title: 'Recently Deleted',
+        color: DeckColors.white,
+        fontSize: 24,
+      ),
     body: SingleChildScrollView(
       padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (deckTitles.isNotEmpty)
-            const BuildTextBox(hintText: 'Search Decks', showPassword: false, icon: Icons.search,),
+            const BuildTextBox(hintText: 'Search Decks', showPassword: false, rightIcon: Icons.search,),
           if (deckTitles.isNotEmpty)
             Padding(padding: EdgeInsets.only(top: 20),
             child: BuildButton(
@@ -109,8 +113,7 @@ class  _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                         },
                             () {
                           setState(() {//when the user clicks no
-                            deckTitles.insert(index, deletedTitle);
-                            deckNumbers.insert(index, deletedNumber);
+
                           });
                         },
                       );
@@ -130,8 +133,7 @@ class  _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                         },
                             () {
                           setState(() {//when the user clicks no
-                            deckTitles.insert(index, retrievedTitle);
-                            deckNumbers.insert(index, retrievedNumber);
+
                           });
                         },
                       );

@@ -19,7 +19,11 @@ class  _editProfileState extends State<editProfile> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-        appBar: const BackButtonAppBar(),
+        appBar: const AuthBar(
+          title: 'Account Information',
+          color: DeckColors.white,
+          fontSize: 24,
+        ),
     body: SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -53,19 +57,19 @@ class  _editProfileState extends State<editProfile> {
                               child: Column(
                                   children: [
                                     Padding(padding: EdgeInsets.only(top: 10),
-                                      child: BuildContentOfBottomSheet(BottomSheetButtonText: 'Upload Cover Photo',
-                                        BottomSheetButtonIcon:
+                                      child: BuildContentOfBottomSheet(bottomSheetButtonText: 'Upload Cover Photo',
+                                        bottomSheetButtonIcon:
                                         Icons.image,
-                                        OnPressed: (){
+                                        onPressed: (){
                                           print("It is working");
                                         },
                                       ),
                                     ),
                                     Padding(padding: EdgeInsets.only(top: 10),
-                                      child: BuildContentOfBottomSheet(BottomSheetButtonText: 'Remove Cover Photo',
-                                        BottomSheetButtonIcon:
+                                      child: BuildContentOfBottomSheet(bottomSheetButtonText: 'Remove Cover Photo',
+                                        bottomSheetButtonIcon:
                                         Icons.remove_circle,
-                                        OnPressed: (){
+                                        onPressed: (){
                                           print("It is working");
                                         },
                                       ),
@@ -101,19 +105,19 @@ class  _editProfileState extends State<editProfile> {
                        child: Column(
                     children: [
                       Padding(padding: EdgeInsets.only(top: 10),
-                        child: BuildContentOfBottomSheet(BottomSheetButtonText: 'Upload Profile Photo',
-                          BottomSheetButtonIcon:
+                        child: BuildContentOfBottomSheet(bottomSheetButtonText: 'Upload Profile Photo',
+                          bottomSheetButtonIcon:
                           Icons.image,
-                          OnPressed: (){
+                          onPressed: (){
                             print("It is working");
                           },
                         ),
                       ),
                       Padding(padding: EdgeInsets.only(top: 10),
-                      child: BuildContentOfBottomSheet(BottomSheetButtonText: 'Remove Profile Photo',
-                        BottomSheetButtonIcon:
+                      child: BuildContentOfBottomSheet(bottomSheetButtonText: 'Remove Profile Photo',
+                        bottomSheetButtonIcon:
                         Icons.remove_circle,
-                        OnPressed: (){
+                        onPressed: (){
                           print("It is working");
                         },
                       ),

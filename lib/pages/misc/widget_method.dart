@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
@@ -27,6 +28,42 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         style: TextStyle(fontFamily: 'Fraiche', fontSize: 24),
       ),
       foregroundColor: DeckColors.primaryColor,
+    );
+  }
+
+  @override
+  Size get preferredSize => AppBar().preferredSize;
+}
+
+///
+///
+/// AuthBar is an AppBar with the font Fraiche (used in auth and main routes)
+class AuthBar extends StatelessWidget implements PreferredSizeWidget {
+  const AuthBar({
+    super.key,
+    required this.title,
+    required this.color,
+    required this.fontSize,
+  });
+  final String title;
+  final Color color;
+  final double fontSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0),
+      child: AppBar(
+        title: Text(
+          title,
+          style: TextStyle(
+            fontFamily: 'Fraiche',
+            fontSize: fontSize,
+            color: color,
+          ),
+        ),
+        centerTitle: true,
+      ),
     );
   }
 
@@ -153,17 +190,29 @@ class BuildProfileImageState extends State<BuildProfileImage> {
 }
 
 //button
+///
+///
+/// ------------------------ S T A R T -------------------------
+/// ------------------ D E C K  B U T T O N --------------------
+
+///
+///
+/// DeckButton is the main button of Deck used for all routes
 class BuildButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String buttonText;
   final double height, width, radius;
   final Color backgroundColor, textColor;
-  final IconData? icon;
+  final Color? borderColor;
+  final IconData? leftIcon;
+  final IconData? rightIcon;
   final Color? iconColor;
   final double? paddingIconText, size;
+  final FontWeight? fontWeight;
+  final MainAxisAlignment? mainAxisAlignment;
 
   const BuildButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.buttonText,
     required this.height,
@@ -171,8 +220,15 @@ class BuildButton extends StatelessWidget {
     required this.radius,
     required this.backgroundColor,
     required this.textColor,
-    this.icon, this.iconColor, this.paddingIconText, this.size,
-  }) : super(key: key);
+    this.borderColor,
+    this.fontWeight,
+    this.leftIcon,
+    this.rightIcon,
+    this.iconColor,
+    this.paddingIconText,
+    this.size,
+    this.mainAxisAlignment,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -185,33 +241,48 @@ class BuildButton extends StatelessWidget {
           backgroundColor: backgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius),
+            side: BorderSide(color: borderColor ?? DeckColors.backgroundColor),
           ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: mainAxisAlignment ?? MainAxisAlignment.center,
           children: [
-            if (icon != null)
-              Padding(padding: EdgeInsets.only(right: paddingIconText ?? 8.0),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: size,
+            if (leftIcon != null)
+              Padding(
+                padding: EdgeInsets.only(right: paddingIconText ?? 8.0),
+                child: Icon(
+                  leftIcon,
+                  color: iconColor,
+                  size: size,
+                ),
               ),
-    ),
-            Text(
-              buttonText,
-              style: GoogleFonts.nunito(
-                fontSize: 16.0,
-                fontWeight: FontWeight.w900,
-                color: textColor,
+            Flexible(
+              child: Text(
+                buttonText,
+                style: GoogleFonts.nunito(
+                  fontSize: 16.0,
+                  fontWeight: fontWeight ?? FontWeight.w900,
+                  color: textColor,
+                ),
               ),
             ),
+            if (rightIcon != null)
+              Padding(
+                padding: EdgeInsets.only(left: paddingIconText ?? 8.0),
+                child: Icon(
+                  rightIcon,
+                  color: iconColor,
+                  size: size,
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 }
+/// -------------------------- E N D ---------------------------
+/// ------------------ D E C K  B U T T O N --------------------
 
 //swipe to deleteAndRetrieve
 class SwipeToDeleteAndRetrieve extends StatelessWidget {
@@ -560,80 +631,100 @@ class _BuildContainerState extends State<BuildContainer> {
 /*------------------ END OF SETTINGS ------------------*/
 
 /*------------------ CHANGE PASSWORD ------------------*/
+///
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ T E X T  F I E L D------------------
 class BuildTextBox extends StatefulWidget {
   final String? hintText, initialValue;
   final bool showPassword;
-  final IconData? icon;
-  final int? maxLines;
-
+  final IconData? leftIcon;
+  final IconData? rightIcon;
+  final bool isMultiLine;
 
   const BuildTextBox({
     Key? key,
     this.hintText,
     this.showPassword = false,
-    this.icon, this.initialValue,
-    this.maxLines,
+    this.leftIcon,
+    this.rightIcon,
+    this.initialValue,
+    this.isMultiLine = false,
   }) : super(key: key);
 
   @override
-  State<BuildTextBox> createState() => buildTextBoxState();
+  State<BuildTextBox> createState() => BuildTextBoxState();
 }
 
-class buildTextBoxState extends State<BuildTextBox> {
+class BuildTextBoxState extends State<BuildTextBox> {
   bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-        maxLines: widget.maxLines,
-        autofocus: false,
-        initialValue: widget.initialValue,
-        style: GoogleFonts.nunito(
-          color: Colors.white,
-          fontSize: 16,
-        ),
-        decoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: const BorderSide(
-              color: DeckColors.white,
-              width: 3.0,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: const BorderSide(
-              color: DeckColors.primaryColor,
-              width: 3.0,
-            ),
-          ),
-          hintText: widget.hintText,
-          hintStyle: GoogleFonts.nunito(
-            fontSize: 16,
+      autofocus: false,
+      initialValue: widget.initialValue,
+      style: GoogleFonts.nunito(
+        color: Colors.white,
+        fontSize: 16,
+      ),
+      maxLines: widget.isMultiLine ? null : 1,
+      minLines: widget.isMultiLine ? 4 : 1,
+      decoration: InputDecoration(
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
             color: Colors.white,
+            width: 1.0,
           ),
-          filled: true,
-          fillColor: DeckColors.gray,
-          contentPadding:
-          const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-          suffixIcon: widget.showPassword
-              ? IconButton(
-            icon: _obscureText
-                ? Icon(Icons.visibility_off)
-                : Icon(Icons.visibility),
-            onPressed: () {
-              setState(() {
-                _obscureText = !_obscureText;
-              });
-            },
-          ) : (widget.icon != null
-              ? Icon(widget.icon)
-              : null),
         ),
-        obscureText: widget.showPassword ? _obscureText : false,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: DeckColors.primaryColor, // Change to your desired color
+            width: 2.0,
+          ),
+        ),
+        hintText: widget.hintText,
+        hintStyle: GoogleFonts.nunito(
+          fontSize: 16,
+          color: Colors.amber,
+        ),
+        filled: true,
+        fillColor: DeckColors.backgroundColor,
+        contentPadding:
+        const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+        prefixIcon: widget.leftIcon != null
+            ? Icon(widget.leftIcon)
+            : null, // Change to your desired left icon
+        suffixIcon: widget.showPassword
+            ? IconButton(
+          icon: _obscureText
+              ? const Icon(Icons.visibility_off)
+              : const Icon(Icons.visibility),
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+        )
+            : widget.rightIcon != null
+            ? IconButton(
+          icon: Icon(widget.rightIcon),
+          onPressed: () {
+            // Perform action on right icon tap
+          },
+        )
+            : null,
+      ),
+      obscureText: widget.showPassword ? _obscureText : false,
     );
   }
 }
+/// ------------------------- E N D ----------------------------
+/// ------------ T E X T  F I E L D------------------
+
+///############################################################
 /*------------------ END OF PASSWORD ------------------*/
 
 
@@ -668,25 +759,26 @@ class BuildIconButton extends StatelessWidget{
 }
 
 class BuildContentOfBottomSheet extends StatelessWidget{
-  final String BottomSheetButtonText;
-  final IconData BottomSheetButtonIcon;
-  final VoidCallback OnPressed;
+  final String bottomSheetButtonText;
+  final IconData bottomSheetButtonIcon;
+  final VoidCallback onPressed;
 
   const BuildContentOfBottomSheet({super.key,
-    required this.BottomSheetButtonText,
-    required this.BottomSheetButtonIcon,
-    required this.OnPressed});
+    required this.bottomSheetButtonText,
+    required this.bottomSheetButtonIcon,
+    required this.onPressed});
   @override
   Widget build(BuildContext context) {
       return Padding(padding: EdgeInsets.only(top: 10),
               child: BuildButton(
-                onPressed: OnPressed,
-                buttonText: BottomSheetButtonText,
+                onPressed: onPressed,
+                buttonText: bottomSheetButtonText,
                 height: 70.0,
+                  borderColor: DeckColors.gray,
                 width: MediaQuery.of(context).size.width,
                 backgroundColor: DeckColors.gray,
                 textColor: DeckColors.white, radius: 0.0,
-                icon: BottomSheetButtonIcon,
+                leftIcon: bottomSheetButtonIcon,
                 iconColor: DeckColors.white,
                 paddingIconText: 20.0, size: 32,
               ),
@@ -697,6 +789,8 @@ class BuildContentOfBottomSheet extends StatelessWidget{
 /*------------------ END OF EDIT PROFILE ------------------*/
 
 /*------------------ FLASHCARD ------------------*/
+
+/// THIS METHOD IS FOR THE DECKS CONTAINER IN THE FLASHCARD PAGE
 class BuildDeckContainer extends StatefulWidget {
   final File? deckCoverPhoto;
   final String titleOfDeck;
@@ -819,7 +913,7 @@ class DeckFAB extends StatelessWidget {
   final IconData icon;
   final Function onPressed;
   final double fontSize;
-  final double borderRadius; //dinagdag ko to
+  final double borderRadius;
 
   const DeckFAB({
     Key? key,
@@ -829,7 +923,7 @@ class DeckFAB extends StatelessWidget {
     required this.icon,
     required this.fontSize,
     required this.onPressed,
-    this.borderRadius = 30.0 //dinagdag ko to
+    this.borderRadius = 30.0
   }) : super(key: key);
 
   @override
@@ -852,7 +946,7 @@ class DeckFAB extends StatelessWidget {
         foregroundColor: foregroundColor,
         child: Icon(icon),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius), //dinagdag ko to
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),
     );
@@ -924,7 +1018,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
                     customIcon = expanded;
                   });
               },
-                tilePadding: EdgeInsets.all(10),
+                tilePadding: const EdgeInsets.all(10),
                 backgroundColor: DeckColors.gray,
                 collapsedBackgroundColor: DeckColors.gray,
                 collapsedShape: RoundedRectangleBorder(
@@ -993,5 +1087,213 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
     );
   }
   }
+
+///
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ T A B  B A R ------------------
+class BuildTabBar extends StatelessWidget {
+  final List<String> titles;
+  final int length;
+  final List<Widget> tabContent;
+
+  const BuildTabBar({
+    Key? key,
+    required this.titles,
+    required this.length,
+    required this.tabContent,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: length,
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                color: DeckColors.accentColor,
+              ),
+              child: TabBar(
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                indicator: BoxDecoration(
+                  color: DeckColors.gray,
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                labelColor: DeckColors.white,
+                unselectedLabelColor: DeckColors.white,
+                tabs: buildTabs(),
+              ),
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+                children: tabContent,
+              ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> buildTabs() {
+    return titles.map((title) {
+      return buildContentTabBar(title: title);
+    }).toList();
+  }
+
+  Widget buildContentTabBar({required String title}) {
+    return Tab(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.nunito(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+/// ------------------------- E N D ----------------------------
+/// ------------ T A B  B A R------------------
+
+///############################################################
+
+///
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ C O N T A I N E R  O F  E A C H  F L A S H C A R D ------------------
+
+class BuildContainerOfFlashCards extends StatefulWidget {
+  final VoidCallback onDelete;
+  final VoidCallback? onRetrieve, onTap;
+  final bool enableSwipeToRetrieve;
+  final String titleOfFlashCard, contentOfFlashCard;
+  bool isStarShaded;
+  final VoidCallback onStarShaded;
+  final VoidCallback onStarUnshaded;
+
+   BuildContainerOfFlashCards({
+    Key? key,
+    required this.onDelete,
+    required this.isStarShaded,
+    required this.onStarShaded,
+    required this.onStarUnshaded,
+    this.onRetrieve,
+    required this.enableSwipeToRetrieve,
+    required this.titleOfFlashCard,
+    required this.contentOfFlashCard,
+    this.onTap,
+  }) : super(key: key);
+
+  @override
+  State<BuildContainerOfFlashCards> createState() => BuildContainerOfFlashCardsState();
+}
+
+class BuildContainerOfFlashCardsState extends State<BuildContainerOfFlashCards> with SingleTickerProviderStateMixin {
+  Color _containerColor = DeckColors.gray;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          if (widget.onTap != null) {
+            _containerColor = Colors.grey.withOpacity(0.7);
+          }
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _containerColor = DeckColors.gray;
+        });
+        widget.onTap?.call();
+      },
+      onTapCancel: () {
+        setState(() {
+          _containerColor = DeckColors.gray;
+        });
+      },
+      child: SwipeToDeleteAndRetrieve(
+        onDelete: widget.onDelete,
+        onRetrieve: widget.enableSwipeToRetrieve ? widget.onRetrieve : null,
+        enableRetrieve: widget.enableSwipeToRetrieve,
+        child: Container(
+          height: 200,
+          padding: const EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15.0),
+            color: _containerColor,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.titleOfFlashCard,
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: DeckColors.white,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        // Toggle the state of isStarShaded
+                        widget.isStarShaded = !widget.isStarShaded;
+                        if (widget.isStarShaded) {
+                          widget.onStarShaded();
+                        } else {
+                          widget.onStarUnshaded();
+                        }
+                      });
+                    },
+                    child: Icon(
+                      size: 32,
+                      widget.isStarShaded ? Icons.star : Icons.star_border,
+                      color: widget.isStarShaded ? DeckColors.primaryColor : DeckColors.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Text(
+                  widget.contentOfFlashCard,
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.justify,
+                  style: GoogleFonts.nunito(
+                    fontSize: 16,
+                    color: DeckColors.white,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// ------------------------- E N D ----------------------------
+/// ------------ C O N T A I N E R  O F  E A C H  F L A S H C A R D------------------
 /*------------------ END OF FLASHCARD ------------------*/
 

@@ -1,11 +1,8 @@
 import 'package:deck/pages/flashcard/add_deck.dart';
 import 'package:deck/pages/flashcard/view_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
-import 'package:deck/pages/misc/deck_icons.dart';
-import 'package:deck/pages/settings/account.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
-import 'package:deck/pages/task/task.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlashcardPage extends StatefulWidget {
@@ -91,7 +88,7 @@ List<String> deckTitles = [
                           radius: 20,
                           backgroundColor: DeckColors.accentColor, textColor: DeckColors.white
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -116,7 +113,7 @@ List<String> deckTitles = [
             if(deckTitles.isNotEmpty)
             const Padding(
               padding: EdgeInsets.only(top: 20.0),
-              child: BuildTextBox(hintText: 'Search Decks', showPassword: false, icon: Icons.search,),
+              child: BuildTextBox(hintText: 'Search Decks', showPassword: false, rightIcon: Icons.search,),
             ),
             if(deckTitles.isNotEmpty)
             Padding(
@@ -144,7 +141,7 @@ List<String> deckTitles = [
                           },
                               () {
                             setState(() {//when the user clicks no
-                              deckTitles.insert(index, deletedTitle);
+
                             });
                           },
                         );

@@ -19,7 +19,11 @@ class  _AddDeckPageState extends State<AddDeckPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const BackButtonAppBar(),
+      appBar: const AuthBar(
+        title: 'Add New Deck',
+        color: DeckColors.white,
+        fontSize: 24,
+      ),
         body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
     child: Column(
@@ -55,19 +59,19 @@ class  _AddDeckPageState extends State<AddDeckPage> {
                               child: Column(
                                   children: [
                                     Padding(padding: EdgeInsets.only(top: 10),
-                                      child: BuildContentOfBottomSheet(BottomSheetButtonText: 'Upload Cover Photo',
-                                        BottomSheetButtonIcon:
+                                      child: BuildContentOfBottomSheet(bottomSheetButtonText: 'Upload Cover Photo',
+                                        bottomSheetButtonIcon:
                                         Icons.image,
-                                        OnPressed: (){
+                                        onPressed: (){
                                           print("It is working");
                                         },
                                       ),
                                     ),
                                     Padding(padding: EdgeInsets.only(top: 10),
-                                      child: BuildContentOfBottomSheet(BottomSheetButtonText: 'Remove Cover Photo',
-                                        BottomSheetButtonIcon:
+                                      child: BuildContentOfBottomSheet(bottomSheetButtonText: 'Remove Cover Photo',
+                                        bottomSheetButtonIcon:
                                         Icons.remove_circle,
-                                        OnPressed: (){
+                                        onPressed: (){
                                           print("It is working");
                                         },
                                       ),
@@ -125,7 +129,7 @@ class  _AddDeckPageState extends State<AddDeckPage> {
         ),
         if (_isToggled)
         const Padding(padding: EdgeInsets.symmetric(vertical: 20),
-          child: BuildTextBox(hintText: 'Enter Description', maxLines: 8),
+          child: BuildTextBox(hintText: 'Enter Description', isMultiLine: true),
         ),
         if (_isToggled)
         Row(

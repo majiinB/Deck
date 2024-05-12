@@ -158,8 +158,7 @@ class  _AccountPageState extends State<AccountPage> {
                           },
                               () {
                                 setState(() {//when the user clicks no
-                                  deckTitles.insert(index, deletedTitle);
-                                  deckNumbers.insert(index, deletedNumber);
+
                                 });
                           },
                         );

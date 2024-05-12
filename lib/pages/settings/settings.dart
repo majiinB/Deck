@@ -5,6 +5,8 @@ import 'package:deck/pages/settings/recently_deleted.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../misc/colors.dart';
+
 class SettingPage extends StatefulWidget {
 const SettingPage({Key? key});
 
@@ -16,7 +18,11 @@ class  _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-        appBar: const BackButtonAppBar(),
+      appBar: const AuthBar(
+        title: 'Settings',
+        color: DeckColors.white,
+        fontSize: 24,
+      ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
             child: Column(

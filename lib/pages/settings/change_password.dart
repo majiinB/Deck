@@ -16,7 +16,11 @@ class  _changePasswordState extends State<changePassword> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-        appBar: const BackButtonAppBar(),
+        appBar: const AuthBar(
+          title: 'Change Password',
+          color: DeckColors.white,
+          fontSize: 24,
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
             child: Column(
@@ -41,13 +45,13 @@ class  _changePasswordState extends State<changePassword> {
                   child: Column(
                       children: [
                         const Padding(padding: EdgeInsets.only(top: 30, left: 20, right: 20),
-                          child: BuildTextBox(hintText: 'Enter Old Password', showPassword: true, maxLines: 1),
+                          child: BuildTextBox(hintText: 'Enter Old Password', showPassword: true, isMultiLine: false),
                         ),
                         const Padding(padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-                          child: BuildTextBox(hintText: 'Enter New Password', showPassword: true, maxLines: 1),
+                          child: BuildTextBox(hintText: 'Enter New Password', showPassword: true, isMultiLine: false),
                         ),
                         const Padding(padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-                          child: BuildTextBox(hintText: 'Confirm New Password', showPassword: true, maxLines: 1),
+                          child: BuildTextBox(hintText: 'Confirm New Password', showPassword: true, isMultiLine: false),
                         ),
                         Padding(padding: const EdgeInsets.only(top: 100, left: 20, right: 20),
                         child: BuildButton(
