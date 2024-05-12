@@ -159,10 +159,10 @@ class _EditTaskPageState extends State<EditTaskPage> {
                     onPressed: (){
                       print("save button clicked");
                       Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const TaskPage()),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => TaskPage()),
+                      // );
                     }
                 ),
               ),
