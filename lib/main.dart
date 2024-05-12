@@ -1,8 +1,9 @@
 // ignore_for_file: deprecated_member_use
+import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/flashcard/flashcard.dart';
 import 'package:deck/pages/home/home.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
-import 'package:deck/pages/settings/settings.dart';
+import 'package:deck/pages/settings/account.dart';
 import 'package:deck/pages/task/task.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MainPage(),
+      home: const SignUpPage(),
     );
   }
 }
@@ -60,7 +61,7 @@ class _MainPageState extends State<MainPage> {
     HomePage(),
     TaskPage(),
     FlashcardPage(),
-    SettingsPage(),
+    AccountPage(),
   ];
 
   ///  Navbar Icons and Label
@@ -117,6 +118,7 @@ class _MainPageState extends State<MainPage> {
       top: false,
       bottom: true,
       child: Scaffold(
+        appBar: null,
         body: screens[index],
         bottomNavigationBar: curvedNavigationBar(),
       ),
