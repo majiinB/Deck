@@ -1,5 +1,5 @@
 // ignore_for_file: deprecated_member_use
-import 'package:deck/pages/auth/signup.dart';
+import 'package:deck/backend/auth/auth_gate.dart';
 import 'package:deck/pages/flashcard/flashcard.dart';
 import 'package:deck/pages/home/home.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const SignUpPage(),
+      home: const AuthGate(),
     );
   }
 }
