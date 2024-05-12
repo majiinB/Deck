@@ -651,14 +651,19 @@ class _BuildContainerState extends State<BuildContainer> {
 class BuildTextBox extends StatefulWidget {
   final String? hintText, initialValue;
   final bool showPassword;
-  final IconData? icon;
+  final IconData? leftIcon;
+  final IconData? rightIcon;
+  final Color? leftIconColor, rightIconColor;
 
   const BuildTextBox({
     super.key,
     this.hintText,
     this.showPassword = false,
-    this.icon,
+    this.leftIcon,
+    this.rightIcon,
     this.initialValue,
+    this.leftIconColor,
+    this.rightIconColor,
   });
 
   @override
@@ -681,7 +686,7 @@ class BuildTextBoxState extends State<BuildTextBox> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: const BorderSide(
-            color: DeckColors.white,
+            color: Colors.white,
             width: 1.0,
           ),
         ),
@@ -698,9 +703,15 @@ class BuildTextBoxState extends State<BuildTextBox> {
           color: Colors.amber,
         ),
         filled: true,
-        fillColor: DeckColors.gray,
+        fillColor: DeckColors.backgroundColor,
         contentPadding:
             const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+        prefixIcon: widget.leftIcon != null
+            ? Icon(
+                widget.leftIcon,
+                color: widget.leftIconColor,
+              )
+            : null,
         suffixIcon: widget.showPassword
             ? IconButton(
                 icon: _obscureText
@@ -712,7 +723,17 @@ class BuildTextBoxState extends State<BuildTextBox> {
                   });
                 },
               )
-            : (widget.icon != null ? Icon(widget.icon) : null),
+            : widget.rightIcon != null
+                ? IconButton(
+                    icon: Icon(
+                      widget.rightIcon,
+                      color: widget.rightIconColor,
+                    ),
+                    onPressed: () {
+                      // Perform action on right icon tap
+                    },
+                  )
+                : null,
       ),
       obscureText: widget.showPassword ? _obscureText : false,
     );

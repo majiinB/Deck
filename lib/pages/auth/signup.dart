@@ -1,13 +1,10 @@
 import 'package:deck/main.dart';
 import 'package:deck/pages/auth/create_account.dart';
 import 'package:deck/pages/auth/login.dart';
-import 'package:deck/pages/home/home.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
-import 'package:deck/pages/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SignUpPage extends StatelessWidget {
@@ -38,7 +35,11 @@ class SignUpPage extends StatelessWidget {
                 height: 20,
               ),
               BuildButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    RouteGenerator.createRoute(const MainPage()),
+                  );
+                },
                 buttonText: 'Continue with Google',
                 height: 60,
                 width: MediaQuery.of(context).size.width,

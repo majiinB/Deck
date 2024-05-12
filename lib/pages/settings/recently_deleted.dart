@@ -51,7 +51,7 @@ class _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
             const BuildTextBox(
               hintText: 'Search Decks',
               showPassword: false,
-              icon: Icons.search,
+              leftIcon: Icons.search,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),
