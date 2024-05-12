@@ -12,20 +12,20 @@ class AddTaskPage extends StatefulWidget {
 
 class _AddTaskPageState extends State<AddTaskPage> {
 
-  TextEditingController _dateController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      lastDate: DateTime(2030),//edit nyo nlng toh
       initialDate: DateTime.now(),
       errorFormatText: 'Enter valid date',
       errorInvalidText: 'Enter date in valid range',
       fieldHintText: 'Month/Day/Year',
       fieldLabelText: 'Date Deadline',
 
-      initialEntryMode: DatePickerEntryMode.input,
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -87,7 +87,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AuthBar(
+      appBar:const DeckBar(
         title: 'Add New Task',
         color: DeckColors.white,
         fontSize: 24,
@@ -97,88 +97,79 @@ class _AddTaskPageState extends State<AddTaskPage> {
         bottom: false,
         left: true,
         right: true,
-        minimum: EdgeInsets.only(left: 30, right: 30),
-        child: Column(
-          children: [
-            Divider(
-              color: DeckColors.white,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20),
-              child:BuildTextBox(
-                hintText: "Enter Task Title",
-                showPassword: false,
-                initialValue: "",
+        minimum: const EdgeInsets.only(left: 30, right: 30),
+        child:SingleChildScrollView(
+          child:
+          Column(
+            children: [
+              const  Divider(
+                color: DeckColors.white,
+                thickness: 2,
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: BuildTextBox(
-                hintText: "Enter Deadline",
-                onTap: () => _selectDate(context), // Pass context to _selectDate method
-                controller: _dateController,
-                isReadOnly: true,
-                rightIcon: Icons.calendar_today_outlined,
-              ),
-            ),
-            Padding(
+              const Padding(
                 padding: EdgeInsets.only(top: 20),
-                child:BuildTextBox(
-                  hintText: "Enter Task Description",
+                child: BuildTextBox(
+                  hintText: "Enter Task Title",
                   showPassword: false,
-
                   initialValue: "",
-                  isMultiLine: true,
-               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: BuildButton(
-                buttonText: "Save",
-                height: 50,
-                width: MediaQuery.of(context).size.width,
-                radius: 10,
-                backgroundColor: DeckColors.primaryColor,
-                textColor: DeckColors.white,
-                size: 16,
-                onPressed: (){
-                 print("save button clicked");
-                 Navigator.pop(context);
-                }
+                ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: BuildButton(
-                  buttonText: "Cancel",
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: BuildTextBox(
+                  hintText: "Enter Deadline",
+                  onTap: () => _selectDate(context), // Pass context to _selectDate method
+                  controller: _dateController,
+                  isReadOnly: true,
+                  rightIcon: Icons.calendar_today_outlined,
+                ),
+              ),
+              const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child:BuildTextBox(
+                    hintText: "Enter Task Description",
+                    showPassword: false,
+
+                    initialValue: "",
+                    isMultiLine: true,
+                 ),
+              ),
+
+               Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: BuildButton(
+                  buttonText: "Save",
                   height: 50,
                   width: MediaQuery.of(context).size.width,
                   radius: 10,
-                  backgroundColor: DeckColors.white,
-                  textColor: DeckColors.primaryColor,
+                  backgroundColor: DeckColors.primaryColor,
+                  textColor: DeckColors.white,
                   size: 16,
                   onPressed: (){
-                    print("Cancel button clicked");
-                    Navigator.pop(context);
+                   print("save button clicked");
+                   Navigator.pop(context);
                   }
+                ),
               ),
-            ),
-            //BuildButton(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   fontWeight: FontWeight.normal,
-            //   buttonText: "Enter Deadline",
-            //   height: 50,
-            //   width: MediaQuery.of(context).size.width,
-            //   radius: 10,
-            //   backgroundColor: DeckColors.backgroundColor,
-            //   borderColor: DeckColors.white,
-            //   textColor: Colors.amber,
-            //   size: 16,
-            //   rightIcon: Icons.calendar_month_rounded,
-            //   iconColor: Colors.amber,
-            //   onPressed: () => _showDatePicker(context),
-            // ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: BuildButton(
+                    buttonText: "Cancel",
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    radius: 10,
+                    backgroundColor: DeckColors.white,
+                    textColor: DeckColors.primaryColor,
+                    size: 16,
+                    onPressed: (){
+                      print("Cancel button clicked");
+                      Navigator.pop(context);
+                    }
+                ),
+              ),
+
           ],
+        ),
         ),
       ),
     );
