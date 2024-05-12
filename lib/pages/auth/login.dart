@@ -1,11 +1,10 @@
 import 'package:deck/main.dart';
 import 'package:deck/pages/auth/create_account.dart';
+import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatelessWidget {
@@ -15,6 +14,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AuthBar(
+        automaticallyImplyLeading: false,
         title: 'log in',
         color: DeckColors.white,
         fontSize: 24,
@@ -109,7 +109,7 @@ class LoginPage extends StatelessWidget {
               BuildButton(
                 onPressed: () {
                   Navigator.of(context).push(
-                    RouteGenerator.createRoute(const CreateAccountPage()),
+                    RouteGenerator.createRoute(const MainPage()),
                   );
                 },
                 buttonText: 'Log In',
@@ -180,8 +180,8 @@ class LoginPage extends StatelessWidget {
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).push(
-                          RouteGenerator.createRoute(const LoginPage()),
+                        Navigator.of(context).pop(
+                          RouteGenerator.createRoute(const SignUpPage()),
                         );
                       },
                       borderRadius: BorderRadius.circular(8),

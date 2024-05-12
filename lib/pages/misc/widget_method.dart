@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:msh_checkbox/msh_checkbox.dart';
 
 ///updated methods as of 05/11/24 1:34AM
 ///
@@ -20,27 +22,57 @@ class DeckBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     required this.color,
     required this.fontSize,
-  });
+    this.onPressed,
+    this.icon,
+    this.iconColor,
+  }); // Correct usage of super keyword
 
   final String title;
   final Color color;
   final double fontSize;
+  final VoidCallback? onPressed;
+  final Color? iconColor;
+  final IconData? icon; // Make IconData nullable
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> actions = [];
+    if (icon != null) {
+      // Check if icon is not null
+      actions.add(
+        InkWell(
+          onTap: onPressed,
+          borderRadius:
+              BorderRadius.circular(50), // Adjust the border radius as needed
+          child: Padding(
+            padding: const EdgeInsets.all(16.0), // Adjust padding as needed
+            child: Icon(
+              icon,
+              color: iconColor,
+            ),
+          ),
+        ),
+      );
+      actions.add(const SizedBox(width: 10));
+    }
+
     return AppBar(
       title: Text(
         title,
         style: GoogleFonts.nunito(
-            fontSize: fontSize, fontWeight: FontWeight.w900, color: color),
+          fontSize: fontSize,
+          fontWeight: FontWeight.w900,
+          color: color,
+        ),
       ),
       centerTitle: true,
       foregroundColor: const Color.fromARGB(255, 61, 61, 61),
+      actions: actions, // Use the constructed list of actions
     );
   }
 
   @override
-  Size get preferredSize => AppBar().preferredSize;
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 
 ///
@@ -52,16 +84,19 @@ class AuthBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     required this.color,
     required this.fontSize,
+    this.automaticallyImplyLeading = false,
   });
   final String title;
   final Color color;
   final double fontSize;
+  final bool automaticallyImplyLeading;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0),
       child: AppBar(
+        automaticallyImplyLeading: automaticallyImplyLeading,
         title: Text(
           title,
           style: TextStyle(
@@ -777,5 +812,134 @@ class BuildIconButton extends StatelessWidget {
     );
   }
 }
+
 /// ------------------------- E N D ----------------------------
 /// --------------- E D I T  P R O F I L E ---------------------
+
+///############################################################
+
+///
+///
+/// ----------------------- S T A R T --------------------------
+/// -------------- D R O P D O W N  M E N U --------------------
+
+///
+///
+///Dropdown Menu Test
+class CustomDropdown extends StatelessWidget {
+  final List<String> items;
+  final ValueChanged<String?>? onChanged;
+  final FormFieldValidator<String>? validator;
+  final FormFieldSetter<String>? onSaved;
+  final IconData? leftIcon;
+  final Color? leftIconColor;
+
+  const CustomDropdown({
+    required this.items,
+    this.onChanged,
+    this.validator,
+    this.onSaved,
+    this.leftIcon,
+    this.leftIconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField2<String?>(
+      isExpanded: true,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.grey[200],
+        contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+        prefixIcon: leftIcon != null
+            ? Icon(
+                leftIcon,
+                color: leftIconColor,
+              )
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10), // Fixed radius of 10 pixels
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+      ),
+      hint: const Text(
+        'Select an option',
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.amber,
+        ),
+      ),
+      items: items
+          .map((item) => DropdownMenuItem<String?>(
+                value: item,
+                child: Text(
+                  item,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
+                ),
+              ))
+          .toList(),
+      onChanged: onChanged,
+      validator: validator,
+      onSaved: onSaved,
+      iconStyleData: const IconStyleData(
+        icon: Icon(
+          DeckIcons.dropdown,
+          color: Colors.black45,
+        ),
+        iconSize: 24,
+      ),
+      dropdownStyleData: DropdownStyleData(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10), // Fixed radius of 10 pixels
+          color: Colors.grey[200],
+        ),
+      ),
+    );
+  }
+}
+
+/// ------------------------ E N D -----------------------------
+/// -------------- D R O P D O W N  M E N U --------------------
+
+///############################################################
+
+///
+///
+/// ---------------------- S T A R T ---------------------------
+/// ------------------- C H E C K B O X ------------------------
+
+///
+///
+///Checkbox Widget
+class DeckBox extends StatefulWidget {
+  DeckBox({Key? key}) : super(key: key);
+
+  @override
+  State<DeckBox> createState() => DeckBoxState();
+}
+
+class DeckBoxState extends State<DeckBox> {
+  bool isChecked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: MSHCheckbox(
+        size: 24,
+        value: isChecked,
+        colorConfig: MSHColorConfig.fromCheckedUncheckedDisabled(
+          checkedColor: DeckColors.primaryColor,
+        ),
+        style: MSHCheckboxStyle.stroke,
+        onChanged: (selected) {
+          setState(() {
+            isChecked = selected;
+          });
+        },
+      ),
+    );
+  }
+}

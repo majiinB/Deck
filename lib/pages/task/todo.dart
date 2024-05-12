@@ -9,6 +9,7 @@ class TodoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: AuthBar(
+        automaticallyImplyLeading: false,
         title: 'sdsd',
         color: DeckColors.white,
         fontSize: 24,

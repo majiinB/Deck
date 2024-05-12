@@ -17,6 +17,7 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AuthBar(
+        automaticallyImplyLeading: true,
         title: 'sign up',
         color: DeckColors.primaryColor,
         fontSize: 24,

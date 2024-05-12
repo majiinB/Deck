@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: AuthBar(
+        automaticallyImplyLeading: true,
         title: 'temporary title',
         color: DeckColors.white,
         fontSize: 24,

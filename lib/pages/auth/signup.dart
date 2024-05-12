@@ -14,6 +14,7 @@ class SignUpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AuthBar(
+        automaticallyImplyLeading: false,
         title: 'sign up',
         color: DeckColors.primaryColor,
         fontSize: 24,
