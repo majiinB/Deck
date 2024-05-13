@@ -24,16 +24,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Deck',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        // primaryColor: Colors.blue,
-        scaffoldBackgroundColor: DeckColors.backgroundColor,
-        textTheme: TextTheme(
-          bodyMedium: GoogleFonts.nunito(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
+      theme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+      // theme: ThemeData(
+      //   colorScheme: lightColorScheme,
+      //   brightness: Brightness.dark,
+      //   // primaryColor: Colors.blue,
+      //   scaffoldBackgroundColor: DeckColors.backgroundColor,
+      //   textTheme: TextTheme(
+      //     bodyMedium: GoogleFonts.nunito(
+      //       fontWeight: FontWeight.w500,
+      //     ),
+      //   ),
+      // ),
       home: const SignUpPage(),
     );
   }

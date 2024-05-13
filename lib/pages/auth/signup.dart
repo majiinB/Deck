@@ -12,6 +12,7 @@ class SignUpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final defaultColorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: const AuthBar(
         automaticallyImplyLeading: false,
@@ -29,7 +30,7 @@ class SignUpPage extends StatelessWidget {
                 child: Container(
                     height: 450,
                     width: MediaQuery.of(context).size.width,
-                    color: DeckColors.accentColor,
+                    color: defaultColorScheme.primary,
                     child: Image.asset('assets/images/Deck-Logo.png')),
               ),
               const SizedBox(

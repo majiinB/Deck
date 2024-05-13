@@ -3,14 +3,14 @@ import 'package:deck/pages/misc/widget_method.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ChangePassword extends StatefulWidget {
-  const ChangePassword({super.key});
+class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({super.key});
 
   @override
-  State<ChangePassword> createState() => _ChangePasswordState();
+  State<ChangePasswordPage> createState() => ChangePasswordPageState();
 }
 
-class _ChangePasswordState extends State<ChangePassword> {
+class ChangePasswordPageState extends State<ChangePasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,11 +92,11 @@ class _ChangePasswordState extends State<ChangePassword> {
                         height: 50.0,
                         width: MediaQuery.of(context).size.width,
                         backgroundColor: DeckColors.primaryColor,
-                        fontSize: 16.0,
                         textColor: DeckColors.white,
                         radius: 10.0,
                         borderColor: Colors.amber,
-                        borderWidth: 5,
+                        fontSize: 16,
+                        borderWidth: 0,
                       ),
                     ),
                     Padding(
@@ -114,10 +114,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                         width: MediaQuery.of(context).size.width,
                         backgroundColor: DeckColors.white,
                         textColor: DeckColors.primaryColor,
-                        fontSize: 16.0,
                         radius: 10.0,
                         borderColor: Colors.amber,
-                        borderWidth: 5,
+                        fontSize: 16,
+                        borderWidth: 0,
                       ),
                     ),
                   ],

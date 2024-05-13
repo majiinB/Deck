@@ -35,9 +35,8 @@ class _AccountPageState extends State<AccountPage> {
                 clipBehavior: Clip.none,
                 alignment: Alignment.centerLeft,
                 children: [
-                  const BuildCoverImage(
-                    coverPhotofile: null,
-                  ),
+                  BuildCoverImage(
+                      borderRadiusContainer: 0, borderRadiusImage: 0),
                   Positioned(
                     top: 200,
                     child: Container(
@@ -47,18 +46,21 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   ),
                   Positioned(
-                      top: 10,
-                      right: 16,
-                      child: BuildIconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            RouteGenerator.createRoute(const SettingPage()),
-                          );
-                        },
-                        icon: DeckIcons.settings,
-                        iconColor: DeckColors.white,
-                        backgroundColor: DeckColors.accentColor,
-                      )),
+                    top: 10,
+                    right: 16,
+                    child: BuildIconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          RouteGenerator.createRoute(const SettingPage()),
+                        );
+                      },
+                      icon: DeckIcons.settings,
+                      iconColor: DeckColors.white,
+                      backgroundColor: DeckColors.accentColor,
+                      containerWidth: 40,
+                      containerHeight: 40,
+                    ),
+                  ),
                   Positioned(
                     top: 150,
                     child: Padding(
@@ -66,9 +68,7 @@ class _AccountPageState extends State<AccountPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const BuildProfileImage(
-                            profilePhotofile: null,
-                          ),
+                          BuildProfileImage(),
                           Padding(
                             padding:
                                 const EdgeInsets.only(top: 20.0, left: 8.0),
@@ -101,23 +101,24 @@ class _AccountPageState extends State<AccountPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Padding(
-                      padding: const EdgeInsets.only(top: 12, right: 7.0),
-                      child: BuildButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            RouteGenerator.createRoute(const EditProfile()),
-                          );
-                        },
-                        buttonText: 'edit profile',
-                        height: 40,
-                        width: 140,
-                        backgroundColor: DeckColors.white,
-                        textColor: DeckColors.backgroundColor,
-                        fontSize: 16.0,
-                        radius: 20.0,
-                        borderColor: Colors.amber,
-                        borderWidth: 5,
-                      )),
+                    padding: const EdgeInsets.only(top: 12, right: 7.0),
+                    child: BuildButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          RouteGenerator.createRoute(const EditProfile()),
+                        );
+                      },
+                      buttonText: 'edit profile',
+                      height: 40,
+                      width: 140,
+                      backgroundColor: DeckColors.white,
+                      textColor: DeckColors.backgroundColor,
+                      radius: 20.0,
+                      fontSize: 16,
+                      borderWidth: 0,
+                      borderColor: Colors.transparent,
+                    ),
+                  ),
                 ],
               ),
               Padding(
