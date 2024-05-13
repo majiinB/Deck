@@ -14,7 +14,7 @@ class DisplayTaskPage extends StatefulWidget {
 class _DisplayTaskPageState extends State<DisplayTaskPage> {
 
   //initial values
-  final String taskTitle = 'Buy groceriesBuy groceries';
+  final String taskTitle = 'Buy groceries for samggggg Buy groceries for samggggg';
   final String taskDescription = '"Buy groceries" involves purchasing essential food items and '
       'household supplies. This task ensures that necessary provisions are '
       'available for daily use. It contributes to maintaining a well-stocked and '
@@ -32,7 +32,7 @@ class _DisplayTaskPageState extends State<DisplayTaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: DeckBar(
-        title: taskTitle,
+        title: "Task",
         color: DeckColors.white,
         fontSize: 24,
         icon: Icons.edit,
@@ -52,15 +52,28 @@ class _DisplayTaskPageState extends State<DisplayTaskPage> {
         left: true,
         right: true,
         minimum: const EdgeInsets.only(left: 30, right: 30),
-        child: SingleChildScrollView( // Add a SingleChildScrollView here
+        child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const  Divider(
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  taskTitle,
+                  style: const TextStyle(
+                    fontFamily: 'Fraiche',
+                    fontSize: 20,
+                    color: DeckColors.white,
+                  ),
+                  textAlign: TextAlign.justify,
+                ),
+              ),
+              const Divider(
                 color: DeckColors.white,
                 thickness: 2,
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 20, bottom: 20),
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -80,34 +93,31 @@ class _DisplayTaskPageState extends State<DisplayTaskPage> {
                         fontSize: 16,
                         color: DeckColors.white,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-              const  Divider(
+              const Divider(
                 color: DeckColors.white,
                 thickness: 2,
               ),
               Padding(
-                padding: EdgeInsets.only(top: 20, bottom: 20),
-                child:
-                    Expanded(
-                      child: Text(
-                        taskDescription,
-                        style: const TextStyle(
-                          fontFamily: 'nunito',
-                          fontSize: 16,
-                          color: DeckColors.white,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                    ),
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  taskDescription,
+                  style: const TextStyle(
+                    fontFamily: 'nunito',
+                    fontSize: 16,
+                    color: DeckColors.white,
+                  ),
+                  textAlign: TextAlign.justify,
+                ),
               ),
-
             ],
           ),
         ),
       ),
+
     );
   }
 }
