@@ -15,6 +15,65 @@ import 'package:google_fonts/google_fonts.dart';
 ///
 /// A P P B A R
 
+/// DeckBar is an app bar with pencil
+class DeckBar extends StatelessWidget implements PreferredSizeWidget {
+  const DeckBar({
+    super.key,
+    required this.title,
+    required this.color,
+    required this.fontSize,
+    this.onPressed,
+    this.icon,
+    this.iconColor,
+  }); // Correct usage of super keyword
+
+  final String title;
+  final Color color;
+  final double fontSize;
+  final VoidCallback? onPressed;
+  final Color? iconColor;
+  final IconData? icon; // Make IconData nullable
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> actions = [];
+    if (icon != null) {
+      // Check if icon is not null
+      actions.add(
+        InkWell(
+          onTap: onPressed,
+          borderRadius:
+          BorderRadius.circular(50), // Adjust the border radius as needed
+          child: Padding(
+            padding: const EdgeInsets.all(16.0), // Adjust padding as needed
+            child: Icon(
+              icon,
+              color: iconColor,
+            ),
+          ),
+        ),
+      );
+      actions.add(const SizedBox(width: 10));
+    }
+
+    return AppBar(
+      title: Text(
+        title,
+        style: GoogleFonts.nunito(
+          fontSize: fontSize,
+          fontWeight: FontWeight.w900,
+          color: color,
+        ),
+      ),
+      centerTitle: true,
+      foregroundColor: const Color.fromARGB(255, 61, 61, 61),
+      actions: actions, // Use the constructed list of actions
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
 /// DefaultHome is the Home Page by default in Deck
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key});
@@ -345,6 +404,7 @@ class SwipeToDeleteAndRetrieve extends StatelessWidget {
 
 
 //container ng decks, design lang i2 nung container
+/// THIS METHOD IS FOR THE DECKS CONTAINER IN THE ACCOUNT AND RECENTLY DELETED PAGE
 class BuildListOfDecks extends StatefulWidget {
   final File? deckImageFile;
   final String titleText, numberText;
@@ -427,6 +487,7 @@ class BuildListOfDecksState extends State<BuildListOfDecks> {
                     children: [
                       Text(
                         widget.titleText,
+                        overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.nunito(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -524,6 +585,7 @@ void showConfirmationDialog(BuildContext context, String title, String text, Voi
 /*------------------ SETTINGS ------------------*/
 
 //container
+/// THIS METHOD IS FOR THE CONTAINER(change password,recently deleted etc)  IN SETTINGS PAGE
 class BuildContainer extends StatefulWidget {
   final IconData selectedIcon;
   final IconData? alternateIcon;
@@ -816,6 +878,7 @@ class BuildDeckContainer extends StatefulWidget {
 class BuildDeckContainerState extends State<BuildDeckContainer> {
   Color _containerColor = DeckColors.gray;
 
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -841,63 +904,67 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
         onDelete: widget.onDelete,
         onRetrieve: widget.enableSwipeToRetrieve ? widget.onRetrieve : null,
         enableRetrieve: widget.enableSwipeToRetrieve,
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: 160,
-          padding: const EdgeInsets.only(bottom: 20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15.0),
-            color: _containerColor,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: widget.deckCoverPhoto != null ? null : DeckColors.white,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15.0),
-                    topRight: Radius.circular(15.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: 160,
+            padding: const EdgeInsets.only(bottom: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              color: _containerColor,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: widget.deckCoverPhoto != null ? null : DeckColors.white,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(15.0),
+                      topRight: Radius.circular(15.0),
+                    ),
+                  ),
+                  width: MediaQuery.of(context).size.width,
+                  height: 100,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(15.0),
+                      topRight: Radius.circular(15.0),
+                    ),
+                    child: widget.deckCoverPhoto != null
+                        ? Image.file(
+                      widget.deckCoverPhoto!,
+                      width: 20,
+                      height: 10,
+                      fit: BoxFit.cover,
+                    )
+                        : const Placeholder(
+                      color: DeckColors.white,
+                    ),
                   ),
                 ),
-                width: MediaQuery.of(context).size.width,
-                height: 100,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15.0),
-                    topRight: Radius.circular(15.0),
-                  ),
-                  child: widget.deckCoverPhoto != null
-                      ? Image.file(
-                    widget.deckCoverPhoto!,
-                    width: 20,
-                    height: 10,
-                    fit: BoxFit.cover,
-                  )
-                      : const Placeholder(
-                    color: DeckColors.white,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 15.0, left: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.titleOfDeck,
-                        style: GoogleFonts.nunito(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: DeckColors.white,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 15.0, left: 10, right: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.titleOfDeck,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.nunito(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: DeckColors.white,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -1245,6 +1312,7 @@ class BuildContainerOfFlashCardsState extends State<BuildContainerOfFlashCards> 
                   Expanded(
                     child: Text(
                       widget.titleOfFlashCard,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,

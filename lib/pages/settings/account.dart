@@ -28,7 +28,11 @@ class  _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const BackButtonAppBar(),
+      appBar: const DeckBar(
+        title: 'Account',
+        color: DeckColors.white,
+        fontSize: 24,
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

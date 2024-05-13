@@ -18,8 +18,8 @@ class  _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      appBar: const AuthBar(
-        title: 'Settings',
+      appBar: const DeckBar(
+        title: 'Account Settings',
         color: DeckColors.white,
         fontSize: 24,
       ),

@@ -1,13 +1,10 @@
-import 'package:deck/pages/flashcard/add_deck.dart';
 import 'package:deck/pages/flashcard/add_flashcard.dart';
 import 'package:deck/pages/flashcard/edit_flashcard.dart';
+import 'package:deck/pages/flashcard/play_my_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
-import 'package:deck/pages/misc/deck_icons.dart';
-import 'package:deck/pages/settings/account.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
-import 'package:deck/pages/task/task.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -30,6 +27,7 @@ class  _ViewDeckPageState extends State<ViewDeckPage> {
     'tanginamong hayup ka may pamilya na yung tao kumekerengkeng ka pa raffy tulfo meme',
     'A philosophical movement originating in the late 19th and early 20th centuries, characterized by an exploration of the individuals subjective experience and the fundamental nature of existence. At its core, existentialism grapples with profound questions regarding human freedom, choice, and responsibility in the face of a seemingly indifferent or absurd universe. Key figures such as Jean-Paul Sartre, Friedrich Nietzsche, and Martin Heidegger have contributed seminal works that delve into the complexities of existence, offering insights into the nature of authenticity, alienation, and the search for meaning in a world devoid of inherent purpose.'
   ];
+
   List<String> starredFlashCardTitles = [
     'Tanga tanga amp',
     'Loh putangina',
@@ -58,14 +56,19 @@ class  _ViewDeckPageState extends State<ViewDeckPage> {
           );
         },
       ),
-        appBar: const BackButtonAppBar(),
+      appBar: const DeckBar(
+        title: 'View Deck',
+        color: DeckColors.white,
+        fontSize: 24,
+      ),
         body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
     child: Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
-        'Deck ni Leila 101',
+        'Deck ni Leila 101 ',
+        overflow: TextOverflow.ellipsis,
         style: GoogleFonts.nunito(
           color: DeckColors.white,
           fontSize: 32,
@@ -77,10 +80,10 @@ class  _ViewDeckPageState extends State<ViewDeckPage> {
         padding: const EdgeInsets.only(top: 25.0),
         child: BuildButton(onPressed: (){
           print("Laruin mo deck ko");
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => ViewDeckPage()),
-          // );
+           Navigator.push(
+            context,
+             MaterialPageRoute(builder: (context) => PlayMyDeckPage()),
+           );
         },
             buttonText: 'Play My Deck',
             height: 35, width: 180,
@@ -103,68 +106,85 @@ class  _ViewDeckPageState extends State<ViewDeckPage> {
             titles: ['All', 'Starred'],
             length: 2,
             tabContent: [
-
+              ///
+              ///
               /// ------------------------- START OF TAB 'ALL' CONTENT ----------------------------
               if (flashCardTitles.isEmpty)
                 ifDeckEmpty(ifDeckEmptyText: 'No Flashcard(s) Available',
                   ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.3,
                 ),
               if(flashCardTitles.isNotEmpty)
-              SingleChildScrollView(
-                child: Padding(
-                  padding:  EdgeInsets.only(top: 20.0),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: flashCardTitles.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6.0),
-                        child: BuildContainerOfFlashCards(
-                          titleOfFlashCard: flashCardTitles[index],
-                          contentOfFlashCard: flashCardContent[index],
-                          onDelete: () {
-                            final String deletedTitle = flashCardTitles[index];
-                            final String deletedNumber = flashCardContent[index];
-                            showConfirmationDialog(
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding:  EdgeInsets.only(top: 20.0),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: flashCardTitles.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6.0),
+                          child: BuildContainerOfFlashCards(
+                            titleOfFlashCard: flashCardTitles[index],
+                            contentOfFlashCard: flashCardContent[index],
+                            onDelete: () {
+                              final String deletedTitle = flashCardTitles[index];
+                              final String deletedNumber = flashCardContent[index];
+                              showConfirmationDialog(
+                                context,
+                                "Delete Item",
+                                "Are you sure you want to delete '$deletedTitle'?",
+                                    () {
+                                  setState(() {
+
+                                    final int starredIndex = starredFlashCardTitles.indexOf(deletedTitle);
+
+                                    if (starredIndex != -1) {
+                                      starredFlashCardTitles.removeAt(starredIndex);
+                                      starredFlashCardContent.removeAt(starredIndex);
+                                    }
+
+                                    setState(() {
+                                      flashCardTitles.removeAt(index);
+                                      flashCardContent.removeAt(index);
+                                    });
+                                  });
+                                },
+                                    () {
+                                  setState(() {//when the user clicks no
+
+                                  });
+                                },
+                              );
+                            }, enableSwipeToRetrieve: false, onTap: () {
+                            print("Clicked");
+                            Navigator.push(
                               context,
-                              "Delete Item",
-                              "Are you sure you want to delete '$deletedTitle'?",
-                                  () {
-                                setState(() {
-                                  flashCardTitles.removeAt(index);
-                                  flashCardContent.removeAt(index);
-                                });
-                              },
-                                  () {
-                                setState(() {//when the user clicks no
-                                  flashCardTitles.insert(index, deletedTitle);
-                                  flashCardContent.insert(index, deletedNumber);
-                                });
-                              },
+                              MaterialPageRoute(builder: (context) => EditFlashcardPage()),
                             );
-                          }, enableSwipeToRetrieve: false, onTap: () {
-                          print("Clicked");
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => EditFlashcardPage()),
-                          );
-                        },
-                          isStarShaded: false,
-                          onStarShaded: () {
-                            print ("yey");
                           },
-                          onStarUnshaded: () {
-                            print ("aww");
-                        },
-                        ),
-                      );
-                    },
+                            isStarShaded: false,
+                            onStarShaded: () {
+                              print ("yey");
+                            },
+                            onStarUnshaded: () {
+                              print ("aww");
+                          },
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
+              ///
+              ///
               /// ------------------------- END OF TAB 'ALL' CONTENT ----------------------------
 
+              ///
+              ///
               /// ------------------------- START OF TAB 'STARRED' CONTENT ----------------------------
               if (starredFlashCardTitles.isEmpty)
                 ifDeckEmpty(ifDeckEmptyText: 'No Starred Flashcard(s) Available',
@@ -236,7 +256,9 @@ class  _ViewDeckPageState extends State<ViewDeckPage> {
     ],
     ),
         ),
-      /// ------------------------- END OF TAb 'STARRED' CONTENT ----------------------------
+      ///
+      ///
+      /// ------------------------- END OF TAB 'STARRED' CONTENT ----------------------------
     );
   }
 

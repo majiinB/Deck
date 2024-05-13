@@ -36,7 +36,11 @@ List<String> deckTitles = [
             );
           },
         ),
-      appBar: const BackButtonAppBar(),
+        appBar: const DeckBar(
+          title: 'Flash Card',
+          color: DeckColors.white,
+          fontSize: 24,
+        ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -67,6 +71,7 @@ List<String> deckTitles = [
                   children: [
                     Text(
                       'Deck ni Leila 101',
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.nunito(
                         color: DeckColors.white,
                         fontSize: 24,

@@ -40,7 +40,7 @@ class  _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      appBar: const AuthBar(
+      appBar: const DeckBar(
         title: 'Recently Deleted',
         color: DeckColors.white,
         fontSize: 24,

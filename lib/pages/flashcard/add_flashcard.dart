@@ -16,17 +16,35 @@ class  _AddFlashcardPageState extends State<AddFlashcardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AuthBar(
-        title: 'Add New Card',
+      appBar: const DeckBar(
+        title: 'Add Flash Card',
         color: DeckColors.white,
         fontSize: 24,
       ),
         body: SingleChildScrollView(
-        padding: const EdgeInsets.all(30),
+        padding: const EdgeInsets.all(20),
     child: Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      BuildTextBox(hintText: 'Enter Term'),
+      Text(
+        'Simply fill in the text fields below to add flash card on your deck.',
+        textAlign: TextAlign.justify,
+        style: GoogleFonts.nunito(
+          fontSize: 16,
+          color: DeckColors.white,
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+        child: Container(
+          color: DeckColors.white,
+          height: 2,
+        ),
+      ),
+      const Padding(
+        padding: EdgeInsets.only(top: 40.0),
+        child: BuildTextBox(hintText: 'Enter Term'),
+      ),
       const Padding(padding: EdgeInsets.symmetric(vertical: 20),
         child: BuildTextBox(hintText: 'Enter Description', isMultiLine: true),
       ),
@@ -52,7 +70,7 @@ class  _AddFlashcardPageState extends State<AddFlashcardPage> {
           textColor: DeckColors.white, radius: 10.0,
         ),
       ),
-      Padding(padding: EdgeInsets.only(top: 10),
+      Padding(padding: const EdgeInsets.only(top: 10),
         child:BuildButton(
           onPressed: () {
             print("cancel button clicked");//line to test if working ung onPressedLogic XD

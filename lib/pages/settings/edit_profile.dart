@@ -19,8 +19,8 @@ class  _editProfileState extends State<editProfile> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-        appBar: const AuthBar(
-          title: 'Account Information',
+        appBar: const DeckBar(
+          title: 'Edit Account Information',
           color: DeckColors.white,
           fontSize: 24,
         ),

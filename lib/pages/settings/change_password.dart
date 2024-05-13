@@ -16,7 +16,7 @@ class  _changePasswordState extends State<changePassword> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-        appBar: const AuthBar(
+        appBar: const DeckBar(
           title: 'Change Password',
           color: DeckColors.white,
           fontSize: 24,

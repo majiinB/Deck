@@ -19,8 +19,8 @@ class  _AddDeckPageState extends State<AddDeckPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AuthBar(
-        title: 'Add New Deck',
+      appBar: const DeckBar(
+        title: 'Add Deck',
         color: DeckColors.white,
         fontSize: 24,
       ),
