@@ -4,14 +4,14 @@ import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/task/edit_task.dart';
 
-class DisplayTaskPage extends StatefulWidget {
-  const DisplayTaskPage({Key? key});
+class ViewTaskPage extends StatefulWidget {
+  const ViewTaskPage({Key? key});
 
   @override
-  State<DisplayTaskPage> createState() => _DisplayTaskPageState();
+  State<ViewTaskPage> createState() => _ViewTaskPageState();
 }
 
-class _DisplayTaskPageState extends State<DisplayTaskPage> {
+class _ViewTaskPageState extends State<ViewTaskPage> {
 
   //initial values
   final String taskTitle = 'Buy groceries for samggggg Buy groceries for samggggg';

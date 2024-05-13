@@ -3,6 +3,7 @@ import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 ///
@@ -966,104 +967,131 @@ class DeckFAB extends StatelessWidget {
 
 ///
 /// ----------------------- S T A R T --------------------------
-/// ------------ D E C K  S L I V E R  D E L E G A T E ------------------
-class BuildTabBarDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child;
+/// ------------ D E C K  E M P T Y ------------------
 
-  BuildTabBarDelegate({required this.child});
+class ifDeckEmpty extends StatelessWidget{
+  final String ifDeckEmptyText;
+  final double ifDeckEmptyheight;
 
-  @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return child;
-  }
+  const ifDeckEmpty({super.key, required this.ifDeckEmptyText,
+    required this.ifDeckEmptyheight});
 
   @override
-  double get maxExtent => 100; // Adjust the height as needed
-
-  @override
-  double get minExtent => 100; // Adjust the height as needed
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: ifDeckEmptyheight,
+        child: Center(
+          child: Text(
+            ifDeckEmptyText,
+            style: GoogleFonts.nunito(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
   }
 }
+
 /// ------------------------- E N D ----------------------------
-/// ---------------  D E C K  F L O A T I N G  B A R  A C T I O N  ---------------------
+/// ------------ D E C K  E M P T Y ------------------
 
 
 ///############################################################
 
-///
-/// ----------------------- S T A R T --------------------------
-/// ------------ D E C K  D A T E P I C K E R ------------------
-
-/// ------------------------- E N D ----------------------------
-/// ------------ D E C K  D A T E P I C K E R ------------------
-
-
-
-///############################################################
 ///
 /// ----------------------- S T A R T --------------------------
 /// ------------ D E C K  T A S K T I L E ------------------
-
-class BuildListOfTask extends StatefulWidget {
+class DeckTaskTile extends StatefulWidget {
   final String title;
+  final String deadline;
+  final bool isChecked;
+  final ValueChanged<bool?> onChanged;
   final VoidCallback onDelete;
-  final VoidCallback? onRetrieve;
-  final bool enableSwipeToRetrieve;
+  final VoidCallback? onRetrieve, onTap;
+  final bool enableRetrieve;
 
-  const BuildListOfTask({
-    super.key,
+  const DeckTaskTile({
+    Key? key,
     required this.title,
+    required this.deadline,
+    required this.isChecked,
+    required this.onChanged,
     required this.onDelete,
     this.onRetrieve,
-    this.enableSwipeToRetrieve = true,
-  });
+    this.enableRetrieve = false,
+    this.onTap,
+  }) : super(key: key);
 
   @override
-  State<BuildListOfTask> createState() => BuildListOfTaskState();
+  State<DeckTaskTile> createState() => DeckTaskTileState();
 }
 
-class BuildListOfTaskState extends State<BuildListOfTask> {
+class DeckTaskTileState extends State<DeckTaskTile> {
+  Color _containerColor = DeckColors.gray;
   @override
   Widget build(BuildContext context) {
-    return SwipeToDeleteAndRetrieve(
+    return GestureDetector(
+        onTapDown: (_) {
+          setState(() {
+            if (widget.onTap != null) {
+              _containerColor = Colors.grey.withOpacity(0.7);
+            }
+          });
+          },
+        onTapUp: (_) {
+          setState(() {
+            _containerColor = DeckColors.gray;
+          });
+          widget.onTap?.call();
+          },
+        onTapCancel: () {
+          setState(() {
+            _containerColor = DeckColors.gray;
+          });
+        },
+    child:  SwipeToDeleteAndRetrieve(
+      onRetrieve: widget.enableRetrieve ? widget.onRetrieve : null,
+      enableRetrieve: widget.enableRetrieve,
       onDelete: widget.onDelete,
-      onRetrieve: widget.enableSwipeToRetrieve ? widget.onRetrieve : null,
-      enableRetrieve: widget.enableSwipeToRetrieve,
       child: Container(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
           color: DeckColors.gray,
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Checkbox(
+              value: widget.isChecked,
+              onChanged: widget.onChanged,
+            ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(left: 15.0, top: 5.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.only(left: 15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       widget.title,
-                      style: GoogleFonts.nunito(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: DeckColors.white,
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 7.0),
-                      child: Container(
-                        width: 150,
-                        padding: const EdgeInsets.all(5.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16.0),
-                          color: DeckColors.coverImageColorSettings,
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        widget.deadline,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: DeckColors.white,
                         ),
                       ),
                     ),
@@ -1074,10 +1102,89 @@ class BuildListOfTaskState extends State<BuildListOfTask> {
           ],
         ),
       ),
+    ),
     );
   }
 }
 
 
+/// ------------------------- E N D ----------------------------
+/// ------------ D E C K  T A S K T I L E ------------------
+
+
+///############################################################
+
+
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ D E C K  S L I V E R H E A D E R ------------------
+
+
+class DeckSliverHeader extends StatelessWidget {
+  final Color backgroundColor;
+  final String headerTitle;
+  final TextStyle textStyle;
+
+  DeckSliverHeader({
+    required this.backgroundColor,
+    required this.headerTitle,
+    required this.textStyle
+  }
+     );
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPersistentHeader(
+
+      pinned: true,
+      floating: false,
+      delegate: DeckDelegate(backgroundColor, headerTitle,textStyle),
+    );
+  }
+}
+
+class DeckDelegate extends SliverPersistentHeaderDelegate {
+  final Color backgroundColor;
+  final String headerTitle;
+  final TextStyle textStyle;
+
+  DeckDelegate(
+    this.backgroundColor,
+    this.headerTitle,
+    this.textStyle
+  );
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: backgroundColor,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          headerTitle,
+          style: textStyle,
+        ),
+      ),
+    );
+  }
+
+
+  @override
+  double get maxExtent => 180;
+
+  @override
+  double get minExtent => 180;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
+  }
+}
+
+
+///
+///
+///
 
 
