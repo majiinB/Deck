@@ -3,18 +3,19 @@ import 'package:deck/pages/misc/widget_method.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ChangePassword extends StatefulWidget {
-  const ChangePassword({super.key});
+class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({super.key});
 
   @override
-  State<ChangePassword> createState() => _ChangePasswordState();
+  State<ChangePasswordPage> createState() => ChangePasswordPageState();
 }
 
-class _ChangePasswordState extends State<ChangePassword> {
+class ChangePasswordPageState extends State<ChangePasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AuthBar(
+        automaticallyImplyLeading: false,
         title: 'sign up',
         color: DeckColors.primaryColor,
         fontSize: 24,
@@ -93,6 +94,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                         backgroundColor: DeckColors.primaryColor,
                         textColor: DeckColors.white,
                         radius: 10.0,
+                        borderColor: Colors.amber,
+                        fontSize: 16,
+                        borderWidth: 0,
                       ),
                     ),
                     Padding(
@@ -111,6 +115,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                         backgroundColor: DeckColors.white,
                         textColor: DeckColors.primaryColor,
                         radius: 10.0,
+                        borderColor: Colors.amber,
+                        fontSize: 16,
+                        borderWidth: 0,
                       ),
                     ),
                   ],
