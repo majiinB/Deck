@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                     (context, index) {
                   return LayoutBuilder(builder: (context, BoxConstraints constraints){
                     double cardWidth = constraints.maxWidth;
-                    return Padding(padding: EdgeInsets.symmetric(vertical: 10),
+                    return Padding(padding: const EdgeInsets.symmetric(vertical: 10),
                     child:  HomeTaskTile(
                       taskName: taskTitles[index],
                       deadline: taskDeadlines[index].toString().split(" ")[0],
@@ -128,10 +128,10 @@ class _HomePageState extends State<HomePage> {
                   });
                 }),
             ),
-            DeckSliverHeader(
+            const DeckSliverHeader(
               backgroundColor: DeckColors.backgroundColor,
               headerTitle: "Recently Added",
-              textStyle: const TextStyle(  color: DeckColors.white,
+              textStyle: TextStyle(  color: DeckColors.white,
                 fontFamily: 'Fraiche',
                 fontSize: 24,
               ),
@@ -159,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   });
                 }),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,

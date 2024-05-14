@@ -12,7 +12,7 @@ class DeckColors {
 
 const lightColorScheme = ColorScheme(
   brightness: Brightness.light,
-  primary: Colors.amber,
+  primary: Colors.blue,
   onPrimary: Color(0xFFFFFFFF),
   secondary: Color(0xFF735761),
   onSecondary: Color(0xFFFFFFFF),
@@ -25,7 +25,7 @@ const lightColorScheme = ColorScheme(
 );
 const darkColorScheme = ColorScheme(
   brightness: Brightness.dark,
-  primary: Colors.blue,
+  primary: Color(0xFF1A1A1A),
   onPrimary: Color(0xFFFFFFFF),
   secondary: Color(0xFF735761),
   onSecondary: Color(0xFFFFFFFF),

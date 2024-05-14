@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
@@ -12,10 +11,11 @@ class ViewTaskPage extends StatefulWidget {
 }
 
 class _ViewTaskPageState extends State<ViewTaskPage> {
-
   //initial values
-  final String taskTitle = 'Buy groceries for samggggg Buy groceries for samggggg';
-  final String taskDescription = '"Buy groceries" involves purchasing essential food items and '
+  final String taskTitle =
+      'Buy groceries for samggggg Buy groceries for samggggg';
+  final String taskDescription =
+      '"Buy groceries" involves purchasing essential food items and '
       'household supplies. This task ensures that necessary provisions are '
       'available for daily use. It contributes to maintaining a well-stocked and '
       'functional home environment.';
@@ -26,8 +26,10 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
   void initState() {
     super.initState();
 
-    _dateController = TextEditingController(text: taskDeadline.toString().split(" ")[0]);
+    _dateController =
+        TextEditingController(text: taskDeadline.toString().split(" ")[0]);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,7 +119,6 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
           ),
         ),
       ),
-
     );
   }
 }
