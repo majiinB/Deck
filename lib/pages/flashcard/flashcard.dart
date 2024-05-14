@@ -1,5 +1,5 @@
 import 'package:deck/pages/misc/colors.dart';
-import 'package:deck/pages/task/todo.dart';
+import 'package:deck/pages/task/add_task.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/task/task.dart';
@@ -19,7 +19,7 @@ class FlashcardPage extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () {
             Navigator.of(context).push(
-              RouteGenerator.createRoute(const TodoPage()),
+              RouteGenerator.createRoute(const AddTaskPage()),
             );
           },
           child: Text('ETO FLASHCARD'),
