@@ -1,5 +1,6 @@
 import 'package:deck/main.dart';
 import 'package:deck/pages/auth/create_account.dart';
+import 'package:deck/pages/auth/recover_account.dart';
 import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
@@ -84,7 +85,7 @@ class LoginPage extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).push(
-                      RouteGenerator.createRoute(const LoginPage()),
+                      RouteGenerator.createRoute(const RecoverAccountPage()),
                     );
                   },
                   borderRadius: BorderRadius.circular(8),

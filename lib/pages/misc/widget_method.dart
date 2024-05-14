@@ -573,6 +573,7 @@ class BuildSettingsContainer extends StatefulWidget {
   final Color selectedColor;
   final Color textColor;
   final Color toggledColor;
+  final ValueChanged<bool>? onToggleChanged;
 
   const BuildSettingsContainer({
     required this.selectedIcon,
@@ -582,6 +583,7 @@ class BuildSettingsContainer extends StatefulWidget {
     this.showSwitch = false,
     this.showArrow = false,
     this.onTap,
+    this.onToggleChanged,
     required this.containerColor,
     required this.selectedColor,
     required this.textColor,
@@ -649,10 +651,13 @@ class BuildSettingsContainerState extends State<BuildSettingsContainer> {
               if (widget.showSwitch)
                 Switch(
                   value: _isToggled,
-                  onChanged: (value) {
+                  onChanged: (bool value) {
                     setState(() {
                       _isToggled = value;
                     });
+                    if (widget.onToggleChanged != null) {
+                      widget.onToggleChanged!(value); // Call the callback
+                    }
                   },
                   activeColor: DeckColors.primaryColor,
                   inactiveThumbColor: Colors.white,
@@ -1233,14 +1238,14 @@ class BuildDeckContainer extends StatefulWidget {
   final bool enableSwipeToRetrieve;
 
   const BuildDeckContainer({
-    Key? key,
+    super.key,
     required this.onDelete,
     this.onRetrieve,
     this.enableSwipeToRetrieve = true,
     this.deckCoverPhoto,
     required this.titleOfDeck,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<BuildDeckContainer> createState() => BuildDeckContainerState();

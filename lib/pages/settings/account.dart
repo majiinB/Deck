@@ -10,10 +10,10 @@ class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
   @override
-  State<AccountPage> createState() => _AccountPageState();
+  State<AccountPage> createState() => AccountPageState();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class AccountPageState extends State<AccountPage> {
   List<String> deckTitles = [
     'Deck ni leila malaki',
     'Deck ko malaki',
@@ -25,8 +25,8 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: Scaffold(
-        appBar: null,
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,7 +41,7 @@ class _AccountPageState extends State<AccountPage> {
                     top: 200,
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      height: 170,
+                      height: 0,
                       color: DeckColors.gray,
                     ),
                   ),
