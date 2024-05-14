@@ -7,4 +7,5 @@ class DeckColors {
   static const Color backgroundColor = Color(0xFF1A1A1A);
   static const Color green = Color(0xFF123524);
   static const Color white = Color(0xFFF3F3F3);
+  static const Color coverImageColorSettings = Color(0xFF4C4C4C);
 }

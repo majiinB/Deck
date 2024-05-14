@@ -1123,22 +1123,27 @@ class DeckTaskTileState extends State<DeckTaskTile> {
 class DeckSliverHeader extends StatelessWidget {
   final Color backgroundColor;
   final String headerTitle;
+  final bool? isPinned;
   final TextStyle textStyle;
+  final double? max;
+  final double? min;
 
   DeckSliverHeader({
     required this.backgroundColor,
+    this.isPinned,
     required this.headerTitle,
-    required this.textStyle
-  }
-     );
+    required this.textStyle,
+    this.max,
+    this.min,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SliverPersistentHeader(
 
-      pinned: true,
+      pinned: isPinned?? true,
       floating: false,
-      delegate: DeckDelegate(backgroundColor, headerTitle,textStyle),
+      delegate: DeckDelegate(backgroundColor, headerTitle,textStyle,max,min),
     );
   }
 }
@@ -1147,11 +1152,15 @@ class DeckDelegate extends SliverPersistentHeaderDelegate {
   final Color backgroundColor;
   final String headerTitle;
   final TextStyle textStyle;
+  final double? max;
+  final double? min;
 
   DeckDelegate(
     this.backgroundColor,
     this.headerTitle,
-    this.textStyle
+      this.textStyle,
+      this.max,
+      this.min,
   );
 
   @override
@@ -1171,10 +1180,10 @@ class DeckDelegate extends SliverPersistentHeaderDelegate {
 
 
   @override
-  double get maxExtent => 180;
+  double get maxExtent => max?? 180;
 
   @override
-  double get minExtent => 180;
+  double get minExtent => min?? 180;
 
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
@@ -1183,8 +1192,169 @@ class DeckDelegate extends SliverPersistentHeaderDelegate {
 }
 
 
-///
-///
-///
+/// ------------------------- E N D ----------------------------
+/// ------------ D E C K  S L I V E R H E A D E R ------------------
 
+
+///############################################################
+
+
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ D E C K  T I L E  I N  H O M E------------------
+class HomeDeckTile extends StatelessWidget {
+  final String deckName;
+  final Color deckColor;
+  final double cardWidth;
+  //final File? deckImage;
+  final VoidCallback? onPressed;
+
+  const HomeDeckTile({
+    Key? key,
+    required this.deckName,
+    required this.deckColor,
+    required this.cardWidth,
+    required this.onPressed,
+   // required this.deckImage,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: onPressed,
+      child:
+      Padding(
+        padding: const EdgeInsets.all(0),
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: SizedBox(
+            width: cardWidth,
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: DeckColors.gray,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.transparent,Colors.black.withOpacity(0.8)],
+                        ),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        deckName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+/// ------------------------- E N D ----------------------------
+/// ------------ D E C K  T I L E  I N  H O M E------------------
+
+///############################################################
+
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ T A S K  T I L E  I N  H O M E------------------
+
+class HomeTaskTile extends StatelessWidget {
+  final String taskName;
+  final String deadline;
+  // final double cardWidth;
+  //final File? deckImage;
+  final VoidCallback? onPressed;
+
+  const HomeTaskTile({
+    Key? key,
+    required this.taskName,
+    required this.deadline,
+    required this.onPressed,
+
+    // required this.cardWidth,
+    // required this.deckImage,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: onPressed,
+        child:
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15.0),
+            color: DeckColors.gray,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: 200,
+                        child: Text( taskName,  maxLines: 1,  overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,  fontWeight: FontWeight.w700,  color: DeckColors.white,
+                          ),
+                        ),
+                      ),
+                      Padding( padding: const EdgeInsets.only(top: 5.0),
+                        child: Text( deadline,
+                          style: const TextStyle(
+                            fontSize: 14, color: DeckColors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+    );
+  }
+}
+
+
+
+
+/// ------------------------- E N D ----------------------------
+/// ------------ T A S K  T I L E  I N  H O M E------------------
+
+///############################################################
 
