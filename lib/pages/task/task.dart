@@ -104,7 +104,7 @@ class _TaskPageState extends State<TaskPage>{
        bottom: false,
        left: true,
        right: true,
-       minimum: const EdgeInsets.only(left: 30, right: 30),
+       minimum: const EdgeInsets.only(left: 20, right: 20),
        child: CustomScrollView(
          slivers: <Widget>[
            DeckSliverHeader(
@@ -199,8 +199,6 @@ class _TaskPageState extends State<TaskPage>{
                length: 2,
                tabContent: [
                  // To Do Tab
-
-
                  if (isThereTask(selectedDay,taskDeadlines))
                    ListView.builder(
                    shrinkWrap: true, // Allow the ListView to wrap its content

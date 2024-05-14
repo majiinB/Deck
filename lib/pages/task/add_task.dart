@@ -97,7 +97,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         bottom: false,
         left: true,
         right: true,
-        minimum: const EdgeInsets.only(left: 30, right: 30),
+        minimum: const EdgeInsets.only(left: 20, right: 20),
         child:SingleChildScrollView(
           child:
           Column(
