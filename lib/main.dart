@@ -1,23 +1,29 @@
-// ignore_for_file: deprecated_member_use
+import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/backend/auth/auth_gate.dart';
 import 'package:deck/pages/flashcard/flashcard.dart';
 import 'package:deck/pages/home/home.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/settings/account.dart';
 import 'package:deck/pages/task/task.dart';
+import 'package:deck/pages/theme/theme.dart';
+import 'package:deck/pages/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:deck/pages/misc/colors.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -29,17 +35,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Deck',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        // primaryColor: Colors.blue,
-        scaffoldBackgroundColor: DeckColors.backgroundColor,
-        textTheme: TextTheme(
-          bodyMedium: GoogleFonts.nunito(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-      home: const AuthGate(),
+      theme: Provider.of<ThemeProvider>(context).themeData,
+      // theme: ThemeData(
+      //   colorScheme: lightColorScheme,
+      //   brightness: Brightness.dark,
+      //   // primaryColor: Colors.blue,
+      //   scaffoldBackgroundColor: DeckColors.backgroundColor,
+      //   textTheme: TextTheme(
+      //     bodyMedium: GoogleFonts.nunito(
+      //       fontWeight: FontWeight.w500,
+      //     ),
+      //   ),
+      // ),
+      home: const SignUpPage(),
     );
   }
 }
@@ -118,6 +126,7 @@ class _MainPageState extends State<MainPage> {
       top: false,
       bottom: true,
       child: Scaffold(
+        extendBody: true,
         appBar: null,
         body: screens[index],
         bottomNavigationBar: curvedNavigationBar(),

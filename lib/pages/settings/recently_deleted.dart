@@ -6,10 +6,10 @@ class RecentlyDeletedPage extends StatefulWidget {
   const RecentlyDeletedPage({super.key});
 
   @override
-  State<RecentlyDeletedPage> createState() => _RecentlyDeletedPageState();
+  State<RecentlyDeletedPage> createState() => RecentlyDeletedPageState();
 }
 
-class _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
+class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
   List<String> deckTitles = [
     "Deck ni leila malaki",
     "Deck ko malaki",
@@ -38,6 +38,7 @@ class _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AuthBar(
+        automaticallyImplyLeading: true,
         title: 'sign up',
         color: DeckColors.primaryColor,
         fontSize: 24,
@@ -51,7 +52,7 @@ class _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
             const BuildTextBox(
               hintText: 'Search Decks',
               showPassword: false,
-              icon: Icons.search,
+              leftIcon: Icons.search,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),
@@ -83,6 +84,9 @@ class _RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                 backgroundColor: Colors.red,
                 textColor: DeckColors.white,
                 radius: 10.0,
+                borderColor: Colors.amber,
+                fontSize: 16,
+                borderWidth: 0,
               ),
             ),
             Padding(
