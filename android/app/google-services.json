@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "165662711092",
+    "project_id": "deck-f429c",
+    "storage_bucket": "deck-f429c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:165662711092:android:426f01039a44f912561961",
+        "android_client_info": {
+          "package_name": "com.example.deck"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "165662711092-cj82n19hrnf28l9huc9i19p8inkfnh6t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlsSfk3pDvF_wOIEowteRcZ3AasojFits"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "165662711092-cj82n19hrnf28l9huc9i19p8inkfnh6t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
