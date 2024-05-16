@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:165662711092:android:426f01039a44f912561961",
+        "mobilesdk_app_id": "1:165662711092:android:4a2850125f01f3fb561961",
         "android_client_info": {
           "package_name": "com.example.deck"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "165662711092-r9u55ifcdb3l6serrvh1rpftbekg5gmj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.deck",
+            "certificate_hash": "6ccbbfe695574983b078166bf630db12457e7e42"
+          }
+        },
         {
           "client_id": "165662711092-cj82n19hrnf28l9huc9i19p8inkfnh6t.apps.googleusercontent.com",
           "client_type": 3
