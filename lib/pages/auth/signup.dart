@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../backend/auth/auth_service.dart';
+
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
 
@@ -37,11 +39,22 @@ class SignUpPage extends StatelessWidget {
                 height: 20,
               ),
               BuildButton(
-                onPressed: () {
+                onPressed: () async {
+                  final authService = AuthService();
+                  try {
+                  final user = await authService.signUpWithGoogle();
+                  if(user != null){
                   Navigator.of(context).push(
-                    RouteGenerator.createRoute(const MainPage()),
+                  RouteGenerator.createRoute(const MainPage()),
                   );
-                },
+                  }
+                  } catch (e){
+                  print(e.toString());
+                  showDialog(context: context, builder: (context) => AlertDialog(
+                  title: const Text("Error signing in."),
+                  ));
+                  }
+                  },
                 buttonText: 'Continue with Google',
                 height: 60,
                 width: MediaQuery.of(context).size.width,
