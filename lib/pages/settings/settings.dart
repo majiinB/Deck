@@ -1,3 +1,5 @@
+import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
@@ -106,7 +108,12 @@ class _SettingPageState extends State<SettingPage> {
               selectedColor: DeckColors.primaryColor, // Left Icon Color
               textColor: Colors.white, // Text Color
               toggledColor: Colors.amber, // Left Icon Color when Toggled
-              onTap: () {
+              onTap: () async {
+                final authService = AuthService();
+                authService.signOut();
+                Navigator.of(context).push(
+                  RouteGenerator.createRoute(const SignUpPage()),
+                );
                 // ignore: avoid_print
                 print("Log Out Clicked");
               },

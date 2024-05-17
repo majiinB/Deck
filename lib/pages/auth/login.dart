@@ -1,3 +1,4 @@
+import 'package:deck/backend/auth/auth_gate.dart';
 import 'package:deck/main.dart';
 import 'package:deck/pages/auth/create_account.dart';
 import 'package:deck/pages/auth/recover_account.dart';
@@ -8,8 +9,13 @@ import 'package:deck/pages/misc/widget_method.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../backend/auth/auth_service.dart';
+
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -33,42 +39,43 @@ class LoginPage extends StatelessWidget {
                     color: DeckColors.accentColor,
                     child: Image.asset('assets/images/Deck-Logo.png')),
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 30),
+              Padding(
+                padding: const EdgeInsets.only(top: 30),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Email',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     BuildTextBox(
                       hintText: 'Enter Email Address',
                       showPassword: false,
                       leftIcon: DeckIcons.account,
+                      controller: emailController,
                     ),
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 10),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Password',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     BuildTextBox(
@@ -76,6 +83,7 @@ class LoginPage extends StatelessWidget {
                       showPassword: false,
                       leftIcon: DeckIcons.lock,
                       rightIcon: Icons.search,
+                      controller: passwordController,
                     ),
                   ],
                 ),
@@ -108,9 +116,19 @@ class LoginPage extends StatelessWidget {
                 height: 100,
               ),
               BuildButton(
-                onPressed: () {
+                onPressed: () async {
+                  try{
+                    await AuthService().signInWithEmail(emailController.text, passwordController.text);
+                  } catch (e) {
+                    print(e.toString());
+                    showDialog(context: context, builder: (context) =>
+                    const AlertDialog(
+                      title: Text("Error logging in user!"),
+                    ));
+                  }
+
                   Navigator.of(context).push(
-                    RouteGenerator.createRoute(const MainPage()),
+                    RouteGenerator.createRoute(const AuthGate()),
                   );
                 },
                 buttonText: 'Log In',
