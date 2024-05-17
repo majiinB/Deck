@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
       //     ),
       //   ),
       // ),
-      home: const SignUpPage(),
+      home: const AuthGate(),
     );
   }
 }

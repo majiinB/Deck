@@ -1,3 +1,9 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypt/crypt.dart';
+import 'package:deck/backend/auth/auth_gate.dart';
+import 'package:deck/backend/auth/auth_service.dart';
 import 'package:deck/main.dart';
 import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
@@ -15,6 +21,27 @@ class CreateAccountPage extends StatefulWidget {
 }
 
 class _CreateAccountPageState extends State<CreateAccountPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  String getAdjective(){
+
+    List<String> adjective = [
+      'Long', 'Short', 'Thick', 'Thin', 'Curved', 'Straight', 'Hard', 'Soft', 'Smooth',
+      'Rough', 'Firm', 'Stiff', 'Limp', 'Engorged', 'Swollen', 'Massive',
+      'Turgid', 'Plump', 'Slender', 'Enlarged', 'Lengthy', 'Trim', 'Sturdy', 'Malleable',
+      'Elastic', 'Pulsating', 'Robust', 'Lithe', 'Luscious', 'Muscular', 'Rigid', 'Tender', 'Prominent', 'Noticeable',
+      'Substantial', 'Compact', 'Potent', 'Dominant', 'Stretched', 'Expansive', 'Defined', 'Well-endowed'
+    ];
+
+    return "${adjective[Random().nextInt(adjective.length)]}_${getRandomNumber()}";
+  }
+
+  int getRandomNumber(){
+    return 10000 + Random().nextInt(99999 + 1);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,71 +56,74 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           padding: const EdgeInsets.only(left: 30, right: 30),
           child: Column(
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Email',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     BuildTextBox(
                       hintText: 'Enter Email Address',
                       showPassword: false,
                       leftIcon: DeckIcons.account,
+                      controller: emailController,
                     ),
                   ],
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Create New Password',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     BuildTextBox(
                       hintText: 'Enter New Password',
                       showPassword: true,
                       leftIcon: DeckIcons.lock,
+                      controller: passwordController,
                     ),
                   ],
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Confirm New Password',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     BuildTextBox(
                       hintText: 'Confirm Password',
                       showPassword: true,
                       leftIcon: DeckIcons.lock,
+                      controller: confirmPasswordController,
                     ),
                   ],
                 ),
@@ -166,10 +196,54 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: BuildButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      RouteGenerator.createRoute(const MainPage()),
-                    );
+                  onPressed: () async {
+                    if(passwordController.text != confirmPasswordController.text) {
+                      showDialog(context: context, builder: (context) =>
+                      const AlertDialog(
+                        title: Text("Passwords do not match!"),
+                      ));
+                      return;
+                    }
+
+                    if(passwordController.text.length < 6 || confirmPasswordController.text.length < 6) {
+                      showDialog(context: context, builder: (context) =>
+                      const AlertDialog(
+                        title: Text("Password should be at least 6 characters!"),
+                      ));
+                      return;
+                    }
+
+                    final user = <String, dynamic> {
+                      "email": emailController.text,
+                      "first_name": "Anonymous",
+                      "last_name": getAdjective().toString(),
+                    };
+
+                    try{
+                      final db = FirebaseFirestore.instance;
+
+                      QuerySnapshot querySnapshot = await db.collection("users").where("email", isEqualTo: emailController.text).get();
+                      if(querySnapshot.docs.isNotEmpty){
+                        showDialog(context: context, builder: (context) => const AlertDialog(
+                          title: Text("Email already used!"),
+                        ));
+                        return;
+                      }
+
+                      await db.collection("users").add(user);
+                      
+                      await AuthService().signUpWithEmail(emailController.text, passwordController.text);
+
+                      Navigator.of(context).push(
+                        RouteGenerator.createRoute(const AuthGate()),
+                      );
+                    } catch (e){
+                      print(e.toString());
+                      showDialog(context: context, builder: (context) => const AlertDialog(
+                        title: Text("Error adding user!"),
+                      ));
+                    }
+
                   },
                   buttonText: 'Join the Deck Party!',
                   height: 60,

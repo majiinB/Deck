@@ -42,17 +42,17 @@ class SignUpPage extends StatelessWidget {
                 onPressed: () async {
                   final authService = AuthService();
                   try {
-                  final user = await authService.signUpWithGoogle();
-                  if(user != null){
-                  Navigator.of(context).push(
-                  RouteGenerator.createRoute(const MainPage()),
-                  );
-                  }
+                    final user = await authService.signUpWithGoogle();
+                    if(user != null){
+                      Navigator.of(context).push(
+                        RouteGenerator.createRoute(const MainPage()),
+                      );
+                    }
                   } catch (e){
-                  print(e.toString());
-                  showDialog(context: context, builder: (context) => AlertDialog(
-                  title: const Text("Error signing in."),
-                  ));
+                    print(e.toString());
+                    showDialog(context: context, builder: (context) => const AlertDialog(
+                    title: Text("Error signing in."),
+                    ));
                   }
                   },
                 buttonText: 'Continue with Google',
@@ -131,7 +131,7 @@ class SignUpPage extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         Navigator.of(context).push(
-                          RouteGenerator.createRoute(const LoginPage()),
+                          RouteGenerator.createRoute(LoginPage()),
                         );
                       },
                       borderRadius: BorderRadius.circular(8),

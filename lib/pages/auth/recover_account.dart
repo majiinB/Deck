@@ -1,3 +1,4 @@
+import 'package:deck/backend/auth/auth_service.dart';
 import 'package:deck/pages/auth/login.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
@@ -53,9 +54,9 @@ class RecoverAccountPage extends StatelessWidget {
                 height: 60,
               ),
               BuildButton(
-                onPressed: () {
+                onPressed: (){
                   Navigator.of(context).pop(
-                    RouteGenerator.createRoute(const LoginPage()),
+                    RouteGenerator.createRoute(LoginPage()),
                   );
                 },
                 buttonText: 'Enter Email',
