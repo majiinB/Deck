@@ -1,11 +1,16 @@
+import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/backend/flashcard/flashcard_service.dart';
+import 'package:deck/backend/models/deck.dart';
 import 'package:deck/pages/flashcard/add_deck.dart';
 import 'package:deck/pages/flashcard/view_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlashcardPage extends StatefulWidget {
+
   const FlashcardPage({Key? key});
 
   @override
@@ -13,13 +18,37 @@ class FlashcardPage extends StatefulWidget {
 }
 
 class _FlashcardPageState extends State<FlashcardPage> {
-  List<String> deckTitles = [
-    'Deck ni leila malaki',
-    'Deck ko malaki',
-    'Deck nating lahat malaki',
-  ];
+  final AuthService _authService = AuthService();
+  final FlashcardService _flashcardService = FlashcardService();
+  List<Deck> _decks = [];
+  late User? _user;
+  // List<String> deckTitles = [
+  //   'Deck ni leila malaki',
+  //   'Deck ko malaki',
+  //   'Deck nating lahat malaki',
+  // ];
 
   @override
+  void initState() {
+    super.initState();
+    _user = _authService.getCurrentUser();
+    _initUserDecks();
+  }
+
+  void _initUserDecks() async{
+    _user = _authService.getCurrentUser(); // Get current user
+    if (_user != null) {
+      String userId = _user!.uid;
+      print(userId);
+      List<Deck> decks = await _flashcardService.getDecksByUserId(userId); // Call method to fetch decks
+      print(decks);
+      setState(() {
+        _decks = decks; // Update state with fetched decks
+      });
+    }
+  }
+
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: DeckFAB(
@@ -45,7 +74,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (deckTitles.isNotEmpty)
+            if (_decks.isNotEmpty)
               Text(
                 'Latest Review',
                 style: GoogleFonts.nunito(
@@ -55,7 +84,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   letterSpacing: 1,
                 ),
               ),
-            if (deckTitles.isNotEmpty)
+            if (_decks.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Container(
@@ -103,11 +132,11 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   ),
                 ),
               ),
-            if (deckTitles.isEmpty)
+            if (_decks.isEmpty)
               IfDeckEmpty(
                   ifDeckEmptyText: 'No Deck(s) Available',
                   ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.7),
-            if (deckTitles.isNotEmpty)
+            if (_decks.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: Text(
@@ -120,7 +149,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   ),
                 ),
               ),
-            if (deckTitles.isNotEmpty)
+            if (_decks.isNotEmpty)
               const Padding(
                 padding: EdgeInsets.only(top: 20.0),
                 child: BuildTextBox(
@@ -129,20 +158,20 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   rightIcon: Icons.search,
                 ),
               ),
-            if (deckTitles.isNotEmpty)
+            if (_decks.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 10.0),
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: deckTitles.length,
+                  itemCount: _decks.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: BuildDeckContainer(
-                        titleOfDeck: deckTitles[index],
+                        titleOfDeck: _decks[index].title,
                         onDelete: () {
-                          final String deletedTitle = deckTitles[index];
+                          final Deck deletedTitle = _decks[index];
 
                           showConfirmationDialog(
                             context,
@@ -150,7 +179,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                             "Are you sure you want to delete '$deletedTitle'?",
                             () {
                               setState(() {
-                                deckTitles.removeAt(index);
+                                _decks.removeAt(index);
                               });
                             },
                             () {

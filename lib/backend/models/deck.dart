@@ -2,20 +2,25 @@ import 'dart:core';
 
 class Deck{
   String _title;
-  String _uid;
+  String _userId;
+  String _deckId;
 
   // Constructor
-  Deck(this._title, this._uid);
+  Deck(this._title, this._userId, this._deckId);
 
   // getters
   String get title => _title;
-  String get uid => _uid;
+  String get userId => _userId;
+  String get deckId => _deckId;
 
   // setters
   set title(String value) {
     _title = value;
   }
   set uid(String value) {
-    _uid = value;
+    _userId = value;
+  }
+  set deckId(String value) {
+    _deckId = value;
   }
 }
