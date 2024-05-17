@@ -94,7 +94,7 @@ class LoginPage extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).push(
-                      RouteGenerator.createRoute(const RecoverAccountPage()),
+                      RouteGenerator.createRoute(RecoverAccountPage()),
                     );
                   },
                   borderRadius: BorderRadius.circular(8),
