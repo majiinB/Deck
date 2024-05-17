@@ -1,3 +1,4 @@
+import 'package:deck/backend/auth/auth_gate.dart';
 import 'package:deck/main.dart';
 import 'package:deck/pages/auth/create_account.dart';
 import 'package:deck/pages/auth/login.dart';
@@ -45,7 +46,7 @@ class SignUpPage extends StatelessWidget {
                     final user = await authService.signUpWithGoogle();
                     if(user != null){
                       Navigator.of(context).push(
-                        RouteGenerator.createRoute(const MainPage()),
+                        RouteGenerator.createRoute(const AuthGate()),
                       );
                     }
                   } catch (e){

@@ -9,6 +9,7 @@ import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -205,14 +206,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       return;
                     }
 
-                    if(passwordController.text.length < 6 || confirmPasswordController.text.length < 6) {
-                      showDialog(context: context, builder: (context) =>
-                      const AlertDialog(
-                        title: Text("Password should be at least 6 characters!"),
-                      ));
-                      return;
-                    }
-
                     final user = <String, dynamic> {
                       "email": emailController.text,
                       "first_name": "Anonymous",
@@ -220,28 +213,36 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     };
 
                     try{
-                      final db = FirebaseFirestore.instance;
-
-                      QuerySnapshot querySnapshot = await db.collection("users").where("email", isEqualTo: emailController.text).get();
-                      if(querySnapshot.docs.isNotEmpty){
-                        showDialog(context: context, builder: (context) => const AlertDialog(
-                          title: Text("Email already used!"),
-                        ));
-                        return;
-                      }
-
-                      await db.collection("users").add(user);
-                      
                       await AuthService().signUpWithEmail(emailController.text, passwordController.text);
+
+                      final db = FirebaseFirestore.instance;
+                      await db.collection("users").add(user);
 
                       Navigator.of(context).push(
                         RouteGenerator.createRoute(const AuthGate()),
                       );
-                    } catch (e){
+                    } on FirebaseAuthException catch (e) {
+                      String message = '';
                       print(e.toString());
-                      showDialog(context: context, builder: (context) => const AlertDialog(
-                        title: Text("Error adding user!"),
+                      if(e.code == 'invalid-email'){
+                        message = "Invalid email format!";
+                      } else if (e.code == 'email-already-in-use'){
+                        message = "Email already taken!";
+                      } else if (e.code == 'weak-password'){
+                        message = "Password should be atleast 6 characters!";
+                      } else {
+                        message = "Error creating your account!";
+                      }
+                      showDialog(context: context, builder: (context) =>
+                          AlertDialog(
+                            title: Text(message),
                       ));
+                    } catch (e) {
+                      print(e.toString());
+                      showDialog(context: context, builder: (context) =>
+                          const AlertDialog(
+                            title: Text("Error creating your account!"),
+                          ));
                     }
 
                   },
