@@ -6,6 +6,7 @@ import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -119,6 +120,17 @@ class LoginPage extends StatelessWidget {
                 onPressed: () async {
                   try{
                     await AuthService().signInWithEmail(emailController.text, passwordController.text);
+                  } on FirebaseAuthException catch(e){
+                    String message = '';
+                    if(e.code == 'wrong-password'){
+                      message = 'Wrong password!';
+                    } else {
+                      message = 'Error logging in user!';
+                    }
+                    showDialog(context: context, builder: (context) =>
+                     AlertDialog(
+                      title: Text(message),
+                    ));
                   } catch (e) {
                     print(e.toString());
                     showDialog(context: context, builder: (context) =>
