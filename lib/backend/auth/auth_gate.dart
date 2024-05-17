@@ -1,5 +1,6 @@
 import 'package:deck/main.dart';
 import 'package:deck/pages/auth/signup.dart';
+import 'package:deck/pages/flashcard/flashcard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -13,7 +14,7 @@ class AuthGate extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if(snapshot.hasData) {
-              return const MainPage();
+              return const FlashcardPage();
             }
             else {
               return const SignUpPage();
