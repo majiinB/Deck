@@ -6,6 +6,7 @@ import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -93,7 +94,7 @@ class LoginPage extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).push(
-                      RouteGenerator.createRoute(const RecoverAccountPage()),
+                      RouteGenerator.createRoute(RecoverAccountPage()),
                     );
                   },
                   borderRadius: BorderRadius.circular(8),
@@ -119,6 +120,21 @@ class LoginPage extends StatelessWidget {
                 onPressed: () async {
                   try{
                     await AuthService().signInWithEmail(emailController.text, passwordController.text);
+                  } on FirebaseAuthException catch(e){
+                    String message = '';
+                    if(e.code == 'wrong-password'){
+                      message = 'Wrong password!';
+                    } else if (e.code == 'user-not-found') {
+                      message = 'User not found!';
+                    } else if (e.code == 'invalid-email') {
+                      message = 'Invalid email format!';
+                    } else {
+                      message = 'Error logging in user!';
+                    }
+                    showDialog(context: context, builder: (context) =>
+                     AlertDialog(
+                      title: Text(message),
+                    ));
                   } catch (e) {
                     print(e.toString());
                     showDialog(context: context, builder: (context) =>
@@ -171,10 +187,21 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               BuildButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    RouteGenerator.createRoute(const MainPage()),
-                  );
+                onPressed: () async{
+                  final authService = AuthService();
+                  try {
+                    final user = await authService.signUpWithGoogle();
+                    if(user != null){
+                      Navigator.of(context).push(
+                        RouteGenerator.createRoute(const AuthGate()),
+                      );
+                    }
+                  } catch (e){
+                    print(e.toString());
+                    showDialog(context: context, builder: (context) => const AlertDialog(
+                      title: Text("Error signing in."),
+                    ));
+                  }
                 },
                 buttonText: 'Continue with Google',
                 height: 60,
