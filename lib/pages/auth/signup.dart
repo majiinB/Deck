@@ -41,20 +41,20 @@ class SignUpPage extends StatelessWidget {
               ),
               BuildButton(
                 onPressed: () async {
-                  final authService = AuthService();
-                  try {
-                    final user = await authService.signUpWithGoogle();
-                    if(user != null){
-                      Navigator.of(context).push(
-                        RouteGenerator.createRoute(const AuthGate()),
-                      );
+                    final authService = AuthService();
+                    try {
+                      final user = await authService.signUpWithGoogle();
+                      if(user != null){
+                        Navigator.of(context).push(
+                          RouteGenerator.createRoute(const AuthGate()),
+                        );
+                      }
+                    } catch (e){
+                      print(e.toString());
+                      showDialog(context: context, builder: (context) => const AlertDialog(
+                      title: Text("Error signing in."),
+                      ));
                     }
-                  } catch (e){
-                    print(e.toString());
-                    showDialog(context: context, builder: (context) => const AlertDialog(
-                    title: Text("Error signing in."),
-                    ));
-                  }
                   },
                 buttonText: 'Continue with Google',
                 height: 60,
