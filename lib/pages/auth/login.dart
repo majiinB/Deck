@@ -120,6 +120,9 @@ class LoginPage extends StatelessWidget {
                 onPressed: () async {
                   try{
                     await AuthService().signInWithEmail(emailController.text, passwordController.text);
+                    Navigator.of(context).push(
+                      RouteGenerator.createRoute(const AuthGate()),
+                    );
                   } on FirebaseAuthException catch(e){
                     String message = '';
                     if(e.code == 'wrong-password'){
@@ -128,6 +131,8 @@ class LoginPage extends StatelessWidget {
                       message = 'User not found!';
                     } else if (e.code == 'invalid-email') {
                       message = 'Invalid email format!';
+                    } else if (e.code == 'too-many-requests') {
+                      message = 'Too many failed attempts, try again later!';
                     } else {
                       message = 'Error logging in user!';
                     }
@@ -142,10 +147,6 @@ class LoginPage extends StatelessWidget {
                       title: Text("Error logging in user!"),
                     ));
                   }
-
-                  Navigator.of(context).push(
-                    RouteGenerator.createRoute(const AuthGate()),
-                  );
                 },
                 buttonText: 'Log In',
                 height: 60,
