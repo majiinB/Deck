@@ -51,18 +51,21 @@ class _FlashcardPageState extends State<FlashcardPage> {
     @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: DeckFAB(
-        text: "Add Deck",
-        fontSize: 12,
-        icon: Icons.add,
-        foregroundColor: DeckColors.primaryColor,
-        backgroundColor: DeckColors.gray,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddDeckPage()),
-          );
-        },
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: DeckFAB(
+          text: "Add Deck",
+          fontSize: 12,
+          icon: Icons.add,
+          foregroundColor: DeckColors.primaryColor,
+          backgroundColor: DeckColors.gray,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddDeckPage()),
+            );
+          },
+        ),
       ),
       appBar: const DeckBar(
         title: 'Flash Card',
@@ -114,7 +117,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ViewDeckPage()),
+                                  builder: (context) => ViewDeckPage(deck: _decks[1])),
                             );
                           },
                           buttonText: 'Continue Learning',
@@ -195,7 +198,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ViewDeckPage()),
+                                builder: (context) => ViewDeckPage(deck: _decks[index])),
                           );
                         },
                       ),

@@ -8,8 +8,11 @@ import 'package:deck/pages/misc/widget_method.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../backend/models/deck.dart';
+
 class ViewDeckPage extends StatefulWidget {
-  const ViewDeckPage({Key? key});
+  final Deck deck;
+  const ViewDeckPage({Key? key, required this.deck});
 
   @override
   _ViewDeckPageState createState() => _ViewDeckPageState();
