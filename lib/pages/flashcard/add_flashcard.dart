@@ -1,5 +1,3 @@
-import 'package:deck/pages/flashcard/add_deck.dart';
-import 'package:deck/pages/flashcard/view_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';

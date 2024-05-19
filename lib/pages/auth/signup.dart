@@ -1,5 +1,4 @@
 import 'package:deck/backend/auth/auth_gate.dart';
-import 'package:deck/main.dart';
 import 'package:deck/pages/auth/create_account.dart';
 import 'package:deck/pages/auth/login.dart';
 import 'package:deck/pages/misc/colors.dart';

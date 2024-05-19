@@ -19,6 +19,7 @@ class FlashcardPage extends StatefulWidget {
 class _FlashcardPageState extends State<FlashcardPage> {
   final AuthService _authService = AuthService();
   final FlashcardService _flashcardService = FlashcardService();
+  Deck? _latestDeck;
   List<Deck> _decks = [];
   List<Deck> _filteredDecks = [];
   late User? _user;
@@ -46,9 +47,11 @@ class _FlashcardPageState extends State<FlashcardPage> {
     if (_user != null) {
       String userId = _user!.uid;
       List<Deck> decks = await _flashcardService.getDecksByUserId(userId); // Call method to fetch decks
+      Deck? latest = await _flashcardService.getLatestDeckLog(userId);
       setState(() {
         _decks = decks; // Update state with fetched decks
         _filteredDecks = decks; // Initialize filtered decks
+        _latestDeck = latest;
       });
     }
   }
@@ -92,7 +95,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_decks.isNotEmpty)
+            if (_latestDeck != null)
               Text(
                 'Latest Review',
                 style: GoogleFonts.nunito(
@@ -102,7 +105,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   letterSpacing: 1,
                 ),
               ),
-            if (_decks.isNotEmpty)
+            if (_latestDeck != null)
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Container(
@@ -115,7 +118,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Deck ni Leila 101',
+                        _latestDeck!.title.toString(),
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.nunito(
                           color: DeckColors.white,
@@ -133,7 +136,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      ViewDeckPage(deck: _decks[1])),
+                                      ViewDeckPage(deck: _latestDeck!)),
                             );
                           },
                           buttonText: 'Continue Learning',

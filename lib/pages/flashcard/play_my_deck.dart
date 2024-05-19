@@ -6,8 +6,6 @@ import 'package:deck/pages/misc/widget_method.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../misc/deck_icons.dart';
-
 class PlayMyDeckPage extends StatefulWidget {
   const PlayMyDeckPage({Key? key});
 

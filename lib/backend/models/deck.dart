@@ -5,37 +5,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'card.dart';
 
 class Deck{
-  String _title;
-  String _userId;
-  String _deckId;
-  bool _isDeleted;
-  bool _isPrivate;
-  DateTime _createdAt;
+  String title;
+  final String _userId;
+  final String _deckId;
+  bool isDeleted;
+  bool isPrivate;
+  DateTime createdAt;
 
   // Constructor
-  Deck(this._title, this._userId, this._deckId, this._isDeleted, this._isPrivate, this._createdAt);
-
-  // getters
-  String get title => _title;
+  Deck(this.title, this._userId, this._deckId, this.isDeleted, this.isPrivate, this.createdAt);
   String get userId => _userId;
   String get deckId => _deckId;
-  bool get isDeleted => _isDeleted;
-  bool get isPrivate => _isPrivate;
-  DateTime get createdAt => _createdAt;
-
-  // setters
-  set title(String value) {
-    _title = value;
-  }
-  set isDeleted(bool value) {
-    _isDeleted = value;
-  }
-  set isPrivate(bool value) {
-    _isPrivate = value;
-  }
-  set createdAt(DateTime value) {
-    _createdAt = value;
-  }
 
   // Methods
   // Change in field methods
@@ -48,7 +28,7 @@ class Deck{
 
       // Update only the 'title' field of the document
       await deckRef.update({'title': newTitle});
-      _title = newTitle;
+      title = newTitle;
       print('Deck title updated successfully');
       return true;
     } catch (e) {
@@ -64,7 +44,7 @@ class Deck{
 
       // Update only the 'title' field of the document
       await deckRef.update({'is_deleted': newStatus});
-      _isDeleted = newStatus;
+      isDeleted = newStatus;
       print('Deck status updated successfully');
       return true;
     } catch (e) {
@@ -89,14 +69,14 @@ class Deck{
       QuerySnapshot querySnapshot = await questionsCollection.get();
 
       // Iterate through the query snapshot to extract document data
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         String question = (doc.data() as Map<String, dynamic>)['question'];
         String answer = (doc.data() as Map<String, dynamic>)['answer'];
         bool isStarred = (doc.data() as Map<String, dynamic>)['is_starred'];
 
         // Create a new Question object and add it to the list
         questions.add(Card(question, answer, isStarred));
-      });
+      }
     } catch (e) {
       // Handle any errors that might occur during the query
       print('Error retrieving questions: $e');

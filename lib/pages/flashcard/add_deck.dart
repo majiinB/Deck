@@ -1,10 +1,8 @@
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
-import 'package:deck/pages/settings/account.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
-import 'package:deck/pages/task/task.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddDeckPage extends StatefulWidget {

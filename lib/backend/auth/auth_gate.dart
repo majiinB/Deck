@@ -1,6 +1,5 @@
 import 'package:deck/main.dart';
 import 'package:deck/pages/auth/signup.dart';
-import 'package:deck/pages/flashcard/flashcard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
