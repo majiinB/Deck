@@ -7,45 +7,48 @@ import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:deck/backend/models/card.dart';
 
 import '../../backend/models/deck.dart';
 
 class ViewDeckPage extends StatefulWidget {
   final Deck deck;
-  const ViewDeckPage({Key? key, required this.deck});
+  const ViewDeckPage({Key? key, required this.deck}) : super(key: key);
 
   @override
   _ViewDeckPageState createState() => _ViewDeckPageState();
 }
 
 class _ViewDeckPageState extends State<ViewDeckPage> {
-  List<String> flashCardTitles = [
-    'Tanga tanga amp',
-    'Loh putangina',
-    'Tangina ng bumoto kay bbm',
-  ];
 
-  List<String> flashCardContent = [
-    'have a shared goal that everyone knows',
-    'tanginamong hayup ka may pamilya na yung tao kumekerengkeng ka pa raffy tulfo meme',
-    'A philosophical movement originating in the late 19th and early 20th centuries, characterized by an exploration of the individuals subjective experience and the fundamental nature of existence. At its core, existentialism grapples with profound questions regarding human freedom, choice, and responsibility in the face of a seemingly indifferent or absurd universe. Key figures such as Jean-Paul Sartre, Friedrich Nietzsche, and Martin Heidegger have contributed seminal works that delve into the complexities of existence, offering insights into the nature of authenticity, alienation, and the search for meaning in a world devoid of inherent purpose.'
-  ];
+  var _cardsCollection = [];
+  var _starredCardCollection = [];
 
-  List<String> starredFlashCardTitles = [
-    'Tanga tanga amp',
-    'Loh putangina',
-    'Tangina ng bumoto kay bbm',
-  ];
-
-  List<String> starredFlashCardContent = [
-    'have a shared goal that everyone knows',
-    'tanginamong hayup ka may pamilya na yung tao kumekerengkeng ka pa raffy tulfo meme',
-    'A philosophical movement originating in the late 19th and early 20th centuries, characterized by an exploration of the individuals subjective experience and the fundamental nature of existence. At its core, existentialism grapples with profound questions regarding human freedom, choice, and responsibility in the face of a seemingly indifferent or absurd universe. Key figures such as Jean-Paul Sartre, Friedrich Nietzsche, and Martin Heidegger have contributed seminal works that delve into the complexities of existence, offering insights into the nature of authenticity, alienation, and the search for meaning in a world devoid of inherent purpose.'
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _initDeckCards();
+  }
+  void _initDeckCards() async {
+    var cards = await widget.deck.getCard();
+    var starredCards = [];
+    var notStarred = [];
+    for(int i = 0; i<cards.length; i++){
+      if(cards[i].isStarred){
+        starredCards.add(cards[i]);
+      }else{
+        notStarred.add(cards[i]);
+      }
+    }
+    setState(() {
+      _cardsCollection = notStarred;
+      _starredCardCollection = starredCards;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     double topPadding =
-        (starredFlashCardTitles.isNotEmpty || flashCardTitles.isNotEmpty)
+        (_cardsCollection.isNotEmpty || _cardsCollection.isNotEmpty)
             ? 20.0
             : 40.0;
     return Scaffold(
@@ -73,7 +76,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Deck ni Leila 101 ',
+              widget.deck.title.toString(),
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.nunito(
                 color: DeckColors.white,
@@ -103,7 +106,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                 borderColor: Colors.transparent,
               ),
             ),
-            if (flashCardTitles.isNotEmpty || starredFlashCardTitles.isNotEmpty)
+            if (_cardsCollection.isNotEmpty || _cardsCollection.isNotEmpty)
               const Padding(
                 padding: EdgeInsets.only(top: 40.0),
                 child: BuildTextBox(
@@ -124,13 +127,13 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                     ///
                     ///
                     /// ------------------------- START OF TAB 'ALL' CONTENT ----------------------------
-                    if (flashCardTitles.isEmpty)
+                    if (_cardsCollection.isEmpty)
                       IfDeckEmpty(
                         ifDeckEmptyText: 'No Flashcard(s) Available',
                         ifDeckEmptyheight:
                             MediaQuery.of(context).size.height * 0.3,
                       ),
-                    if (flashCardTitles.isNotEmpty)
+                    if (_cardsCollection.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: SingleChildScrollView(
@@ -139,39 +142,38 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                             child: ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: flashCardTitles.length,
+                              itemCount: _cardsCollection.length,
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 6.0),
                                   child: BuildContainerOfFlashCards(
-                                    titleOfFlashCard: flashCardTitles[index],
-                                    contentOfFlashCard: flashCardContent[index],
+                                    titleOfFlashCard: _cardsCollection[index].question,
+                                    contentOfFlashCard: _cardsCollection[index].answer,
                                     onDelete: () {
                                       final String deletedTitle =
-                                          flashCardTitles[index];
+                                        _cardsCollection[index];
                                       final String deletedNumber =
-                                          flashCardContent[index];
+                                        _cardsCollection[index];
                                       showConfirmationDialog(
                                         context,
                                         "Delete Item",
                                         "Are you sure you want to delete '$deletedTitle'?",
                                         () {
                                           setState(() {
-                                            final int starredIndex =
-                                                starredFlashCardTitles
-                                                    .indexOf(deletedTitle);
+                                            // final int starredIndex =
+                                                // starredFlashCardTitles
+                                                //     .indexOf(deletedTitle);
 
-                                            if (starredIndex != -1) {
-                                              starredFlashCardTitles
-                                                  .removeAt(starredIndex);
-                                              starredFlashCardContent
-                                                  .removeAt(starredIndex);
-                                            }
+                                            //if (starredIndex != -1) {
+                                              // starredFlashCardTitles
+                                              //     .removeAt(starredIndex);
+                                              // starredFlashCardContent
+                                              //     .removeAt(starredIndex);
+                                            //}
 
                                             setState(() {
-                                              flashCardTitles.removeAt(index);
-                                              flashCardContent.removeAt(index);
+                                              _cardsCollection.removeAt(index);
                                             });
                                           });
                                         },
@@ -214,34 +216,34 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                     ///
                     ///
                     /// ------------------------- START OF TAB 'STARRED' CONTENT ----------------------------
-                    if (starredFlashCardTitles.isEmpty)
+                    if (_starredCardCollection.isEmpty)
                       IfDeckEmpty(
                         ifDeckEmptyText: 'No Starred Flashcard(s) Available',
                         ifDeckEmptyheight:
                             MediaQuery.of(context).size.height * 0.3,
                       ),
-                    if (starredFlashCardTitles.isNotEmpty)
+                    if (_starredCardCollection.isNotEmpty)
                       SingleChildScrollView(
                         child: Padding(
                           padding: EdgeInsets.only(top: 20.0),
                           child: ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: starredFlashCardTitles.length,
+                            itemCount: _starredCardCollection.length,
                             itemBuilder: (context, index) {
                               return Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 6.0),
                                 child: BuildContainerOfFlashCards(
                                   titleOfFlashCard:
-                                      starredFlashCardTitles[index],
+                                    _starredCardCollection[index].question,
                                   contentOfFlashCard:
-                                      starredFlashCardContent[index],
+                                    _starredCardCollection[index].answer,
                                   onDelete: () {
                                     final String starredDeletedTitle =
-                                        starredFlashCardTitles[index];
+                                      _starredCardCollection[index].question;
                                     final String starredDeletedNumber =
-                                        starredFlashCardContent[index];
+                                      _starredCardCollection[index].answer;
 
                                     showConfirmationDialog(
                                       context,
@@ -249,9 +251,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                       "Are you sure you want to delete '$starredDeletedTitle'?",
                                       () {
                                         setState(() {
-                                          starredFlashCardTitles
-                                              .removeAt(index);
-                                          starredFlashCardContent
+                                          _starredCardCollection
                                               .removeAt(index);
                                         });
                                       },
@@ -279,8 +279,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                   onStarUnshaded: () {
                                     print("aww");
                                     setState(() {
-                                      starredFlashCardTitles.removeAt(index);
-                                      starredFlashCardContent.removeAt(index);
+                                      _starredCardCollection.removeAt(index);
                                     });
                                   },
                                 ),

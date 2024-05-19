@@ -10,8 +10,7 @@ import 'package:deck/pages/misc/widget_method.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlashcardPage extends StatefulWidget {
-
-  const FlashcardPage({Key? key});
+  const FlashcardPage({Key? key}) : super(key: key);
 
   @override
   _FlashcardPageState createState() => _FlashcardPageState();
@@ -21,34 +20,50 @@ class _FlashcardPageState extends State<FlashcardPage> {
   final AuthService _authService = AuthService();
   final FlashcardService _flashcardService = FlashcardService();
   List<Deck> _decks = [];
+  List<Deck> _filteredDecks = [];
   late User? _user;
-  // List<String> deckTitles = [
-  //   'Deck ni leila malaki',
-  //   'Deck ko malaki',
-  //   'Deck nating lahat malaki',
-  // ];
+
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
 
   @override
   void initState() {
     super.initState();
     _user = _authService.getCurrentUser();
     _initUserDecks();
+    _searchController.addListener(_onSearchChanged);
   }
 
-  void _initUserDecks() async{
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _initUserDecks() async {
     _user = _authService.getCurrentUser(); // Get current user
     if (_user != null) {
       String userId = _user!.uid;
-      print(userId);
       List<Deck> decks = await _flashcardService.getDecksByUserId(userId); // Call method to fetch decks
-      print(decks);
       setState(() {
         _decks = decks; // Update state with fetched decks
+        _filteredDecks = decks; // Initialize filtered decks
       });
     }
   }
 
-    @override
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text;
+      _filteredDecks = _decks
+          .where((deck) =>
+          deck.title.toLowerCase().contains(_searchQuery.toLowerCase()))
+          .toList();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: Padding(
@@ -91,7 +106,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -117,7 +132,8 @@ class _FlashcardPageState extends State<FlashcardPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ViewDeckPage(deck: _decks[1])),
+                                  builder: (context) =>
+                                      ViewDeckPage(deck: _decks[1])),
                             );
                           },
                           buttonText: 'Continue Learning',
@@ -153,9 +169,10 @@ class _FlashcardPageState extends State<FlashcardPage> {
                 ),
               ),
             if (_decks.isNotEmpty)
-              const Padding(
-                padding: EdgeInsets.only(top: 20.0),
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0),
                 child: BuildTextBox(
+                  controller: _searchController,
                   hintText: 'Search Decks',
                   showPassword: false,
                   rightIcon: Icons.search,
@@ -167,25 +184,26 @@ class _FlashcardPageState extends State<FlashcardPage> {
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _decks.length,
+                  itemCount: _filteredDecks.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: BuildDeckContainer(
-                        titleOfDeck: _decks[index].title,
+                        titleOfDeck: _filteredDecks[index].title,
                         onDelete: () {
-                          final Deck deletedTitle = _decks[index];
+                          final Deck deletedTitle = _filteredDecks[index];
 
                           showConfirmationDialog(
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
-                            () {
+                                () {
                               setState(() {
                                 _decks.removeAt(index);
+                                _filteredDecks.removeAt(index);
                               });
                             },
-                            () {
+                                () {
                               setState(() {
                                 //when the user clicks no
                               });
@@ -198,7 +216,8 @@ class _FlashcardPageState extends State<FlashcardPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ViewDeckPage(deck: _decks[index])),
+                                builder: (context) =>
+                                    ViewDeckPage(deck: _filteredDecks[index])),
                           );
                         },
                       ),
