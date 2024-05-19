@@ -199,7 +199,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                             "Are you sure you want to delete '$deletedTitle'?",
                                 () {
                               setState(() {
-                                _decks.removeAt(index);
+                                _filteredDecks[index].updateDeleteStatus(true);
                                 _filteredDecks.removeAt(index);
                               });
                             },

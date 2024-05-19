@@ -521,14 +521,14 @@ class ShowConfirmationDialog extends StatelessWidget {
             onCancel();
             Navigator.of(context).pop();
           },
-          child: const Text("No"),
+          child: const Text("No", style: TextStyle(color: Colors.red)),
         ),
         TextButton(
           onPressed: () {
             onConfirm();
             Navigator.of(context).pop();
           },
-          child: const Text("Yes"),
+          child: const Text("Yes", style: TextStyle(color: Colors.green)),
         ),
       ],
     );
