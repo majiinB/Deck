@@ -31,16 +31,13 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
   void _initDeckCards() async {
     var cards = await widget.deck.getCard();
     var starredCards = [];
-    var notStarred = [];
     for(int i = 0; i<cards.length; i++){
       if(cards[i].isStarred){
         starredCards.add(cards[i]);
-      }else{
-        notStarred.add(cards[i]);
       }
     }
     setState(() {
-      _cardsCollection = notStarred;
+      _cardsCollection = cards;
       _starredCardCollection = starredCards;
     });
   }
@@ -151,29 +148,17 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                     contentOfFlashCard: _cardsCollection[index].answer,
                                     onDelete: () {
                                       final String deletedTitle =
-                                        _cardsCollection[index];
-                                      final String deletedNumber =
-                                        _cardsCollection[index];
+                                        _cardsCollection[index].question;
+                                      // final String deletedNumber =
+                                      //   _cardsCollection[index];
                                       showConfirmationDialog(
                                         context,
                                         "Delete Item",
                                         "Are you sure you want to delete '$deletedTitle'?",
                                         () {
                                           setState(() {
-                                            // final int starredIndex =
-                                                // starredFlashCardTitles
-                                                //     .indexOf(deletedTitle);
-
-                                            //if (starredIndex != -1) {
-                                              // starredFlashCardTitles
-                                              //     .removeAt(starredIndex);
-                                              // starredFlashCardContent
-                                              //     .removeAt(starredIndex);
-                                            //}
-
-                                            setState(() {
-                                              _cardsCollection.removeAt(index);
-                                            });
+                                            _cardsCollection[index].updateDeleteStatus(true, widget.deck.deckId);
+                                            _cardsCollection.removeAt(index);
                                           });
                                         },
                                         () {
@@ -193,12 +178,31 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                                 EditFlashcardPage()),
                                       );
                                     },
-                                    isStarShaded: false,
+                                    isStarShaded: _cardsCollection[index].isStarred,
                                     onStarShaded: () {
-                                      print("yey");
+                                      setState(() {
+                                        try{
+                                          _cardsCollection[index].updateStarredStatus(true, widget.deck.deckId);
+                                          _starredCardCollection.add(_cardsCollection[index]);
+                                          _cardsCollection[index].isStarred = true;
+                                        }catch(e){
+                                          print('star shaded error: $e');
+                                        }
+                                      });
                                     },
                                     onStarUnshaded: () {
-                                      print("aww");
+                                      setState(() {
+                                        try{
+                                          _cardsCollection[index].updateStarredStatus(false, widget.deck.deckId);
+                                          _starredCardCollection.removeWhere(
+                                                  (card) => card.cardId == _cardsCollection[index].cardId
+                                          );
+                                          _cardsCollection[index].isStarred = false;
+                                        }catch(e){
+                                          print('star shaded error: $e');
+                                        }
+
+                                      });
                                     },
                                   ),
                                 );
@@ -250,8 +254,8 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                       "Are you sure you want to delete '$starredDeletedTitle'?",
                                       () {
                                         setState(() {
-                                          _starredCardCollection
-                                              .removeAt(index);
+                                          _starredCardCollection[index].updateDeleteStatus(true, widget.deck.deckId);
+                                          _starredCardCollection.removeAt(index);
                                         });
                                       },
                                       () {
@@ -273,12 +277,19 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                   },
                                   isStarShaded: true,
                                   onStarShaded: () {
-                                    print("yey");
+                                    //No action kasi lagi naman shaded yung andito
                                   },
                                   onStarUnshaded: () {
-                                    print("aww");
                                     setState(() {
-                                      _starredCardCollection.removeAt(index);
+                                      try{
+                                        _starredCardCollection[index].updateStarredStatus(false, widget.deck.deckId);
+                                        _starredCardCollection[index].isStarred = false;
+                                        _starredCardCollection.removeWhere(
+                                                (card) => card.cardId == _starredCardCollection[index].cardId
+                                        );
+                                      }catch(e){
+                                        print('star shaded error: $e');
+                                      }
                                     });
                                   },
                                 ),
