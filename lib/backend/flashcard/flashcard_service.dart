@@ -140,4 +140,27 @@ class FlashcardService{
       print('Failed to add deck log record: $e');
     }
   }
+  Future<Deck?> addDeck(String userId, String title) async {
+    try {
+      // Get the reference to the collection
+      CollectionReference questionsRef = _firestore.collection('decks');
+
+      // Add the question to the collection
+      DocumentReference docRef = await questionsRef.add({
+        'created_at': DateTime.now(),
+        'is_deleted': false,
+        'is_private': false,
+        'title': title,
+        'user_id': userId
+      });
+
+      String newDeckId = docRef.id;
+
+      print('Deck added successfully!');
+      return Deck(title, userId, newDeckId, false, false, DateTime.now());
+    } catch (e) {
+      print('Error adding deck: $e');
+      return null;
+    }
+  }
 }

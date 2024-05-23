@@ -1,3 +1,4 @@
+import 'package:deck/backend/flashcard/flashcard_service.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,8 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../backend/models/deck.dart';
+
 class AddDeckPage extends StatefulWidget {
-  const AddDeckPage({Key? key});
+  final List<Deck> decks;
+  final String userId;
+  const AddDeckPage({
+    Key? key,
+    required this.decks,
+    required this.userId
+  }) : super(key: key);
 
   @override
   _AddDeckPageState createState() => _AddDeckPageState();
@@ -14,6 +23,7 @@ class AddDeckPage extends StatefulWidget {
 
 class _AddDeckPageState extends State<AddDeckPage> {
   bool _isToggled = false;
+  final TextEditingController _deckTitleContoller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,9 +105,12 @@ class _AddDeckPageState extends State<AddDeckPage> {
                       )),
                 ],
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 20),
-                child: BuildTextBox(hintText: 'Enter Deck Title'),
+                child: BuildTextBox(
+                    controller: _deckTitleContoller,
+                    hintText: 'Enter Deck Title'
+                ),
               ),
               Padding(
                   padding: EdgeInsets.only(top: 15),
@@ -176,9 +189,18 @@ class _AddDeckPageState extends State<AddDeckPage> {
                 child: BuildButton(
                   onPressed: () {
                     showConfirmationDialog(context, "Generate Deck",
-                        "Are you sure you want to generate deck?", () {
-                      //when user clicks yes
-                      //add logic here
+                        "Are you sure you want to generate deck?",
+                    () async{
+                      try{
+                        FlashcardService _flashCardService = FlashcardService();
+                        Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleContoller.text.toString());
+                        if(newDeck != null){
+                          widget.decks.add(newDeck);
+
+                        }
+                      }catch(e){
+                        print('error in adding deck: $e');
+                      }
                     }, () {
                       //when user clicks no
                       //add logic here

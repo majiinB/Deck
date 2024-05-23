@@ -78,10 +78,17 @@ class _FlashcardPageState extends State<FlashcardPage> {
           foregroundColor: DeckColors.primaryColor,
           backgroundColor: DeckColors.gray,
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddDeckPage()),
-            );
+            if(_user != null){
+              try{
+                String userId = _user!.uid.toString();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddDeckPage(decks: _filteredDecks, userId: userId,)),
+                );
+              }catch(e){
+                print('error in navigating add deck $e');
+              }
+            }
           },
         ),
       ),
