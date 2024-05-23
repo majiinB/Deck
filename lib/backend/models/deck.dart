@@ -55,8 +55,8 @@ class Deck{
   }
 
   // Access subcollections method
-  Future<List<Card>> getCard() async {
-    List<Card> questions = [];
+  Future<List<Cards>> getCard() async {
+    List<Cards> questions = [];
 
     try {
       // Reference to the questions subcollection
@@ -79,7 +79,7 @@ class Deck{
         String cardId = doc.id;
 
         // Create a new Question object and add it to the list
-        questions.add(Card(question, answer, isStarred, cardId, isDeleted));
+        questions.add(Cards(question, answer, isStarred, cardId, isDeleted));
       }
     } catch (e) {
       // Handle any errors that might occur during the query

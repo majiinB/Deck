@@ -1,6 +1,7 @@
 import 'package:deck/backend/auth/auth_service.dart';
 import 'package:deck/backend/flashcard/flashcard_service.dart';
 import 'package:deck/backend/flashcard/flashcard_utils.dart';
+import 'package:deck/backend/models/card.dart';
 import 'package:deck/pages/flashcard/add_flashcard.dart';
 import 'package:deck/pages/flashcard/edit_flashcard.dart';
 import 'package:deck/pages/flashcard/play_my_deck.dart';
@@ -23,10 +24,10 @@ class ViewDeckPage extends StatefulWidget {
 }
 
 class _ViewDeckPageState extends State<ViewDeckPage> {
-  var _cardsCollection = [];
-  var _starredCardCollection = [];
-  var _filteredCardsCollection = [];
-  var _filteredStarredCardCollection = [];
+  List<Cards> _cardsCollection = [];
+  List<Cards> _starredCardCollection = [];
+  List<Cards> _filteredCardsCollection = [];
+  List<Cards> _filteredStarredCardCollection = [];
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -37,8 +38,8 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
   }
 
   void _initDeckCards() async {
-    var cards = await widget.deck.getCard();
-    var starredCards = [];
+    List<Cards> cards = await widget.deck.getCard();
+    List<Cards> starredCards = [];
     for (int i = 0; i < cards.length; i++) {
       if (cards[i].isStarred) {
         starredCards.add(cards[i]);
@@ -263,7 +264,10 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => EditFlashcardPage()),
+                                            builder: (context) => EditFlashcardPage(
+                                              deck: widget.deck,
+                                              card: _filteredCardsCollection[index],
+                                            )),
                                       );
                                     },
                                     isStarShaded: _filteredCardsCollection[index].isStarred,
@@ -348,7 +352,10 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => EditFlashcardPage()),
+                                          builder: (context) => EditFlashcardPage(
+                                            deck: widget.deck,
+                                            card: _filteredStarredCardCollection[index],
+                                          )),
                                     );
                                   },
                                   isStarShaded: true,

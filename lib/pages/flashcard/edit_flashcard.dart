@@ -2,10 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../backend/models/deck.dart';
+import '../../backend/models/card.dart';
+
 class EditFlashcardPage extends StatefulWidget {
-  const EditFlashcardPage({Key? key});
+  final Deck deck;
+  final Cards card;
+
+  const EditFlashcardPage({
+    Key? key,
+    required this.deck,
+    required this.card
+  }) : super(key: key);
 
   @override
   _EditFlashcardPageState createState() => _EditFlashcardPageState();
@@ -13,6 +24,15 @@ class EditFlashcardPage extends StatefulWidget {
 
 class _EditFlashcardPageState extends State<EditFlashcardPage> {
   bool buttonsEnabled = false; // Flag to track button state
+  late final TextEditingController _descriptionOrAnswerController;
+  late final TextEditingController _questionOrTermController;
+
+  @override
+  void initState() {
+    super.initState();
+    _descriptionOrAnswerController = TextEditingController(text: widget.card.answer.toString());
+    _questionOrTermController = TextEditingController(text: widget.card.question.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +44,11 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
         icon: DeckIcons.pencil,
         iconColor: Colors.white,
         onPressed: () {
+          // Unfocus the text fields
+          FocusScope.of(context).unfocus();
+
+          // Hide the keyboard
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
           setState(() {
             buttonsEnabled = !buttonsEnabled;
           });
@@ -57,9 +82,9 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
                     : 0.7, // Set opacity based on button state
                 child: IgnorePointer(
                   ignoring: !buttonsEnabled,
-                  child: const BuildTextBox(
-                    hintText: 'Enter Term',
-                    initialValue: 'Loh Putangina',
+                  child: BuildTextBox(
+                    hintText: 'Enter Term/Question',
+                    controller: _questionOrTermController,
                   ),
                 ),
               ),
@@ -72,20 +97,9 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
                     : 0.7, // Set opacity based on button state
                 child: IgnorePointer(
                   ignoring: !buttonsEnabled,
-                  child: const BuildTextBox(
-                    hintText: 'Enter Description',
-                    initialValue:
-                        'A philosophical movement originating in the late '
-                        '19th and early 20th centuries, characterized by an exploration '
-                        'of the individual\'s subjective experience and the fundamental '
-                        'nature of existence. At its core, existentialism grapples '
-                        'with profound questions regarding human freedom, choice, '
-                        'and responsibility in the face of a seemingly indifferent or'
-                        ' absurd universe. Key figures such as Jean-Paul Sartre, '
-                        'Friedrich Nietzsche, and Martin Heidegger have contributed'
-                        ' seminal works that delve into the complexities of existence, '
-                        'offering insights into the nature of authenticity, alienation, '
-                        'and the search for meaning in a world devoid of inherent purpose.',
+                  child: BuildTextBox(
+                    controller: _descriptionOrAnswerController,
+                    hintText: 'Enter Description/Answer',
                     isMultiLine: true,
                   ),
                 ),
