@@ -88,4 +88,29 @@ class Deck{
 
     return questions;
   }
+  Future<Cards?> addQuestionToDeck(String question, String answer) async {
+    try {
+      // Get the reference to the collection
+      CollectionReference questionsRef = _firestore.collection('decks')
+        .doc(_deckId)
+        .collection('questions');
+
+
+      // Add the question to the collection
+      DocumentReference docRef = await questionsRef.add({
+        'question': question,
+        'answer': answer,
+        'is_deleted': false,
+        'is_starred': false,
+      });
+
+      String newQuestionId = docRef.id;
+
+      print('Question added successfully!');
+      return Cards(question, answer, false, newQuestionId, false);
+    } catch (e) {
+      print('Error adding question: $e');
+      return null;
+    }
+  }
 }

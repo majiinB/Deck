@@ -1,16 +1,26 @@
 import 'package:deck/pages/misc/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../backend/models/card.dart';
+import '../../backend/models/deck.dart';
+
 class AddFlashcardPage extends StatefulWidget {
-  const AddFlashcardPage({Key? key});
+  Deck deck;
+  List<Cards> cardList;
+  AddFlashcardPage({Key? key, required this.deck, required this.cardList}) : super(key: key);
+
 
   @override
   _AddFlashcardPageState createState() => _AddFlashcardPageState();
 }
 
 class _AddFlashcardPageState extends State<AddFlashcardPage> {
+  final TextEditingController _descriptionOrAnswerController = TextEditingController();
+  final TextEditingController _questionOrTermController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,28 +47,77 @@ class _AddFlashcardPageState extends State<AddFlashcardPage> {
               height: 2,
             ),
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(top: 40.0),
-            child: BuildTextBox(hintText: 'Enter Term'),
+            child: BuildTextBox(
+                controller: _questionOrTermController,
+                hintText: 'Enter Term'
+            ),
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
-            child:
-                BuildTextBox(hintText: 'Enter Description', isMultiLine: true),
+            child: BuildTextBox(
+                    controller: _descriptionOrAnswerController,
+                    hintText: 'Enter Description',
+                    isMultiLine: true
+                ),
           ),
           Padding(
             padding: EdgeInsets.only(top: 35),
             child: BuildButton(
               onPressed: () {
-                showConfirmationDialog(context, "Add Flash Card",
-                    "Are you sure you want to add this flash card on your deck?",
-                    () {
-                  //when user clicks yes
-                  //add logic here
-                }, () {
-                  //when user clicks no
-                  //add logic here
-                });
+                showConfirmationDialog(
+                  context,
+                  "Add Flash Card",
+                  "Are you sure you want to add this flash card on your deck?",
+                      () async {
+                    try {
+                      if (_descriptionOrAnswerController.text.isNotEmpty &&
+                          _questionOrTermController.text.isNotEmpty) {
+                        Cards? card = await widget.deck.addQuestionToDeck(
+                          _questionOrTermController.text.toString(),
+                          _descriptionOrAnswerController.text.toString(),
+                        );
+                        if (card != null) {
+                          widget.cardList.add(card);
+                        }
+                      } else {
+                        //Navigator.of(context).pop(); // Close the confirmation dialog
+                        await Future.delayed(Duration(milliseconds: 300)); // Ensure the dialog is fully closed
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Input Error'),
+                              content: const Text('Please fill out all of the input fields.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); // Close the dialog
+                                  },
+                                  child: const Text(
+                                    'Close',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    } catch (e) {
+                      print('add card error: $e');
+                    }
+                  },
+                      () {
+                    // when user clicks no
+                    // add logic here
+                  },
+                );
+
+
               },
               buttonText: 'Save Changes',
               height: 50.0,

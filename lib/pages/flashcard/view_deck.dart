@@ -91,7 +91,10 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddFlashcardPage()),
+            MaterialPageRoute(builder: (context) => AddFlashcardPage(
+                deck: widget.deck,
+                cardList: _cardsCollection,
+            )),
           );
         },
       ),
@@ -123,6 +126,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                   var starredCards = [];
                   var noStarCard = [];
                   var joinedCards = [];
+
                   for (int i = 0; i < cards.length; i++) {
                     if (cards[i].isStarred) {
                       starredCards.add(cards[i]);
@@ -130,7 +134,9 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                       noStarCard.add(cards[i]);
                     }
                   }
+
                   FlashcardUtils _flashcardUtils = FlashcardUtils();
+
 
                   // Shuffle cards
                   if(starredCards.isNotEmpty) _flashcardUtils.shuffleList(starredCards);
@@ -164,14 +170,14 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Deck Empty'),
-                          content: Text('The deck has no card please add a card first before playing '),
+                          title: const Text('Deck Empty'),
+                          content: const Text('The deck has no card please add a card first before playing '),
                           actions: <Widget>[
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop(); // Close the dialog
                               },
-                              child: Text(
+                              child: const Text(
                                 'Close',
                                 style: TextStyle(
                                   color: Colors.red,
