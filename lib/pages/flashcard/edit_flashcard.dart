@@ -118,9 +118,25 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
                               context,
                               "Save Changes",
                               "Are you sure you want to save changes you made on this flashcard?",
-                              () {
-                                //when user clicks yes
-                                //add logic here
+                              () async{
+                                try{
+                                  if(widget.card.question.toString() != _questionOrTermController.text.toString()) {
+                                    await widget.card.updateQuestion(
+                                        _questionOrTermController.text
+                                            .toString(),
+                                        widget.deck.deckId
+                                    );
+                                  }
+                                  if(widget.card.answer.toString() != _descriptionOrAnswerController.text.toString()) {
+                                    await widget.card.updateAnswer(
+                                        _descriptionOrAnswerController.text
+                                            .toString(),
+                                        widget.deck.deckId
+                                    );
+                                  }
+                                }catch(e){
+                                  print('Error saving changes $e');
+                                }
                               },
                               () {
                                 //when user clicks no

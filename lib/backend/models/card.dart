@@ -24,11 +24,11 @@ class Cards {
       // Update only the 'title' field of the document
       await deckRef.update({'is_deleted': newStatus});
       isDeleted = newStatus;
-      print('Deck status updated successfully');
+      print('Card status updated successfully');
       return true;
     } catch (e) {
       // Handle any errors that might occur during the update
-      print('Error updating deck status: $e');
+      print('Error updating card status: $e');
       return false;
     }
   }
@@ -42,11 +42,11 @@ class Cards {
       // Update only the 'title' field of the document
       await deckRef.update({'is_starred': newStatus});
       isDeleted = newStatus;
-      print('Deck status updated successfully');
+      print('Card status updated successfully');
       return true;
     } catch (e) {
       // Handle any errors that might occur during the update
-      print('Error updating deck status: $e');
+      print('Error updating card status: $e');
       return false;
     }
   }
@@ -60,11 +60,29 @@ class Cards {
       // Update only the 'title' field of the document
       await deckRef.update({'question': newQuestion});
       question = newQuestion;
-      print('Deck question updated successfully');
+      print('Card question updated successfully');
       return true;
     } catch (e) {
       // Handle any errors that might occur during the update
-      print('Error updating deck question: $e');
+      print('Error updating card question: $e');
+      return false;
+    }
+  }
+  Future<bool> updateAnswer(String newAnswer, String deckId) async {
+    try {
+      // Reference to the Firestore document
+      DocumentReference deckRef = _firestore.collection('decks').doc(deckId)
+          .collection('questions')
+          .doc(_cardId);
+
+      // Update only the 'title' field of the document
+      await deckRef.update({'answer': newAnswer});
+      answer = newAnswer;
+      print('Card answer updated successfully');
+      return true;
+    } catch (e) {
+      // Handle any errors that might occur during the update
+      print('Error updating card answer: $e');
       return false;
     }
   }
