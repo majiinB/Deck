@@ -1,7 +1,11 @@
+import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/backend/flashcard/flashcard_service.dart';
+import 'package:deck/backend/flashcard/flashcard_utils.dart';
 import 'package:deck/pages/flashcard/add_flashcard.dart';
 import 'package:deck/pages/flashcard/edit_flashcard.dart';
 import 'package:deck/pages/flashcard/play_my_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
@@ -113,12 +117,71 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
             Padding(
               padding: const EdgeInsets.only(top: 25.0),
               child: BuildButton(
-                onPressed: () {
-                  print("Laruin mo deck ko");
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PlayMyDeckPage()),
-                  );
+                onPressed: () async{
+                  var cards = await widget.deck.getCard();
+                  var starredCards = [];
+                  var noStarCard = [];
+                  var joinedCards = [];
+                  for (int i = 0; i < cards.length; i++) {
+                    if (cards[i].isStarred) {
+                      starredCards.add(cards[i]);
+                    }else{
+                      noStarCard.add(cards[i]);
+                    }
+                  }
+                  FlashcardUtils _flashcardUtils = FlashcardUtils();
+
+                  // Shuffle cards
+                  if(starredCards.isNotEmpty) _flashcardUtils.shuffleList(starredCards);
+                  if(noStarCard.isNotEmpty) _flashcardUtils.shuffleList(noStarCard);
+
+                  joinedCards = starredCards + noStarCard;
+
+                  if(joinedCards.isNotEmpty){
+                    AuthService _authService = AuthService();
+                    User? user = _authService.getCurrentUser();
+                    if(user != null){
+                      try{
+                        FlashcardService _flashCardService = FlashcardService();
+                        await _flashCardService.addDeckLogRecord(
+                            deckId: widget.deck.deckId.toString(),
+                            title: widget.deck.title.toString(),
+                            userId: user.uid.toString(),
+                            visitedAt: DateTime.now()
+                        );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PlayMyDeckPage(cards: joinedCards, deck: widget.deck,)),
+                        );
+                      }catch(e){
+                        // Do something pag may error pero di ko pa alam eh
+                      }
+                    }
+
+                  }else{
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Deck Empty'),
+                          content: Text('The deck has no card please add a card first before playing '),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                              child: Text(
+                                'Close',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
                 buttonText: 'Play My Deck',
                 height: 35,

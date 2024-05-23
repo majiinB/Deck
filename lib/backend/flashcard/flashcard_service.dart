@@ -119,5 +119,25 @@ class FlashcardService{
     // Return null if no deck is found or if an error occurs
     return null;
   }
+  Future<void> addDeckLogRecord({
+    required String deckId,
+    required String title,
+    required String userId,
+    required DateTime visitedAt,
+  }) async {
+    try {
+      CollectionReference deckLogs = _firestore.collection('deck_log');
 
+      await deckLogs.add({
+        'deck_id': deckId,
+        'title': title,
+        'user_id': userId,
+        'visited_at': visitedAt,
+      });
+
+      print('Deck log record added successfully');
+    } catch (e) {
+      print('Failed to add deck log record: $e');
+    }
+  }
 }

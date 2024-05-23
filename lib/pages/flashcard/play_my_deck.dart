@@ -6,8 +6,12 @@ import 'package:deck/pages/misc/widget_method.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../backend/models/deck.dart';
+
 class PlayMyDeckPage extends StatefulWidget {
-  const PlayMyDeckPage({Key? key});
+  final List cards;
+  final Deck deck;
+  const PlayMyDeckPage({Key? key, required this.cards, required this.deck}) : super(key: key);
 
   @override
   _PlayMyDeckPageState createState() => _PlayMyDeckPageState();
@@ -15,19 +19,9 @@ class PlayMyDeckPage extends StatefulWidget {
 
 class  _PlayMyDeckPageState extends State<PlayMyDeckPage> {
   PageController pageController = PageController();
-  int currentIndex = 0;
-  List<String> frontContents = [
-    'Tanga tanga amp',
-    'Loh putangina',
-    'Tangina ng bumoto kay bbm',
-  ];
-  List<String> backContents = [
-    'have a shared goal that everyone knows',
-    'tanginamong hayup ka may pamilya na yung tao kumekerengkeng ka pa raffy tulfo meme',
-    'A philosophical movement originating in the late 19th and early 20th centuries, characterized by an exploration of the individuals subjective experience and the fundamental nature of existence. At its core, existentialism grapples with profound questions regarding human freedom, choice, and responsibility in the face of a seemingly indifferent or absurd universe. Key figures such as Jean-Paul Sartre, Friedrich Nietzsche, and Martin Heidegger have contributed seminal works that delve into the complexities of existence, offering insights into the nature of authenticity, alienation, and the search for meaning in a world devoid of inherent purpose.'
-
-  ];
   final ScrollController controller = ScrollController();
+  int currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +38,7 @@ class  _PlayMyDeckPageState extends State<PlayMyDeckPage> {
             Padding(
               padding: const EdgeInsets.only(bottom: 40.0),
               child: Text(
-                'Deck ni Leila 101',
+                widget.deck.title.toString(),
                  style: GoogleFonts.nunito(
                   color: DeckColors.white,
                   fontSize: 32,
@@ -56,7 +50,7 @@ class  _PlayMyDeckPageState extends State<PlayMyDeckPage> {
             Expanded(
               child: PageView.builder(
                 controller: pageController,
-                itemCount: frontContents.length,
+                itemCount: widget.cards.length,
                 onPageChanged: (index) {
                   setState(() {
                     currentIndex = index;
@@ -66,8 +60,8 @@ class  _PlayMyDeckPageState extends State<PlayMyDeckPage> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: FlipCard(
-                      front: buildFlipCard(frontContents[index]),
-                      back: buildFlipCard(backContents[index]),
+                      front: buildFlipCard(widget.cards[index].question),
+                      back: buildFlipCard(widget.cards[index].answer),
                     ),
                   );
                 },
@@ -98,7 +92,7 @@ class  _PlayMyDeckPageState extends State<PlayMyDeckPage> {
                           },
                         ),
                       Text(
-                          '${currentIndex + 1} / ${frontContents.length}',
+                          '${currentIndex + 1} / ${widget.cards.length}',
                           style: GoogleFonts.nunito(
                             color: DeckColors.primaryColor,
                             fontSize: 24,
@@ -109,7 +103,7 @@ class  _PlayMyDeckPageState extends State<PlayMyDeckPage> {
                           icon: const Icon(Icons.arrow_forward_ios_rounded),
                           color: Colors.white,
                           onPressed: () {
-                            if (currentIndex < frontContents.length - 1) {
+                            if (currentIndex < widget.cards.length - 1) {
                               pageController.nextPage(
                                 duration: const Duration(milliseconds: 300),
                                 curve: Curves.ease,
