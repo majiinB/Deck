@@ -19,34 +19,63 @@ class ViewDeckPage extends StatefulWidget {
 }
 
 class _ViewDeckPageState extends State<ViewDeckPage> {
-
   var _cardsCollection = [];
   var _starredCardCollection = [];
+  var _filteredCardsCollection = [];
+  var _filteredStarredCardCollection = [];
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _initDeckCards();
+    _searchController.addListener(_filterFlashcards);
   }
+
   void _initDeckCards() async {
     var cards = await widget.deck.getCard();
     var starredCards = [];
-    for(int i = 0; i<cards.length; i++){
-      if(cards[i].isStarred){
+    for (int i = 0; i < cards.length; i++) {
+      if (cards[i].isStarred) {
         starredCards.add(cards[i]);
       }
     }
     setState(() {
       _cardsCollection = cards;
       _starredCardCollection = starredCards;
+      _filteredCardsCollection = cards;
+      _filteredStarredCardCollection = starredCards;
     });
   }
+
+  void _filterFlashcards() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredCardsCollection = _cardsCollection
+          .where((card) =>
+      card.question.toLowerCase().contains(query) ||
+          card.answer.toLowerCase().contains(query))
+          .toList();
+      _filteredStarredCardCollection = _starredCardCollection
+          .where((card) =>
+      card.question.toLowerCase().contains(query) ||
+          card.answer.toLowerCase().contains(query))
+          .toList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double topPadding =
-        (_cardsCollection.isNotEmpty || _cardsCollection.isNotEmpty)
-            ? 20.0
-            : 40.0;
+    (_cardsCollection.isNotEmpty || _starredCardCollection.isNotEmpty)
+        ? 20.0
+        : 40.0;
     return Scaffold(
       floatingActionButton: DeckFAB(
         text: "Add FlashCard",
@@ -102,10 +131,11 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                 borderColor: Colors.transparent,
               ),
             ),
-            if (_cardsCollection.isNotEmpty || _cardsCollection.isNotEmpty)
-              const Padding(
+            if (_cardsCollection.isNotEmpty || _starredCardCollection.isNotEmpty)
+              Padding(
                 padding: EdgeInsets.only(top: 40.0),
                 child: BuildTextBox(
+                  controller: _searchController,
                   hintText: 'Search Flashcard',
                   showPassword: false,
                   rightIcon: Icons.search,
@@ -123,13 +153,12 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                     ///
                     ///
                     /// ------------------------- START OF TAB 'ALL' CONTENT ----------------------------
-                    if (_cardsCollection.isEmpty)
+                    if (_filteredCardsCollection.isEmpty)
                       IfDeckEmpty(
                         ifDeckEmptyText: 'No Flashcard(s) Available',
-                        ifDeckEmptyheight:
-                            MediaQuery.of(context).size.height * 0.3,
-                      ),
-                    if (_cardsCollection.isNotEmpty)
+                        ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.3,
+                      )
+                    else
                       Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: SingleChildScrollView(
@@ -138,30 +167,27 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                             child: ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: _cardsCollection.length,
+                              itemCount: _filteredCardsCollection.length,
                               itemBuilder: (context, index) {
                                 return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 6.0),
+                                  padding: const EdgeInsets.symmetric(vertical: 6.0),
                                   child: BuildContainerOfFlashCards(
-                                    titleOfFlashCard: _cardsCollection[index].question,
-                                    contentOfFlashCard: _cardsCollection[index].answer,
+                                    titleOfFlashCard: _filteredCardsCollection[index].question,
+                                    contentOfFlashCard: _filteredCardsCollection[index].answer,
                                     onDelete: () {
-                                      final String deletedTitle =
-                                        _cardsCollection[index].question;
-                                      // final String deletedNumber =
-                                      //   _cardsCollection[index];
+                                      final String deletedTitle = _filteredCardsCollection[index].question;
                                       showConfirmationDialog(
                                         context,
                                         "Delete Item",
                                         "Are you sure you want to delete '$deletedTitle'?",
-                                        () {
+                                            () {
                                           setState(() {
-                                            _cardsCollection[index].updateDeleteStatus(true, widget.deck.deckId);
-                                            _cardsCollection.removeAt(index);
+                                            _filteredCardsCollection[index].updateDeleteStatus(true, widget.deck.deckId);
+                                            _filteredStarredCardCollection.removeWhere((card) => card.cardId == _filteredCardsCollection[index].cardId);
+                                            _filteredCardsCollection.removeAt(index);
                                           });
                                         },
-                                        () {
+                                            () {
                                           setState(() {
                                             //when the user clicks no
                                           });
@@ -174,34 +200,30 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                EditFlashcardPage()),
+                                            builder: (context) => EditFlashcardPage()),
                                       );
                                     },
-                                    isStarShaded: _cardsCollection[index].isStarred,
+                                    isStarShaded: _filteredCardsCollection[index].isStarred,
                                     onStarShaded: () {
                                       setState(() {
-                                        try{
-                                          _cardsCollection[index].updateStarredStatus(true, widget.deck.deckId);
-                                          _starredCardCollection.add(_cardsCollection[index]);
-                                          _cardsCollection[index].isStarred = true;
-                                        }catch(e){
+                                        try {
+                                          _filteredCardsCollection[index].updateStarredStatus(true, widget.deck.deckId);
+                                          _filteredStarredCardCollection.add(_filteredCardsCollection[index]);
+                                          _filteredCardsCollection[index].isStarred = true;
+                                        } catch (e) {
                                           print('star shaded error: $e');
                                         }
                                       });
                                     },
                                     onStarUnshaded: () {
                                       setState(() {
-                                        try{
-                                          _cardsCollection[index].updateStarredStatus(false, widget.deck.deckId);
-                                          _starredCardCollection.removeWhere(
-                                                  (card) => card.cardId == _cardsCollection[index].cardId
-                                          );
-                                          _cardsCollection[index].isStarred = false;
-                                        }catch(e){
+                                        try {
+                                          _filteredCardsCollection[index].updateStarredStatus(false, widget.deck.deckId);
+                                          _filteredStarredCardCollection.removeWhere((card) => card.cardId == _filteredCardsCollection[index].cardId);
+                                          _filteredCardsCollection[index].isStarred = false;
+                                        } catch (e) {
                                           print('star shaded error: $e');
                                         }
-
                                       });
                                     },
                                   ),
@@ -211,7 +233,6 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                           ),
                         ),
                       ),
-
                     ///
                     ///
                     /// ------------------------- END OF TAB 'ALL' CONTENT ----------------------------
@@ -219,46 +240,39 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                     ///
                     ///
                     /// ------------------------- START OF TAB 'STARRED' CONTENT ----------------------------
-                    if (_starredCardCollection.isEmpty)
+                    if (_filteredStarredCardCollection.isEmpty)
                       IfDeckEmpty(
                         ifDeckEmptyText: 'No Starred Flashcard(s) Available',
-                        ifDeckEmptyheight:
-                            MediaQuery.of(context).size.height * 0.3,
-                      ),
-                    if (_starredCardCollection.isNotEmpty)
+                        ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.3,
+                      )
+                    else
                       SingleChildScrollView(
                         child: Padding(
                           padding: EdgeInsets.only(top: 20.0),
                           child: ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: _starredCardCollection.length,
+                            itemCount: _filteredStarredCardCollection.length,
                             itemBuilder: (context, index) {
                               return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 6.0),
+                                padding: const EdgeInsets.symmetric(vertical: 6.0),
                                 child: BuildContainerOfFlashCards(
-                                  titleOfFlashCard:
-                                    _starredCardCollection[index].question,
-                                  contentOfFlashCard:
-                                    _starredCardCollection[index].answer,
+                                  titleOfFlashCard: _filteredStarredCardCollection[index].question,
+                                  contentOfFlashCard: _filteredStarredCardCollection[index].answer,
                                   onDelete: () {
-                                    final String starredDeletedTitle =
-                                      _starredCardCollection[index].question;
-                                    final String starredDeletedNumber =
-                                      _starredCardCollection[index].answer;
-
+                                    final String starredDeletedTitle = _filteredStarredCardCollection[index].question;
                                     showConfirmationDialog(
                                       context,
                                       "Delete Item",
                                       "Are you sure you want to delete '$starredDeletedTitle'?",
-                                      () {
+                                          () {
                                         setState(() {
-                                          _starredCardCollection[index].updateDeleteStatus(true, widget.deck.deckId);
-                                          _starredCardCollection.removeAt(index);
+                                          _filteredStarredCardCollection[index].updateDeleteStatus(true, widget.deck.deckId);
+                                          _filteredCardsCollection.removeWhere((card) => card.cardId == _filteredStarredCardCollection[index].cardId);
+                                          _filteredStarredCardCollection.removeAt(index);
                                         });
                                       },
-                                      () {
+                                          () {
                                         setState(() {
                                           //when the user clicks no
                                         });
@@ -271,8 +285,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              EditFlashcardPage()),
+                                          builder: (context) => EditFlashcardPage()),
                                     );
                                   },
                                   isStarShaded: true,
@@ -281,13 +294,11 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                   },
                                   onStarUnshaded: () {
                                     setState(() {
-                                      try{
-                                        _starredCardCollection[index].updateStarredStatus(false, widget.deck.deckId);
-                                        _starredCardCollection[index].isStarred = false;
-                                        _starredCardCollection.removeWhere(
-                                                (card) => card.cardId == _starredCardCollection[index].cardId
-                                        );
-                                      }catch(e){
+                                      try {
+                                        _filteredStarredCardCollection[index].updateStarredStatus(false, widget.deck.deckId);
+                                        _filteredStarredCardCollection[index].isStarred = false;
+                                        _filteredStarredCardCollection.removeWhere((card) => card.cardId == _filteredStarredCardCollection[index].cardId);
+                                      } catch (e) {
                                         print('star shaded error: $e');
                                       }
                                     });
@@ -305,7 +316,6 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
           ],
         ),
       ),
-
       ///
       ///
       /// ------------------------- END OF TAB 'STARRED' CONTENT ----------------------------
