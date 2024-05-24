@@ -54,6 +54,7 @@ dependencies:
   http: ^1.2.1
   file_picker: ^8.0.3
   firebase_storage: ^11.7.6
+  syncfusion_flutter_pdf: ^25.2.5
 
 dev_dependencies:
   flutter_test:
