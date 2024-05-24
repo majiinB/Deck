@@ -277,6 +277,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                               print(flashCardDataList);
 
                               if (flashCardDataList.isEmpty) {
+                                await Future.delayed(Duration(milliseconds: 300));
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -358,6 +359,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                               // Optionally, you can show a snackbar or dialog to inform the user about the error
                             }
                           }else{
+                            await Future.delayed(Duration(milliseconds: 300));
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {

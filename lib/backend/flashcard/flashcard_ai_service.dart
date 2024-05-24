@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:deck/backend/custom_exceptions/api_exception.dart';
 import 'package:deck/backend/models/cardAi.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -51,7 +52,22 @@ class FlashcardAiService{
     } else {
       // If the server did not return a 200 OK response, throw an exception
       print(response.statusCode);
-      throw Exception('Failed to send data: ${response.statusCode}');
+      switch (response.statusCode) {
+        case 418:
+          throw IncompleteRequestBodyException('Incomplete request body: ${response.body}');
+        case 420:
+          throw NumberOfCardsException('Unknown number of cards: ${response.body}');
+        case 421:
+          throw ForbiddenException('Forbidden: ${response.body}');
+        case 404:
+          throw NotFoundException('Not found: ${response.body}');
+        case 500:
+          throw InternalServerErrorException('Internal server error: ${response.body}');
+        case 418:
+          throw ApiException(418, 'I\'m a teapot: ${response.body}'); // Example for status code 418
+        default:
+          throw ApiException(response.statusCode, 'Error: ${response.body}');
+      }
     }
   }
   //===========================================================================================
