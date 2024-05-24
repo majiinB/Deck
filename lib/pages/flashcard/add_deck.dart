@@ -1,4 +1,5 @@
 import 'package:deck/backend/flashcard/flashcard_service.dart';
+import 'package:deck/pages/flashcard/view_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/cupertino.dart';
@@ -192,11 +193,48 @@ class _AddDeckPageState extends State<AddDeckPage> {
                         "Are you sure you want to generate deck?",
                     () async{
                       try{
-                        FlashcardService _flashCardService = FlashcardService();
-                        Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleContoller.text.toString());
-                        if(newDeck != null){
-                          widget.decks.add(newDeck);
+                        if(_isToggled){
 
+                        }else{
+                          if(_deckTitleContoller.text.isNotEmpty){
+                            FlashcardService _flashCardService = FlashcardService();
+                            Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleContoller.text.toString());
+                            if(newDeck != null){
+                              Navigator.pop(context, newDeck);
+
+                              widget.decks.add(newDeck);
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ViewDeckPage(deck: newDeck)),
+                              );
+
+                            }
+                          }else{
+                            await Future.delayed(Duration(milliseconds: 300)); // Ensure the dialog is fully closed
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Input Error'),
+                                  content: const Text('Please fill out all of the input fields.'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // Close the dialog
+                                      },
+                                      child: const Text(
+                                        'Close',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
                         }
                       }catch(e){
                         print('error in adding deck: $e');

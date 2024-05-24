@@ -95,7 +95,6 @@ class Deck{
         .doc(_deckId)
         .collection('questions');
 
-
       // Add the question to the collection
       DocumentReference docRef = await questionsRef.add({
         'question': question,

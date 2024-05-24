@@ -116,8 +116,6 @@ class _AddFlashcardPageState extends State<AddFlashcardPage> {
                     // add logic here
                   },
                 );
-
-
               },
               buttonText: 'Save Changes',
               height: 50.0,
