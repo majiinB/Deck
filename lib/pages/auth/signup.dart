@@ -46,7 +46,8 @@ class SignUpPage extends StatelessWidget {
                       final currentUser = await authService.signUpWithGoogle();
                       final user = <String, dynamic> {
                         "email": currentUser?.email,
-                        "first_name": currentUser?.displayName,
+                        "name": currentUser?.displayName,
+                        "user_id": currentUser?.uid,
                       };
 
                       final db = FirebaseFirestore.instance;

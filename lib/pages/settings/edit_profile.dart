@@ -32,7 +32,7 @@ class EditProfileState extends State<EditProfile> {
                 Positioned(
                   top: 150,
                   left: 10,
-                  child: BuildProfileImage(),
+                  child: BuildProfileImage(null),
                 ),
                 Positioned(
                   top: 140,

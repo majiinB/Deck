@@ -194,7 +194,8 @@ class LoginPage extends StatelessWidget {
 
                     final user = <String, dynamic> {
                       "email": currentUser?.email,
-                      "first_name": currentUser?.displayName,
+                      "name": currentUser?.displayName,
+                      "uid": currentUser?.uid,
                     };
 
                     final db = FirebaseFirestore.instance;
