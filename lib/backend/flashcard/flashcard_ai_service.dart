@@ -111,23 +111,4 @@ class FlashcardAiService{
       throw Exception('Failed to fetch data: ${response.statusCode}');
     }
   }
-  Future<String> uploadFileToFirebase(String filePath) async {
-    String fileUrl = "";
-    File file = File(filePath);
-    String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
-    if(await file.exists()){
-      // Get a reference to the Firebase Storage location
-      Reference referenceRoot = FirebaseStorage.instance.ref();
-      Reference referenceFileToUpload = referenceRoot.child(uniqueFileName);
-
-      // Upload file to Firebase Storage
-      try {
-        await referenceFileToUpload.putFile(File(file.path));
-        print('File Uploaded Successfully!');
-      } catch (e) {
-        print('Error uploading file: $e');
-      }
-    }
-    return uniqueFileName;
-  }
 }

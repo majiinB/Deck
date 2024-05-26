@@ -246,6 +246,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                           if(_deckTitleContoller.text.isNotEmpty && _numCardsController.text.isNotEmpty){
                             try {
                               FlashcardAiService _flashcardAiService = FlashcardAiService();
+                              FlashcardService _flashcardService = FlashcardService();
                               String fileName = "";
 
                               //Check if conditions are met before uploading file
@@ -254,7 +255,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                 // Check if numberOfCards is a valid number and within the specified range
                                 int? numberOfCards = int.tryParse(_numCardsController.text);
                                 if (numberOfCards != null && numberOfCards > 0 && numberOfCards < 20) {
-                                  fileName = await _flashcardAiService.uploadFileToFirebase(_pickedFileController.text.toString().trim());
+                                  fileName = await _flashcardService.uploadFileToFirebase(_pickedFileController.text.toString().trim(), widget.userId.toString());
                                 }
                               }
 

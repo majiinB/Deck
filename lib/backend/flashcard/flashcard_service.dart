@@ -1,6 +1,9 @@
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as path;
 import '../models/deck.dart';
 
 class FlashcardService{
@@ -163,4 +166,25 @@ class FlashcardService{
       return null;
     }
   }
+  Future<String> uploadFileToFirebase(String filePath, String userId) async {
+    String fileUrl = "";
+    File file = File(filePath);
+    String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+    if (await file.exists()) {
+      // Get a reference to the Firebase Storage location
+      Reference referenceRoot = FirebaseStorage.instance.ref();
+      Reference referenceUserFolder = referenceRoot.child('uploads').child(userId);
+      Reference referenceFileToUpload = referenceUserFolder.child(uniqueFileName);
+
+      // Upload file to Firebase Storage
+      try {
+        await referenceFileToUpload.putFile(file);
+        print('File Uploaded Successfully!');
+      } catch (e) {
+        print('Error uploading file: $e');
+      }
+    }
+    return uniqueFileName;
+  }
+
 }
