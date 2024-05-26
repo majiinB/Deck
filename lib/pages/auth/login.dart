@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/auth/auth_gate.dart';
 import 'package:deck/main.dart';
 import 'package:deck/pages/auth/create_account.dart';
@@ -191,12 +192,21 @@ class LoginPage extends StatelessWidget {
                 onPressed: () async{
                   final authService = AuthService();
                   try {
-                    final user = await authService.signUpWithGoogle();
-                    if(user != null){
-                      Navigator.of(context).push(
-                        RouteGenerator.createRoute(const AuthGate()),
-                      );
+                    final currentUser = await authService.signUpWithGoogle();
+
+                    final user = <String, dynamic> {
+                      "email": currentUser?.email,
+                      "first_name": currentUser?.displayName,
+                    };
+
+                    final db = FirebaseFirestore.instance;
+                    final snap = await db.collection("users").where('email',isEqualTo: currentUser?.email).get();
+                    if(snap.docs.isEmpty){
+                      await db.collection("users").add(user);
                     }
+                    Navigator.of(context).push(
+                      RouteGenerator.createRoute(const AuthGate()),
+                    );
                   } catch (e){
                     print(e.toString());
                     showDialog(context: context, builder: (context) => const AlertDialog(

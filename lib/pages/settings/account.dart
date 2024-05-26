@@ -1,5 +1,7 @@
+import 'package:deck/backend/auth/auth_service.dart';
 import 'package:deck/pages/settings/edit_profile.dart';
 import 'package:deck/pages/settings/settings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:deck/pages/misc/colors.dart';
@@ -14,6 +16,8 @@ class AccountPage extends StatefulWidget {
 }
 
 class AccountPageState extends State<AccountPage> {
+  String name = '';
+
   List<String> deckTitles = [
     'Deck ni leila malaki',
     'Deck ko malaki',

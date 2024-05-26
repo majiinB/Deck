@@ -206,14 +206,16 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       return;
                     }
 
-                    final user = <String, dynamic> {
-                      "email": emailController.text,
-                      "first_name": "Anonymous",
-                      "last_name": getAdjective().toString(),
-                    };
-
                     try{
-                      await AuthService().signUpWithEmail(emailController.text, passwordController.text);
+                      final authService = AuthService();
+                      await authService.signUpWithEmail(emailController.text, passwordController.text);
+
+                      final user = <String, dynamic> {
+                        "user_id":  authService.getCurrentUser()?.uid,
+                        "email": emailController.text,
+                        "first_name": "Anonymous",
+                        "last_name": getAdjective().toString(),
+                      };
 
                       final db = FirebaseFirestore.instance;
                       await db.collection("users").add(user);
