@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:deck/backend/custom_exceptions/api_exception.dart';
 import 'package:deck/backend/flashcard/flashcard_ai_service.dart';
 import 'package:deck/backend/flashcard/flashcard_service.dart';
 import 'package:deck/backend/models/cardAi.dart';
@@ -310,23 +311,53 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                 }
                               }
 
-                              //sendData function
-                              Map<String, dynamic> runAndThreadId = await _flashcardAiService.sendData(
-                                id: widget.userId,
-                                subject: _subjectController.text.trim(),
-                                topic: _topicController.text.trim(),
-                                addDescription: _descriptionController.text.trim(),
-                                pdfFileName: fileName,
-                                numberOfQuestions: int.tryParse(_numCardsController.text) ?? 0,
-                              );
-                              print(runAndThreadId);
+                              List<Cardai> flashCardDataList = [];
 
-                              List<Cardai> flashCardDataList = await _flashcardAiService.fetchData(
-                                id: widget.userId,
-                                runID: runAndThreadId['run_id'],//"run_FKVsyJHmM7xCCJOHasmqORvR",
-                                threadID: runAndThreadId['thread_id'],//"thread_yqFz4pwS35nITyQ4dIG0xRc2"
-                              );
-                              print(flashCardDataList);
+                              //sendData function
+                              try{
+                                Map<String, dynamic> runAndThreadId = await _flashcardAiService.sendData(
+                                  id: widget.userId,
+                                  subject: _subjectController.text.trim(),
+                                  topic: _topicController.text.trim(),
+                                  addDescription: _descriptionController.text.trim(),
+                                  pdfFileName: fileName,
+                                  numberOfQuestions: int.tryParse(_numCardsController.text) ?? 0,
+                                );
+                                print(runAndThreadId);
+
+                                flashCardDataList = await _flashcardAiService.fetchData(
+                                  id: widget.userId,
+                                  runID: runAndThreadId['run_id'],//"run_FKVsyJHmM7xCCJOHasmqORvR",
+                                  threadID: runAndThreadId['thread_id'],//"thread_yqFz4pwS35nITyQ4dIG0xRc2"
+                                );
+
+                              }on ApiException catch(e){
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Input Error'),
+                                      content: Text(e.message.toString()),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(); // Close the dialog
+                                          },
+                                          child: const Text(
+                                            'Close',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                return;
+                              }catch(e){
+                                print(e);
+                              }
 
                               if (flashCardDataList.isEmpty) {
                                 await Future.delayed(Duration(milliseconds: 300));
@@ -360,7 +391,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                 // If sendData is successful, navigate to ViewDeckPage
                                 if(_deckTitleContoller.text.isNotEmpty){
                                   FlashcardService _flashCardService = FlashcardService();
-                                  String uploadedPhotoUrl = 'https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=2b0faebd-9691-4c37-8049-dc30289460c2';
+                                  String uploadedPhotoUrl = 'https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=de6ac50d-13d0-411c-934e-fbeac5b9f6e0';
                                   if(coverPhoto != 'no_photo'){
                                     uploadedPhotoUrl = await _flashCardService.uploadImageToFirebase(coverPhoto, widget.userId.toString());
                                   }
@@ -444,7 +475,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                           // START OF NON AI
                           if(_deckTitleContoller.text.isNotEmpty){
                             FlashcardService _flashCardService = FlashcardService();
-                            String uploadedPhotoUrl = 'https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=2b0faebd-9691-4c37-8049-dc30289460c2';
+                            String uploadedPhotoUrl = 'https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=de6ac50d-13d0-411c-934e-fbeac5b9f6e0';
                             if(coverPhoto != 'no_photo'){
                               uploadedPhotoUrl = await _flashCardService.uploadImageToFirebase(coverPhoto, widget.userId.toString());
                             }

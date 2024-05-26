@@ -1,15 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:deck/backend/custom_exceptions/api_exception.dart';
 import 'package:deck/backend/models/cardAi.dart';
-import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:firebase_core/firebase_core.dart';
-import '../../firebase_options.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart' as path;
 
 class FlashcardAiService{
 
@@ -52,21 +45,19 @@ class FlashcardAiService{
     } else {
       // If the server did not return a 200 OK response, throw an exception
       print(response.statusCode);
-      switch (response.statusCode) {
-        case 418:
-          throw IncompleteRequestBodyException('Incomplete request body: ${response.body}');
-        case 420:
-          throw NumberOfCardsException('Unknown number of cards: ${response.body}');
-        case 421:
-          throw ForbiddenException('Forbidden: ${response.body}');
-        case 404:
-          throw NotFoundException('Not found: ${response.body}');
-        case 500:
-          throw InternalServerErrorException('Internal server error: ${response.body}');
-        case 418:
-          throw ApiException(418, 'I\'m a teapot: ${response.body}'); // Example for status code 418
-        default:
-          throw ApiException(response.statusCode, 'Error: ${response.body}');
+      print(response.body);
+      if(response.statusCode == 418){
+        throw IncompleteRequestBodyException('Incomplete request body: ${response.body}');
+      }else if(response.statusCode == "420"){
+        throw NumberOfCardsException('Unknown number of cards: ${response.body}');
+      }else if(response.statusCode == "421"){
+        throw TextExtractionException('Text Extraction error: ${response.body}');
+      }else if(response.statusCode == "422"){
+        throw FileDeletionError('File was not deleted: ${response.body}');
+      }else if(response.statusCode == "420"){
+        throw InternalServerErrorException('Internal server error: ${response.body}');
+      }else{
+        throw ApiException(response.statusCode, 'Error: ${response.body}');
       }
     }
   }
@@ -86,20 +77,24 @@ class FlashcardAiService{
     // Check if the response is successful
     if (response.statusCode == 200) {
       // Parse the JSON data
-
-      var jsonData = jsonDecode(response.body) as List;
-      //var jsonDataQues = jsonDecode(jsonData)["question"] as List;
-      print(jsonData);
-
-      List<dynamic> questionsList = jsonData[0]['questions'];
       List<Cardai> flashCards = [];
-      for (var questionAnswerPair in questionsList) {
-        String question = questionAnswerPair['question'];
-        String answer = questionAnswerPair['answer'];
-        Cardai flashcard = new Cardai(question: question, answer: answer);
-        flashCards.add(flashcard);
-        // Use question and answer as needed
+      var jsonData = jsonDecode(response.body) as List;
+
+      if (jsonData != null && jsonData.isNotEmpty && jsonData is List<dynamic>) {
+        try{
+          List<dynamic> questionsList = jsonData[0]['questions'];
+          for (var questionAnswerPair in questionsList) {
+            String question = questionAnswerPair['question'];
+            String answer = questionAnswerPair['answer'];
+            Cardai flashcard = new Cardai(question: question, answer: answer);
+            flashCards.add(flashcard);
+            // Use question and answer as needed
+          }
+        }catch(e){
+          return flashCards;
+        }
       }
+
       //List<Flashcard> flashCards = jsonData.map((flashObj) => Flashcard.fromJson(flashObj)).toList();
 
       return flashCards;
