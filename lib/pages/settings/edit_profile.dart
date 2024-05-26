@@ -1,6 +1,9 @@
+import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/backend/auth/auth_utils.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/misc/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -12,6 +15,10 @@ class EditProfile extends StatefulWidget {
 }
 
 class EditProfileState extends State<EditProfile> {
+  final TextEditingController firstNameController = TextEditingController(text: AuthUtils().getFirstName());
+  final TextEditingController lastNameController = TextEditingController(text: AuthUtils().getLastName());
+  final TextEditingController emailController = TextEditingController(text: AuthUtils().getEmail());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +39,7 @@ class EditProfileState extends State<EditProfile> {
                 Positioned(
                   top: 150,
                   left: 10,
-                  child: BuildProfileImage(null),
+                  child: BuildProfileImage(AuthUtils().getPhoto()),
                 ),
                 Positioned(
                   top: 140,
@@ -55,7 +62,7 @@ class EditProfileState extends State<EditProfile> {
                               color: DeckColors.gray,
                               child: Column(children: [
                                 Padding(
-                                  padding: EdgeInsets.only(top: 10),
+                                  padding: const EdgeInsets.only(top: 10),
                                   child: BuildContentOfBottomSheet(
                                     bottomSheetButtonText: 'Upload Cover Photo',
                                     bottomSheetButtonIcon: Icons.image,
@@ -65,7 +72,7 @@ class EditProfileState extends State<EditProfile> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(top: 10),
+                                  padding: const EdgeInsets.only(top: 10),
                                   child: BuildContentOfBottomSheet(
                                     bottomSheetButtonText: 'Remove Cover Photo',
                                     bottomSheetButtonIcon: Icons.remove_circle,
@@ -107,7 +114,7 @@ class EditProfileState extends State<EditProfile> {
                             color: DeckColors.gray,
                             child: Column(children: [
                               Padding(
-                                padding: EdgeInsets.only(top: 10),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: BuildContentOfBottomSheet(
                                   bottomSheetButtonText: 'Upload Profile Photo',
                                   bottomSheetButtonIcon: Icons.image,
@@ -117,7 +124,7 @@ class EditProfileState extends State<EditProfile> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(top: 10),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: BuildContentOfBottomSheet(
                                   bottomSheetButtonText: 'Remove Profile Photo',
                                   bottomSheetButtonIcon: Icons.remove_circle,
@@ -136,20 +143,20 @@ class EditProfileState extends State<EditProfile> {
                   iconColor: DeckColors.white,
                   backgroundColor: DeckColors.accentColor,
                 )),
-            const Padding(
-              padding: EdgeInsets.only(top: 60, left: 16, right: 16),
-              child: BuildTextBox(initialValue: 'Pole', showPassword: false),
+            Padding(
+              padding: const EdgeInsets.only(top: 60, left: 16, right: 16),
+              child: BuildTextBox(showPassword: false, controller: firstNameController,),
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-              child: BuildTextBox(
-                  initialValue: 'Di - Maguiba', showPassword: false),
+            Padding(
+              padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
+              child: BuildTextBox(showPassword: false, controller: lastNameController,),
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+            Padding(
+              padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
               child: BuildTextBox(
-                  initialValue: 'poledimaguibaumaalogalog@gmail.com',
-                  showPassword: false),
+                  showPassword: false,
+                  controller: emailController,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 40, left: 16, right: 16),
@@ -162,8 +169,20 @@ class EditProfileState extends State<EditProfile> {
                     "Save Account Information",
                     "Are you sure you want to change your account information?",
                     () {
-                      //when user clicks yes
-                      //add logic here
+                      User? user = AuthService().getCurrentUser();
+                      String newName = '';
+                      if(lastNameController.text.isEmpty){
+                        newName = firstNameController.text;
+                      } else {
+                        newName = "${firstNameController.text} ${lastNameController.text}";
+                      }
+                      if(user?.displayName != newName){
+                        user?.updateDisplayName(newName);
+                      }
+
+                      if(user?.email != emailController.text){
+                          user?.verifyBeforeUpdateEmail(emailController.text);
+                      }
                     },
                     () {
                       //when user clicks no

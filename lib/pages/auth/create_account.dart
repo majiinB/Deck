@@ -209,9 +209,9 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       await authService.signUpWithEmail(emailController.text, passwordController.text);
 
                       final user = <String, dynamic> {
-                        "user_id":  authService.getCurrentUser()?.uid,
                         "email": emailController.text,
                         "name": "Anonymous ${getAdjective()}",
+                        "user_id":  authService.getCurrentUser()?.uid,
                       };
 
                       final db = FirebaseFirestore.instance;
