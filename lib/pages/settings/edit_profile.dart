@@ -30,6 +30,12 @@ class EditProfileState extends State<EditProfile> {
   void initState() {
     super.initState();
     photoUrl = AuthUtils().getPhoto();
+    coverUrl = null;
+    getCoverUrl();
+  }
+
+  void getCoverUrl() async {
+    coverUrl = await AuthUtils().getCoverPhotoUrl();
   }
 
   @override
@@ -48,7 +54,7 @@ class EditProfileState extends State<EditProfile> {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                BuildCoverImage(borderRadiusContainer: 0, borderRadiusImage: 0, coverPhotoFuture: AuthUtils().getCoverPhotoUrl(),),
+                BuildCoverImage(borderRadiusContainer: 0, borderRadiusImage: 0, CoverPhotofile: coverUrl,),
                 Positioned(
                   top: 150,
                   left: 10,

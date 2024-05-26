@@ -28,6 +28,19 @@ class AccountPageState extends State<AccountPage> {
   ];
 
   List<String> deckNumbers = ['69 Cards', '96 Cards', '88 Cards'];
+  Image? coverUrl;
+
+  @override
+  void initState() {
+    coverUrl = null;
+    getCoverUrl();
+    super.initState();
+  }
+
+  void getCoverUrl() async{
+      coverUrl = await AuthUtils().getCoverPhotoUrl();
+      print(coverUrl);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +56,7 @@ class AccountPageState extends State<AccountPage> {
                 alignment: Alignment.centerLeft,
                 children: [
                   BuildCoverImage(
-                      borderRadiusContainer: 0, borderRadiusImage: 0, coverPhotoFuture: AuthUtils().getCoverPhotoUrl(),),
+                      borderRadiusContainer: 0, borderRadiusImage: 0, CoverPhotofile: coverUrl,),
                   Positioned(
                     top: 200,
                     child: Container(

@@ -60,7 +60,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
               Stack(
                 children: [
                   BuildCoverImage(
-                      borderRadiusContainer: 10, borderRadiusImage: 10, coverPhotoFuture: Future<Image?>.value(null),),
+                      borderRadiusContainer: 10, borderRadiusImage: 10,),
                   Positioned(
                       top: 140,
                       right: 10,
