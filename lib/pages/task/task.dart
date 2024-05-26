@@ -122,17 +122,21 @@ class _TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: DeckFAB(
-        text: "Add Task",
-        icon: Icons.add, //walang plus c deck </3
-        foregroundColor: DeckColors.primaryColor,
-        backgroundColor: DeckColors.gray,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddTaskPage()),
-          );
-        },
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: DeckFAB(
+          text: "Add Task",
+          fontSize: 12,
+          icon: Icons.add,
+          foregroundColor: DeckColors.primaryColor,
+          backgroundColor: DeckColors.gray,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddTaskPage()),
+            );
+          },
+        ),
       ),
       body: SafeArea(
         top: true,
