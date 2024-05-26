@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:deck/backend/flashcard/flashcard_ai_service.dart';
 import 'package:deck/backend/flashcard/flashcard_service.dart';
 import 'package:deck/backend/models/cardAi.dart';
@@ -28,6 +30,7 @@ class AddDeckPage extends StatefulWidget {
 
 class _AddDeckPageState extends State<AddDeckPage> {
   bool _isToggled = false;
+  String coverPhoto = "no_photo";
   final TextEditingController _deckTitleContoller = TextEditingController();
   final TextEditingController _pickedFileController = TextEditingController();
   final TextEditingController _subjectController = TextEditingController();
@@ -60,7 +63,12 @@ class _AddDeckPageState extends State<AddDeckPage> {
               Stack(
                 children: [
                   BuildCoverImage(
-                      borderRadiusContainer: 10, borderRadiusImage: 10),
+                    // Conditionally pass CoverPhotofile based on coverPhoto value
+                    CoverPhotofile: coverPhoto != 'no_photo' ? File(coverPhoto) : null,
+                    borderRadiusContainer: 10,
+                    borderRadiusImage: 10,
+                  ),
+
                   Positioned(
                       top: 140,
                       right: 10,
@@ -87,8 +95,47 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                           bottomSheetButtonText:
                                               'Upload Cover Photo',
                                           bottomSheetButtonIcon: Icons.image,
-                                          onPressed: () {
-                                            print("It is working");
+                                          onPressed: () async{
+                                            try {
+                                              FilePickerResult? result = await FilePicker.platform.pickFiles(
+                                                type: FileType.custom,
+                                                allowedExtensions: ['jpeg', 'jpg', 'png'],
+                                              );
+
+                                              if (result != null) {
+                                                PlatformFile file = result.files.first;
+                                                setState(() {
+                                                  coverPhoto = file.path ?? 'no_photo';
+                                                });
+                                                print("Cover photo path: "+coverPhoto);
+                                              } else {
+                                                // User canceled the picker
+                                              }
+                                            } catch (e) {
+                                              print('Error: $e');
+                                              showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: const Text('File Selection Error'),
+                                                    content: const Text('There was an error in selecting the file. Please try again.'),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context).pop(); // Close the dialog
+                                                        },
+                                                        child: const Text(
+                                                          'Close',
+                                                          style: TextStyle(
+                                                            color: Colors.red,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            }
                                           },
                                         ),
                                       ),
@@ -100,7 +147,11 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                           bottomSheetButtonIcon:
                                               Icons.remove_circle,
                                           onPressed: () {
-                                            print("It is working");
+                                            print(coverPhoto);
+                                            setState(() {
+                                              coverPhoto = "no_photo";
+                                            });
+                                            print(coverPhoto);
                                           },
                                         ),
                                       ),
@@ -255,7 +306,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                 // Check if numberOfCards is a valid number and within the specified range
                                 int? numberOfCards = int.tryParse(_numCardsController.text);
                                 if (numberOfCards != null && numberOfCards > 0 && numberOfCards < 20) {
-                                  fileName = await _flashcardService.uploadFileToFirebase(_pickedFileController.text.toString().trim(), widget.userId.toString());
+                                  fileName = await _flashcardService.uploadPdfFileToFirebase(_pickedFileController.text.toString().trim(), widget.userId.toString());
                                 }
                               }
 
@@ -309,7 +360,11 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                 // If sendData is successful, navigate to ViewDeckPage
                                 if(_deckTitleContoller.text.isNotEmpty){
                                   FlashcardService _flashCardService = FlashcardService();
-                                  Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleContoller.text.toString());
+                                  String uploadedPhotoUrl = 'https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=2b0faebd-9691-4c37-8049-dc30289460c2';
+                                  if(coverPhoto != 'no_photo'){
+                                    uploadedPhotoUrl = await _flashCardService.uploadImageToFirebase(coverPhoto, widget.userId.toString());
+                                  }
+                                  Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleContoller.text.toString(), uploadedPhotoUrl);
                                   if(newDeck != null){
                                     //Loop through the list and transfer info from response to the deck
                                     for(Cardai aiResponse in flashCardDataList){
@@ -389,7 +444,11 @@ class _AddDeckPageState extends State<AddDeckPage> {
                           // START OF NON AI
                           if(_deckTitleContoller.text.isNotEmpty){
                             FlashcardService _flashCardService = FlashcardService();
-                            Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleContoller.text.toString());
+                            String uploadedPhotoUrl = 'https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=2b0faebd-9691-4c37-8049-dc30289460c2';
+                            if(coverPhoto != 'no_photo'){
+                              uploadedPhotoUrl = await _flashCardService.uploadImageToFirebase(coverPhoto, widget.userId.toString());
+                            }
+                            Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleContoller.text.toString(), uploadedPhotoUrl);
                             if(newDeck != null){
                               Navigator.pop(context, newDeck);
 
