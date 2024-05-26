@@ -258,12 +258,11 @@ class BuildButton extends StatelessWidget {
 ///
 /// BuildCoverImage is a method for Cover Photo
 class BuildCoverImage extends StatefulWidget {
-  final File? CoverPhotofile;
+  final Future<Image?> coverPhotoFuture;
   final double borderRadiusContainer, borderRadiusImage;
 
   BuildCoverImage(
-      {Key? key,
-      this.CoverPhotofile,
+      {Key? key, required this.coverPhotoFuture,
       required this.borderRadiusContainer,
       required this.borderRadiusImage})
       : super(key: key);
@@ -273,21 +272,34 @@ class BuildCoverImage extends StatefulWidget {
 }
 
 class BuildCoverImageState extends State<BuildCoverImage> {
+  Image? coverPhoto;
+  void initState() {
+    super.initState();
+    // Load the cover photo asynchronously when the widget is initialized
+    loadCoverPhoto();
+  }
+
+  Future<void> loadCoverPhoto() async {
+    Image? photo = await widget.coverPhotoFuture;
+    setState(() {
+      coverPhoto = photo;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(widget.borderRadiusContainer),
-        color: widget.CoverPhotofile != null
+        color: coverPhoto != null
             ? null
             : DeckColors.coverImageColorSettings,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.borderRadiusImage),
-        child: widget.CoverPhotofile != null
-            ? Image.file(
-                widget.CoverPhotofile!,
+        child: coverPhoto != null
+            ? Image(
+                image: coverPhoto!.image,
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,

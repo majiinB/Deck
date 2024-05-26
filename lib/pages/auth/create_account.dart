@@ -212,6 +212,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         "email": emailController.text,
                         "name": "Anonymous ${getAdjective()}",
                         "user_id":  authService.getCurrentUser()?.uid,
+                        "cover_photo": "",
                       };
 
                       final db = FirebaseFirestore.instance;

@@ -43,7 +43,7 @@ class AccountPageState extends State<AccountPage> {
                 alignment: Alignment.centerLeft,
                 children: [
                   BuildCoverImage(
-                      borderRadiusContainer: 0, borderRadiusImage: 0),
+                      borderRadiusContainer: 0, borderRadiusImage: 0, coverPhotoFuture: AuthUtils().getCoverPhotoUrl(),),
                   Positioned(
                     top: 200,
                     child: Container(

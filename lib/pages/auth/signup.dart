@@ -48,6 +48,7 @@ class SignUpPage extends StatelessWidget {
                         "email": currentUser?.email,
                         "name": currentUser?.displayName,
                         "user_id": currentUser?.uid,
+                        "cover_photo": "",
                       };
 
                       final db = FirebaseFirestore.instance;

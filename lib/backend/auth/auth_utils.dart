@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -48,6 +50,32 @@ class AuthUtils {
       return Image.network(photoUrl);
     }
     return null;
+  }
+
+  Future<Image?> getCoverPhotoUrl() async {
+    final db = FirebaseFirestore.instance;
+    var querySnapshot = await db.collection('users')
+        .where('email', isEqualTo: AuthUtils().getEmail())
+        .limit(1)
+        .get();
+
+    // Check if the document exists
+    if (querySnapshot.docs.isNotEmpty) {
+      var doc = querySnapshot.docs.first;
+      String docId = doc.id;
+
+      // Update the existing document with the new field
+      final snap = await db.collection('users').doc(docId).get();
+      if(snap.exists && snap.get('cover_photo') != ""){
+        return Image.network(snap.get('cover_photo'));
+      } else {
+        return null;
+      }
+    }
+  }
+
+  Future<Image?> getCoverPhoto() async {
+    Image? image = await getCoverPhotoUrl();
   }
 
 }

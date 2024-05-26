@@ -196,6 +196,7 @@ class LoginPage extends StatelessWidget {
                       "email": currentUser?.email,
                       "name": currentUser?.displayName,
                       "uid": currentUser?.uid,
+                      "cover_photo": "",
                     };
 
                     final db = FirebaseFirestore.instance;
