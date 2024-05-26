@@ -11,6 +11,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../backend/profile/profile_utils.dart';
+
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
 
@@ -102,7 +104,10 @@ class EditProfileState extends State<EditProfile> {
                                     bottomSheetButtonText: 'Remove Cover Photo',
                                     bottomSheetButtonIcon: Icons.remove_circle,
                                     onPressed: () {
-                                      print("It is working");
+                                      setState(() {
+                                        coverUrl = null;
+                                      });
+                                      coverFile = null;
                                     },
                                   ),
                                 ),
@@ -160,7 +165,10 @@ class EditProfileState extends State<EditProfile> {
                                   bottomSheetButtonText: 'Remove Profile Photo',
                                   bottomSheetButtonIcon: Icons.remove_circle,
                                   onPressed: () {
-                                    print("It is working");
+                                    setState(() {
+                                      photoUrl = null;
+                                    });
+                                    pfpFile = null;
                                   },
                                 ),
                               ),
@@ -207,7 +215,7 @@ class EditProfileState extends State<EditProfile> {
                       } else {
                         newName = "${firstNameController.text} ${lastNameController.text}";
                       }
-                      String uniqueFileName = '${AuthService().getCurrentUser()?.uid}-${DateTime.now().microsecondsSinceEpoch.toString()}';
+                      String uniqueFileName = '${AuthService().getCurrentUser()?.uid}';
                       try {
 
                         if(user?.displayName != newName){
@@ -220,50 +228,37 @@ class EditProfileState extends State<EditProfile> {
 
                         Reference refRoot = FirebaseStorage.instance.ref();
                         if (pfpFile != null) {
-                          Reference refDirPfpImg = refRoot.child(
-                              'userProfiles/${AuthService()
-                                  .getCurrentUser()
-                                  ?.uid}');
-                          Reference refPfpUpload = refDirPfpImg.child(
-                              uniqueFileName);
+                          Reference refDirPfpImg = refRoot.child('userProfiles/${AuthService().getCurrentUser()?.uid}');
+                          Reference refPfpUpload = refDirPfpImg.child(uniqueFileName);
+
+                          bool pfpExists = await ProfileUtils().doesFileExist(refPfpUpload);
+                          if(pfpExists) return;
+
                           await refPfpUpload.putFile(File(pfpFile!.path));
                           String photoUrl = await refPfpUpload.getDownloadURL();
-                          await AuthService().getCurrentUser()?.updatePhotoURL(
-                              photoUrl);
+                          await AuthService().getCurrentUser()?.updatePhotoURL(photoUrl);
                         }
 
                         if (coverFile != null) {
-                          Reference refDirCoverImg = refRoot.child(
-                              'userCovers/${AuthService()
-                                  .getCurrentUser()
-                                  ?.uid}');
-                          Reference refCoverUpload = refDirCoverImg.child(
-                              uniqueFileName);
-                          try {
-                            await refCoverUpload.putFile(File(coverFile!.path));
-                            String photoCover = await refCoverUpload
-                                .getDownloadURL();
+                          Reference refDirCoverImg = refRoot.child('userCovers/${AuthService().getCurrentUser()?.uid}');
+                          Reference refCoverUpload = refDirCoverImg.child(uniqueFileName);
+                          bool coverExists = await ProfileUtils().doesFileExist(refCoverUpload);
+                          if(coverExists) return;
+                          await refCoverUpload.putFile(File(coverFile!.path));
+                          String photoCover = await refCoverUpload.getDownloadURL();
 
-                            final db = FirebaseFirestore.instance;
-                            var querySnapshot = await db.collection('users')
-                                .where('email', isEqualTo: AuthUtils().getEmail())
-                                .limit(1)
-                                .get();
+                          final db = FirebaseFirestore.instance;
+                          var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
 
-                            // Check if the document exists
-                            if (querySnapshot.docs.isNotEmpty) {
-                              var doc = querySnapshot.docs.first;
-                              String docId = doc.id;
+                          // Check if the document exists
+                          if (querySnapshot.docs.isNotEmpty) {
+                            var doc = querySnapshot.docs.first;
+                            String docId = doc.id;
 
-                              // Update the existing document with the new field
-                              await db.collection('users').doc(docId).update({
-                                'cover_photo': photoCover,
-                              });
-                            } else {
-                              print('Document not found');
-                            }
-                          } catch (e) {
-
+                            // Update the existing document with the new field
+                            await db.collection('users').doc(docId).update({'cover_photo': photoCover,});
+                          } else {
+                            print('Document not found');
                           }
                         }
                       } catch (e) {
@@ -291,8 +286,7 @@ class EditProfileState extends State<EditProfile> {
               padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
               child: BuildButton(
                 onPressed: () {
-                  print(
-                      "cancel button clicked"); //line to test if working ung onPressedLogic XD
+                  print("cancel button clicked"); //line to test if working ung onPressedLogic XD
                   Navigator.pop(context);
                 },
                 buttonText: 'Cancel',

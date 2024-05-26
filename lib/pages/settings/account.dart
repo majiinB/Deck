@@ -28,7 +28,7 @@ class AccountPageState extends State<AccountPage> {
   ];
 
   List<String> deckNumbers = ['69 Cards', '96 Cards', '88 Cards'];
-  Image? coverUrl;
+  late Image? coverUrl;
 
   @override
   void initState() {
@@ -39,7 +39,9 @@ class AccountPageState extends State<AccountPage> {
 
   void getCoverUrl() async{
       coverUrl = await AuthUtils().getCoverPhotoUrl();
-      print(coverUrl);
+      setState(() {
+
+      });
   }
 
   @override
