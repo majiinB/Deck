@@ -50,4 +50,5 @@ class AuthService {
   Future<void> resetPass(String newPassword) async {
     return _firebaseAuth.currentUser!.updatePassword(newPassword);
   }
+
 }

@@ -1,11 +1,9 @@
-import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/backend/auth/auth_gate.dart';
 import 'package:deck/pages/flashcard/flashcard.dart';
 import 'package:deck/pages/home/home.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/settings/account.dart';
 import 'package:deck/pages/task/task.dart';
-import 'package:deck/pages/theme/theme.dart';
 import 'package:deck/pages/theme/theme_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +11,6 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';

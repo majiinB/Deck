@@ -1,5 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/backend/auth/auth_utils.dart';
 import 'package:deck/pages/settings/edit_profile.dart';
 import 'package:deck/pages/settings/settings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:deck/pages/misc/colors.dart';
@@ -14,6 +19,8 @@ class AccountPage extends StatefulWidget {
 }
 
 class AccountPageState extends State<AccountPage> {
+  String name = '';
+
   List<String> deckTitles = [
     'Deck ni leila malaki',
     'Deck ko malaki',
@@ -21,6 +28,21 @@ class AccountPageState extends State<AccountPage> {
   ];
 
   List<String> deckNumbers = ['69 Cards', '96 Cards', '88 Cards'];
+  late Image? coverUrl;
+
+  @override
+  void initState() {
+    coverUrl = null;
+    getCoverUrl();
+    super.initState();
+  }
+
+  void getCoverUrl() async{
+      coverUrl = await AuthUtils().getCoverPhotoUrl();
+      setState(() {
+
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +58,7 @@ class AccountPageState extends State<AccountPage> {
                 alignment: Alignment.centerLeft,
                 children: [
                   BuildCoverImage(
-                      borderRadiusContainer: 0, borderRadiusImage: 0),
+                      borderRadiusContainer: 0, borderRadiusImage: 0, CoverPhotofile: coverUrl,),
                   Positioned(
                     top: 200,
                     child: Container(
@@ -68,12 +90,12 @@ class AccountPageState extends State<AccountPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          BuildProfileImage(),
+                          BuildProfileImage(AuthUtils().getPhoto()),
                           Padding(
                             padding:
                                 const EdgeInsets.only(top: 20.0, left: 8.0),
                             child: Text(
-                              "POLE - DI MAGUIBA",
+                              AuthUtils().getDisplayName() ?? "Guest",
                               style: GoogleFonts.nunito(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
@@ -84,7 +106,7 @@ class AccountPageState extends State<AccountPage> {
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0),
                             child: Text(
-                              "poledimaguibaumaalogalog@gmail.com",
+                              AuthUtils().getEmail() ?? "guest@guest.com",
                               style: GoogleFonts.nunito(
                                 fontSize: 16,
                                 color: DeckColors.white,

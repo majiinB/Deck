@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:deck/backend/auth/auth_utils.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -257,15 +258,14 @@ class BuildButton extends StatelessWidget {
 ///
 /// BuildCoverImage is a method for Cover Photo
 class BuildCoverImage extends StatefulWidget {
-  final File? CoverPhotofile;
+  final Image? CoverPhotofile;
   final double borderRadiusContainer, borderRadiusImage;
 
-  BuildCoverImage(
-      {Key? key,
+  const BuildCoverImage(
+      {super.key,
       this.CoverPhotofile,
       required this.borderRadiusContainer,
-      required this.borderRadiusImage})
-      : super(key: key);
+      required this.borderRadiusImage});
 
   @override
   BuildCoverImageState createState() => BuildCoverImageState();
@@ -285,8 +285,8 @@ class BuildCoverImageState extends State<BuildCoverImage> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.borderRadiusImage),
         child: widget.CoverPhotofile != null
-            ? Image.file(
-                widget.CoverPhotofile!,
+            ? Image(
+                image: widget.CoverPhotofile!.image,
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
@@ -303,9 +303,9 @@ class BuildCoverImageState extends State<BuildCoverImage> {
 ///
 /// BuildProfileImage is a method for Profile Photo
 class BuildProfileImage extends StatefulWidget {
-  final File? profilePhotofile;
+  final Image? profilePhotofile;
 
-  BuildProfileImage({Key? key, this.profilePhotofile}) : super(key: key);
+  BuildProfileImage(this.profilePhotofile, {Key? key}) : super(key: key);
 
   @override
   BuildProfileImageState createState() => BuildProfileImageState();
@@ -315,15 +315,10 @@ class BuildProfileImageState extends State<BuildProfileImage> {
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-      backgroundColor:
-          widget.profilePhotofile != null ? null : DeckColors.white,
-      backgroundImage: widget.profilePhotofile != null
-          ? FileImage(widget.profilePhotofile!)
-          : null,
-      child: widget.profilePhotofile == null
-          ? Icon(DeckIcons.account, size: 60, color: DeckColors.backgroundColor)
-          : null,
+      backgroundColor: DeckColors.white,
+      backgroundImage: widget.profilePhotofile?.image,
       radius: 60,
+      child: widget.profilePhotofile?.image == null ? const Icon(DeckIcons.account, size: 60, color: DeckColors.backgroundColor) : null,
     );
   }
 }
@@ -521,14 +516,14 @@ class ShowConfirmationDialog extends StatelessWidget {
             onCancel();
             Navigator.of(context).pop();
           },
-          child: const Text("No"),
+          child: const Text("No", style: TextStyle(color: Colors.red)),
         ),
         TextButton(
           onPressed: () {
             onConfirm();
             Navigator.of(context).pop();
           },
-          child: const Text("Yes"),
+          child: const Text("Yes", style: TextStyle(color: Colors.green)),
         ),
       ],
     );
