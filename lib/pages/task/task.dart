@@ -8,6 +8,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:deck/pages/task/view_task.dart';
 import 'package:deck/pages/task/add_task.dart';
 
+import '../../backend/models/task.dart';
+
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
   @override
@@ -15,8 +17,15 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
+  List<Task> tasks = [];
+
   DateTime today = DateTime.now();
   DateTime selectedDay = DateTime.now();
+
+  void _getTasks() async{
+    tasks = await Task().getTasksOnSpecificDate();
+    setState(() {});
+  }
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
@@ -133,7 +142,7 @@ class _TaskPageState extends State<TaskPage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddTaskPage()),
+              MaterialPageRoute(builder: (context) => const AddTaskPage()),
             );
           },
         ),
@@ -298,7 +307,7 @@ class _TaskPageState extends State<TaskPage> {
                     // Done Tab
                     if (!isThereTask(selectedDay, taskDeadlines))
                       IfDeckEmpty(
-                        ifDeckEmptyText: 'No Task fo Today.',
+                        ifDeckEmptyText: 'No Task for Today.',
                         ifDeckEmptyheight:
                             MediaQuery.of(context).size.height * 0.2,
                       ),
