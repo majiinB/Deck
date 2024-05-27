@@ -298,6 +298,45 @@ class BuildCoverImageState extends State<BuildCoverImage> {
     );
   }
 }
+class BuildCoverImageUrl extends StatelessWidget {
+  final String? imageUrl;
+  final double borderRadiusContainer, borderRadiusImage;
+  final Color backgroundColor;
+
+  BuildCoverImageUrl({
+    Key? key,
+    this.imageUrl,
+    required this.borderRadiusContainer,
+    required this.borderRadiusImage,
+    this.backgroundColor = Colors.transparent,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadiusContainer),
+        color: imageUrl != null ? null : backgroundColor,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadiusImage),
+        child: imageUrl != null
+            ? Image.network(
+          imageUrl!,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+        )
+            : Container(
+          color: backgroundColor,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+      ),
+    );
+  }
+}
 
 ///
 ///
@@ -1237,21 +1276,22 @@ class CustomExpansionTileState extends State<CustomExpansionTile> {
 
 /// THIS METHOD IS FOR THE DECKS CONTAINER IN THE FLASHCARD PAGE
 class BuildDeckContainer extends StatefulWidget {
-  final File? deckCoverPhoto;
+  final String? deckCoverPhotoUrl;
   final String titleOfDeck;
-  final VoidCallback onDelete, onTap;
+  final VoidCallback onDelete;
+  final VoidCallback onTap;
   final VoidCallback? onRetrieve;
   final bool enableSwipeToRetrieve;
 
   const BuildDeckContainer({
-    super.key,
+    Key? key,
     required this.onDelete,
     this.onRetrieve,
     this.enableSwipeToRetrieve = true,
-    this.deckCoverPhoto,
+    this.deckCoverPhotoUrl,
     required this.titleOfDeck,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   State<BuildDeckContainer> createState() => BuildDeckContainerState();
@@ -1259,6 +1299,7 @@ class BuildDeckContainer extends StatefulWidget {
 
 class BuildDeckContainerState extends State<BuildDeckContainer> {
   Color _containerColor = DeckColors.gray;
+  final String defaultImageUrl = "https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=2b0faebd-9691-4c37-8049-dc30289460c2";
 
   @override
   Widget build(BuildContext context) {
@@ -1272,9 +1313,7 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
         setState(() {
           _containerColor = DeckColors.gray;
         });
-        if (widget.onTap != null) {
-          widget.onTap();
-        }
+        widget.onTap();
       },
       onTapCancel: () {
         setState(() {
@@ -1300,8 +1339,9 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color:
-                        widget.deckCoverPhoto != null ? null : DeckColors.white,
+                    color: (widget.deckCoverPhotoUrl != null && widget.deckCoverPhotoUrl != "no_image")
+                        ? null
+                        : DeckColors.coverImageColorSettings,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(15.0),
                       topRight: Radius.circular(15.0),
@@ -1314,22 +1354,44 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
                       topLeft: Radius.circular(15.0),
                       topRight: Radius.circular(15.0),
                     ),
-                    child: widget.deckCoverPhoto != null
-                        ? Image.file(
-                            widget.deckCoverPhoto!,
-                            width: 20,
-                            height: 10,
+                    child: (widget.deckCoverPhotoUrl != null && widget.deckCoverPhotoUrl != "no_image")
+                        ? Image.network(
+                          widget.deckCoverPhotoUrl!,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                          return Image.network(
+                            defaultImageUrl,
+                            width: double.infinity,
+                            height: double.infinity,
                             fit: BoxFit.cover,
-                          )
-                        : const Placeholder(
-                            color: DeckColors.white,
-                          ),
+                            errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: DeckColors.coverImageColorSettings,
+                              child: const Icon(Icons.broken_image, color: Colors.grey),
+                            );
+                          },
+                        );
+                      },
+                    )
+                        : Image.network(
+                          defaultImageUrl,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: DeckColors.coverImageColorSettings,
+                            child: const Icon(Icons.broken_image, color: Colors.grey),
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                ),
                 Expanded(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(top: 15.0, left: 10, right: 10),
+                    padding: const EdgeInsets.only(top: 15.0, left: 10, right: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1354,6 +1416,8 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
     );
   }
 }
+
+
 
 /// ------------------------ E N D -----------------------------
 /// --------------- B O T T O M  S H E E T ---------------------

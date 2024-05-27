@@ -1,7 +1,6 @@
 import 'package:deck/pages/misc/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../backend/models/card.dart';
