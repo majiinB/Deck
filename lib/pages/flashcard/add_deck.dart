@@ -63,7 +63,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                 children: [
                   BuildCoverImage(
                     // Conditionally pass CoverPhotofile based on coverPhoto value
-                    CoverPhotofile: coverPhoto != 'no_photo' ? File(coverPhoto) : null,
+                    CoverPhotofile: coverPhoto != 'no_photo' ? Image.file(File(coverPhoto)) : null,
                     borderRadiusContainer: 10,
                     borderRadiusImage: 10,
                   ),
