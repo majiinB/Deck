@@ -18,12 +18,12 @@ class NumberOfCardsException extends ApiException {
   NumberOfCardsException(String message) : super(420, message);
 }
 
-class ForbiddenException extends ApiException {
-  ForbiddenException(String message) : super(403, message);
+class TextExtractionException extends ApiException {
+  TextExtractionException(String message) : super(421, message);
 }
 
-class NotFoundException extends ApiException {
-  NotFoundException(String message) : super(404, message);
+class FileDeletionError extends ApiException {
+  FileDeletionError(String message) : super(422, message);
 }
 
 class InternalServerErrorException extends ApiException {

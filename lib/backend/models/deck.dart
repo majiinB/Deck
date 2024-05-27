@@ -8,12 +8,13 @@ class Deck{
   String title;
   final String _userId;
   final String _deckId;
+  String coverPhoto;
   bool isDeleted;
   bool isPrivate;
   DateTime createdAt;
 
   // Constructor
-  Deck(this.title, this._userId, this._deckId, this.isDeleted, this.isPrivate, this.createdAt);
+  Deck(this.title, this._userId, this._deckId, this.isDeleted, this.isPrivate, this.createdAt, this.coverPhoto);
   String get userId => _userId;
   String get deckId => _deckId;
 

@@ -1,3 +1,4 @@
+import 'package:deck/backend/task/task_service.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class _TaskPageState extends State<TaskPage> {
   DateTime selectedDay = DateTime.now();
 
   void _getTasks() async{
-    tasks = await Task().getTasksOnSpecificDate();
+    tasks = await TaskService().getTasksOnSpecificDate();
     setState(() {});
   }
 

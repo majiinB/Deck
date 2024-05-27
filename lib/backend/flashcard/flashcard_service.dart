@@ -1,6 +1,8 @@
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../models/deck.dart';
 
 class FlashcardService{
@@ -24,6 +26,7 @@ class FlashcardService{
         // Extract data from the document
         String title = (doc.data() as Map<String, dynamic>)['title'];
         String userId = (doc.data() as Map<String, dynamic>)['user_id'];
+        String coverPhoto = (doc.data() as Map<String, dynamic>)['cover_photo'];
         bool isDeleted = (doc.data() as Map<String, dynamic>)['is_deleted'];
         bool isPrivate = (doc.data() as Map<String, dynamic>)['is_private'];
         String deckId = doc.id;
@@ -33,7 +36,7 @@ class FlashcardService{
         DateTime createdAt = createdAtTimestamp.toDate();
 
         // Create a new Deck object and add it to the list
-        decks.add(Deck(title, userId, deckId, isDeleted, isPrivate, createdAt));
+        decks.add(Deck(title, userId, deckId, isDeleted, isPrivate, createdAt, coverPhoto));
       }
     } catch (e) {
       // Handle errors
@@ -62,12 +65,13 @@ class FlashcardService{
         // Check if the deck belongs to the user and is not deleted
         if (deckUserId == userId && !isDeleted) {
           String title = deckData['title'];
+          String coverPhoto = deckData['cover_photo'];
           bool isPrivate = deckData['is_private'];
           Timestamp createdAtTimestamp = deckData['created_at'];
           DateTime createdAt = createdAtTimestamp.toDate();
 
           // Create and return a Deck object
-          return Deck(title, userId, deckId, isDeleted, isPrivate, createdAt);
+          return Deck(title, userId, deckId, isDeleted, isPrivate, createdAt, coverPhoto);
         } else {
           // Deck does not belong to the user or is deleted
           return null;
@@ -140,7 +144,7 @@ class FlashcardService{
       print('Failed to add deck log record: $e');
     }
   }
-  Future<Deck?> addDeck(String userId, String title) async {
+  Future<Deck?> addDeck(String userId, String title, String coverPhoto) async {
     try {
       // Get the reference to the collection
       CollectionReference questionsRef = _firestore.collection('decks');
@@ -151,16 +155,65 @@ class FlashcardService{
         'is_deleted': false,
         'is_private': false,
         'title': title,
-        'user_id': userId
+        'user_id': userId,
+        'cover_photo':coverPhoto
       });
 
       String newDeckId = docRef.id;
 
       print('Deck added successfully!');
-      return Deck(title, userId, newDeckId, false, false, DateTime.now());
+      return Deck(title, userId, newDeckId, false, false, DateTime.now(), coverPhoto);
     } catch (e) {
       print('Error adding deck: $e');
       return null;
     }
   }
+  Future<String> uploadPdfFileToFirebase(String filePath, String userId) async {
+    String fileUrl = "";
+    File file = File(filePath);
+    String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+    if (await file.exists()) {
+      // Get a reference to the Firebase Storage location
+      Reference referenceRoot = FirebaseStorage.instance.ref();
+      Reference referenceUserFolder = referenceRoot.child('uploads').child(userId);
+      Reference referenceFileToUpload = referenceUserFolder.child(uniqueFileName);
+
+      // Upload file to Firebase Storage
+      try {
+        await referenceFileToUpload.putFile(file);
+        print('File Uploaded Successfully!');
+      } catch (e) {
+        print('Error uploading file: $e');
+      }
+    }
+    return uniqueFileName;
+  }
+
+  Future<String> uploadImageToFirebase(String filePath, String userId) async {
+    String fileUrl = "";
+    File file = File(filePath);
+    String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+    if (await file.exists()) {
+      // Get a reference to the Firebase Storage location
+      Reference referenceRoot = FirebaseStorage.instance.ref();
+      Reference referenceUserFolder = referenceRoot.child('deckCovers').child(userId);
+      Reference referenceFileToUpload = referenceUserFolder.child(uniqueFileName);
+
+      // Upload file to Firebase Storage
+      try {
+        // Upload the file
+        await referenceFileToUpload.putFile(file);
+        print('File Uploaded Successfully!');
+
+        // Retrieve the download URL
+        fileUrl = await referenceFileToUpload.getDownloadURL();
+        print('Download URL: $fileUrl');
+      } catch (e) {
+        print('Error uploading file: $e');
+      }
+    }
+    return fileUrl;
+  }
+
 }

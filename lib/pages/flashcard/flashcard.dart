@@ -202,6 +202,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: BuildDeckContainer(
+                        deckCoverPhotoUrl: _filteredDecks[index].coverPhoto,
                         titleOfDeck: _filteredDecks[index].title,
                         onDelete: () {
                           final Deck deletedTitle = _filteredDecks[index];
