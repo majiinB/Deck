@@ -8,6 +8,7 @@ import 'package:deck/pages/settings/recently_deleted.dart';
 import 'package:deck/pages/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 class SettingPage extends StatefulWidget {
@@ -111,6 +112,10 @@ class _SettingPageState extends State<SettingPage> {
               onTap: () async {
                 final authService = AuthService();
                 authService.signOut();
+                GoogleSignIn _googleSignIn = GoogleSignIn();
+                if(await _googleSignIn.isSignedIn()) {
+                  await _googleSignIn.signOut();
+                }
                 Navigator.of(context).push(
                   RouteGenerator.createRoute(const SignUpPage()),
                 );

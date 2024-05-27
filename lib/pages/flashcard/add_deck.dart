@@ -67,7 +67,6 @@ class _AddDeckPageState extends State<AddDeckPage> {
                     borderRadiusContainer: 10,
                     borderRadiusImage: 10,
                   ),
-
                   Positioned(
                       top: 140,
                       right: 10,

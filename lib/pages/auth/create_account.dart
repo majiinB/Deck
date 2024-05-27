@@ -204,14 +204,16 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       return;
                     }
 
-                    final user = <String, dynamic> {
-                      "email": emailController.text,
-                      "first_name": "Anonymous",
-                      "last_name": getAdjective().toString(),
-                    };
-
                     try{
-                      await AuthService().signUpWithEmail(emailController.text, passwordController.text);
+                      final authService = AuthService();
+                      await authService.signUpWithEmail(emailController.text, passwordController.text);
+
+                      final user = <String, dynamic> {
+                        "email": emailController.text,
+                        "name": "Anonymous ${getAdjective()}",
+                        "user_id":  authService.getCurrentUser()?.uid,
+                        "cover_photo": "",
+                      };
 
                       final db = FirebaseFirestore.instance;
                       await db.collection("users").add(user);
@@ -228,6 +230,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         message = "Email already taken!";
                       } else if (e.code == 'weak-password'){
                         message = "Password should be atleast 6 characters!";
+                      } else if (e.code == 'email-already-in-use'){
+                        message = "Email already in use!";
                       } else {
                         message = "Error creating your account!";
                       }
