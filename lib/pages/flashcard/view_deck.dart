@@ -7,10 +7,8 @@ import 'package:deck/pages/flashcard/edit_flashcard.dart';
 import 'package:deck/pages/flashcard/play_my_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../backend/models/deck.dart';
