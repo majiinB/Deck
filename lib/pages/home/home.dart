@@ -1,3 +1,4 @@
+import 'package:deck/pages/flashcard/view_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
@@ -161,7 +162,7 @@ class _HomePageState extends State<HomePage> {
                         print('U TOUCHED MI DECK!');
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const /*ViewDeckPage*/ ViewTaskPage()), /// WALA PALA SAKEN MGA PAGES NI GAB HEHE
+                          MaterialPageRoute(builder: (context) => ViewDeckPage(deck: _decks[index])), /// WALA PALA SAKEN MGA PAGES NI GAB HEHE
                         );
                       },
                     );

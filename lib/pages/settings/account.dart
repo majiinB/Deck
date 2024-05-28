@@ -192,7 +192,7 @@ class AccountPageState extends State<AccountPage> {
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: BuildListOfDecks(
                         titleText: _decks[index].title.toString(),
-                        numberText: _deckCardCount[_decks[index].deckId].toString() + " Card//s",
+                        numberText: _deckCardCount[_decks[index].deckId].toString() + " Card(s)",
                         deckImageUrl: _decks[index].coverPhoto.toString(),
                         onDelete: () {
                           final String deletedTitle = _decks[index].title.toString();
