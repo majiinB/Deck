@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:deck/backend/auth/auth_service.dart';
@@ -11,6 +12,9 @@ import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 
+import '../../backend/flashcard/flashcard_service.dart';
+import '../../backend/models/deck.dart';
+
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
@@ -20,12 +24,17 @@ class AccountPage extends StatefulWidget {
 
 class AccountPageState extends State<AccountPage> {
   String name = '';
+  final AuthService _authService = AuthService();
+  final FlashcardService _flashcardService = FlashcardService();
+  List<Deck> _decks = [];
+  Map<String, int> _deckCardCount = {};
+  late User? _user;
 
-  List<String> deckTitles = [
-    'Deck ni leila malaki',
-    'Deck ko malaki',
-    'Deck nating lahat malaki',
-  ];
+  // List<String> deckTitles = [
+  //   'Deck ni leila malaki',
+  //   'Deck ko malaki',
+  //   'Deck nating lahat malaki',
+  // ];
 
   List<String> deckNumbers = ['69 Cards', '96 Cards', '88 Cards'];
   late Image? coverUrl;
@@ -35,6 +44,8 @@ class AccountPageState extends State<AccountPage> {
     coverUrl = null;
     getCoverUrl();
     super.initState();
+    _user = _authService.getCurrentUser();
+    _initUserDecks(_user);
   }
 
   void getCoverUrl() async{
@@ -42,6 +53,22 @@ class AccountPageState extends State<AccountPage> {
       setState(() {
 
       });
+  }
+
+  void _initUserDecks(User? user) async {
+    if (user != null) {
+      String userId = user.uid;
+      List<Deck> decks = await _flashcardService.getDecksByUserIdNewestFirst(userId); // Call method to fetch decks
+      Map<String, int> deckCardCount = {};
+      for(Deck deckCount in decks){
+        int count = await deckCount.getCardCount();
+        deckCardCount[deckCount.deckId] = count;
+      }
+      setState(() {
+        _decks = decks; // Update state with fetched decks
+        _deckCardCount = deckCardCount; // Update state with fetched decks count
+      });
+    }
   }
 
   @override
@@ -159,32 +186,29 @@ class AccountPageState extends State<AccountPage> {
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: deckTitles.length,
+                  itemCount: _decks.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: BuildListOfDecks(
-                        titleText: deckTitles[index],
-                        numberText: deckNumbers[index],
+                        titleText: _decks[index].title.toString(),
+                        numberText: _deckCardCount[_decks[index].deckId].toString() + " Card//s",
+                        deckImageUrl: _decks[index].coverPhoto.toString(),
                         onDelete: () {
-                          final String deletedTitle = deckTitles[index];
-                          final String deletedNumber = deckNumbers[index];
+                          final String deletedTitle = _decks[index].title.toString();
+                          //final String deletedNumber = deckNumbers[index];
 
-                          setState(() {
-                            deckTitles.removeAt(index);
-                            deckNumbers.removeAt(index);
-                          });
                           showConfirmationDialog(
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
-                            () {},
                             () {
-                              setState(() {
-                                //when the user clicks no
-                                deckTitles.insert(index, deletedTitle);
-                                deckNumbers.insert(index, deletedNumber);
-                              });
+                              _deckCardCount.remove(_decks[index].deckId);
+                              _decks[index].updateDeleteStatus(true);
+                              _decks.removeAt(index);
+                            },
+                            () {
+                              // Wala lang kasi wala naman mangyayari pag nag delete
                             },
                           );
                         },

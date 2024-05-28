@@ -1,11 +1,15 @@
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../backend/auth/auth_service.dart';
+import '../../backend/flashcard/flashcard_service.dart';
+import '../../backend/models/deck.dart';
 import '../task/view_task.dart';
 // import 'package:deck/pages/account/account.dart';
 
@@ -17,6 +21,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final AuthService _authService = AuthService();
+  final FlashcardService _flashcardService = FlashcardService();
+  Deck? _latestDeck;
+  List<Deck> _decks = [];
+  late User? _user;
   //Initial values for testing
   String userName  = "Pole Andrei Buendia";
   String greeting = "";
@@ -28,21 +37,7 @@ class _HomePageState extends State<HomePage> {
   //   ['taskTitle2',DateTime(2024, 5, 14),false],
   // ['taskTitle3',DateTime(2024, 5, 15),false]
   // ];
-  List recentDeck = [
-    //title, deckImageFile()
-    ["Flashcard Title 1", ""],
-    ["Flashcard Title 2", ""],
-    ["Flashcard Title 3", ""],
-    ["Flashcard Title 4", ""],
-    ["Flashcard Title 5", ""],
-    ["A Long Flashcard Title 6", ""],
-    ["Flashcard Title 1", ""],
-    ["Flashcard Title 2", ""],
-    ["Flashcard Title 3", ""],
-    ["Flashcard Title 4", ""],
-    ["Flashcard Title 5", ""],
-    ["A Long Flashcard Title 6", ""],
-  ];
+
 
   List<String> taskTitles = [
     'taskTitle1','taskTitle2','taskTitle3',
@@ -81,19 +76,31 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _user = _authService.getCurrentUser();
+    _initUserDecks(_user);
     String firstName = userName.isNotEmpty ? userName.split(" ").first : 'User';
     greeting = "hi, ${firstName.isEmpty ? 'User' : firstName}!";
+  }
+
+  void _initUserDecks(User? user) async {
+    if (user != null) {
+      String userId = user.uid;
+      List<Deck> decks = await _flashcardService.getDecksByUserIdNewestFirst(userId); // Call method to fetch decks
+      setState(() {
+        _decks = decks; // Update state with fetched decks
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body:SafeArea(
-      top: true,
-      bottom: false,
-      left: true,
-      right: true,
-      minimum: const EdgeInsets.only(left: 20, right: 20),
+          top: true,
+          bottom: false,
+          left: true,
+          right: true,
+          minimum: const EdgeInsets.only(left: 20, right: 20),
         child: CustomScrollView(
           slivers: <Widget>[
             DeckSliverHeader(
@@ -141,12 +148,13 @@ class _HomePageState extends State<HomePage> {
             ),
             SliverGrid(
                 delegate: SliverChildBuilderDelegate(
-                        childCount: recentDeck.length,
+                        childCount: _decks.length,
                         (context, index) {
                   return LayoutBuilder(builder: (context, BoxConstraints constraints){
                     double cardWidth = constraints.maxWidth;
                     return HomeDeckTile(
-                      deckName: recentDeck[index][0],
+                      deckName: _decks[index].title.toString(),
+                      deckImageUrl: _decks[index].coverPhoto.toString(),
                       deckColor:DeckColors.gray,
                       cardWidth: cardWidth - 8,
                       onPressed: () {
