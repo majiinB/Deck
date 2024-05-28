@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deck/backend/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 
 class AddTaskPage extends StatefulWidget {
-  const AddTaskPage({Key? key});
+  const AddTaskPage({super.key});
 
   @override
   State<AddTaskPage> createState() => _AddTaskPageState();
@@ -11,6 +13,8 @@ class AddTaskPage extends StatefulWidget {
 
 class _AddTaskPageState extends State<AddTaskPage> {
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
@@ -105,12 +109,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 color: DeckColors.white,
                 thickness: 2,
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 20),
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
                 child: BuildTextBox(
                   hintText: "Enter Task Title",
                   showPassword: false,
-                  initialValue: "",
+                  controller: _titleController,
                 ),
               ),
               Padding(
@@ -124,12 +128,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   rightIcon: Icons.calendar_today_outlined,
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 20),
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
                 child: BuildTextBox(
                   hintText: "Enter Task Description",
                   showPassword: false,
-                  initialValue: "",
+                  controller: _descriptionController,
                   isMultiLine: true,
                 ),
               ),
@@ -146,8 +150,26 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     fontSize: 16,
                     borderWidth: 0,
                     borderColor: Colors.transparent,
-                    onPressed: () {
-                      print("save button clicked");
+                    onPressed: () async {
+                      if(DateTime.parse(_dateController.text).isBefore(DateTime.now())){
+                        showDialog(context: context, builder: (context) =>
+                            const AlertDialog(
+                              title: Text("You cannot set the deadline that's already in the past!"),
+                            ));
+                        return;
+                      }
+
+                      Map<String, dynamic> data = {
+                        "user_id": AuthService().getCurrentUser()?.uid,
+                        "title": _titleController.text,
+                        "description" : _descriptionController.text,
+                        "set_date": DateTime.now(),
+                        "end_date": DateTime.parse(_dateController.text),
+                        "is_done": false,
+                      };
+
+                      final db = FirebaseFirestore.instance;
+                      await db.collection('tasks').add(data);
                       Navigator.pop(context);
                     }),
               ),

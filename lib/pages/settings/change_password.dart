@@ -1,5 +1,7 @@
+import 'package:deck/backend/auth/auth_service.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -11,6 +13,10 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class ChangePasswordPageState extends State<ChangePasswordPage> {
+  final newPasswordController = TextEditingController();
+  final newConfirmPasswordController = TextEditingController();
+  final oldPasswordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,25 +51,28 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                 ),
                 child: Column(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 30, left: 20, right: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
                       child: BuildTextBox(
                         hintText: 'Enter Old Password',
                         showPassword: true,
+                        controller: oldPasswordController,
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
                       child: BuildTextBox(
                         hintText: 'Enter New Password',
                         showPassword: true,
+                        controller: newPasswordController,
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
                       child: BuildTextBox(
                         hintText: 'Confirm New Password',
                         showPassword: true,
+                        controller: newConfirmPasswordController,
                       ),
                     ),
                     Padding(
@@ -78,13 +87,62 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                             context,
                             "Change Password",
                             "Are you sure you want to change password?",
-                            () {
+                            () async {
                               //when user clicks yes
                               //add logic here
+                              try{
+                                User? user = FirebaseAuth.instance.currentUser;
+                                String? email = user?.email;
+                                if(email == null){ return; }
+                                AuthCredential credential = EmailAuthProvider.credential(
+                                  email: email,
+                                  password: oldPasswordController.text,
+                                );
+                                await user?.reauthenticateWithCredential(credential);
+
+                                if(newPasswordController.text != newConfirmPasswordController.text){
+                                  showDialog(context: context, builder: (context) => const AlertDialog(
+                                    title: Text("Password mismatch!"),
+                                  ));
+                                  return;
+                                } else if(newPasswordController.text == oldPasswordController.text || oldPasswordController.text == newConfirmPasswordController.text){
+                                  showDialog(context: context, builder: (context) => const AlertDialog(
+                                    title: Text("You cannot change your password as your current password!"),
+                                  ));
+                                  return;
+                                }
+                                AuthService().resetPass(newPasswordController.text);
+                              } on FirebaseAuthException catch (e){
+                                String message = '';
+                                if(e.code == 'user-mismatch'){
+                                  message = "User credential mismatch!";
+                                } else if (e.code == 'user-not-found'){
+                                  message = 'User not found!';
+                                } else if (e.code == 'invalid-credential') {
+                                  message = 'Invalid credential!';
+                                } else if (e.code == 'invalid-email'){
+                                  message = 'Invalid email!';
+                                } else if (e.code == 'wrong-password'){
+                                  message = 'Wrong password!';
+                                } else if (e.code == 'weak-password'){
+                                  message = 'Password must be atleast 6 characters!';
+                                } else {
+                                  message = 'Error changing your password!';
+                                }
+                                print(e.toString());
+                                showDialog(context: context, builder: (context) => AlertDialog(
+                                  title: Text(message),
+                                ));
+                              } catch (e) {
+                                print(e.toString());
+                                showDialog(context: context, builder: (context) => AlertDialog(
+                                  title: Text(e.toString()),
+                                ));
+                              }
                             },
                             () {
                               //when user clicks no
-                              //add logic here
+                              //nothing happens
                             },
                           );
                         },

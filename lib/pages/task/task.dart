@@ -1,3 +1,4 @@
+import 'package:deck/backend/task/task_service.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:deck/pages/task/view_task.dart';
 import 'package:deck/pages/task/add_task.dart';
 
+import '../../backend/models/task.dart';
+
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
   @override
@@ -15,8 +18,15 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
+  List<Task> tasks = [];
+
   DateTime today = DateTime.now();
   DateTime selectedDay = DateTime.now();
+
+  void _getTasks() async{
+    tasks = await TaskService().getTasksOnSpecificDate();
+    setState(() {});
+  }
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
@@ -122,17 +132,21 @@ class _TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: DeckFAB(
-        text: "Add Task",
-        icon: Icons.add, //walang plus c deck </3
-        foregroundColor: DeckColors.primaryColor,
-        backgroundColor: DeckColors.gray,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddTaskPage()),
-          );
-        },
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: DeckFAB(
+          text: "Add Task",
+          fontSize: 12,
+          icon: Icons.add,
+          foregroundColor: DeckColors.primaryColor,
+          backgroundColor: DeckColors.gray,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddTaskPage()),
+            );
+          },
+        ),
       ),
       body: SafeArea(
         top: true,
@@ -294,7 +308,7 @@ class _TaskPageState extends State<TaskPage> {
                     // Done Tab
                     if (!isThereTask(selectedDay, taskDeadlines))
                       IfDeckEmpty(
-                        ifDeckEmptyText: 'No Task fo Today.',
+                        ifDeckEmptyText: 'No Task for Today.',
                         ifDeckEmptyheight:
                             MediaQuery.of(context).size.height * 0.2,
                       ),

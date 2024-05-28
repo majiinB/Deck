@@ -1,6 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/auth/auth_gate.dart';
-import 'package:deck/main.dart';
-import 'package:deck/pages/auth/create_account.dart';
 import 'package:deck/pages/auth/recover_account.dart';
 import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
@@ -120,6 +119,9 @@ class LoginPage extends StatelessWidget {
                 onPressed: () async {
                   try{
                     await AuthService().signInWithEmail(emailController.text, passwordController.text);
+                    Navigator.of(context).push(
+                      RouteGenerator.createRoute(const AuthGate()),
+                    );
                   } on FirebaseAuthException catch(e){
                     String message = '';
                     if(e.code == 'wrong-password'){
@@ -128,6 +130,8 @@ class LoginPage extends StatelessWidget {
                       message = 'User not found!';
                     } else if (e.code == 'invalid-email') {
                       message = 'Invalid email format!';
+                    } else if (e.code == 'too-many-requests') {
+                      message = 'Too many failed attempts, try again later!';
                     } else {
                       message = 'Error logging in user!';
                     }
@@ -142,10 +146,6 @@ class LoginPage extends StatelessWidget {
                       title: Text("Error logging in user!"),
                     ));
                   }
-
-                  Navigator.of(context).push(
-                    RouteGenerator.createRoute(const AuthGate()),
-                  );
                 },
                 buttonText: 'Log In',
                 height: 60,
@@ -190,12 +190,23 @@ class LoginPage extends StatelessWidget {
                 onPressed: () async{
                   final authService = AuthService();
                   try {
-                    final user = await authService.signUpWithGoogle();
-                    if(user != null){
-                      Navigator.of(context).push(
-                        RouteGenerator.createRoute(const AuthGate()),
-                      );
+                    final currentUser = await authService.signUpWithGoogle();
+
+                    final user = <String, dynamic> {
+                      "email": currentUser?.email,
+                      "name": currentUser?.displayName,
+                      "uid": currentUser?.uid,
+                      "cover_photo": "",
+                    };
+
+                    final db = FirebaseFirestore.instance;
+                    final snap = await db.collection("users").where('email',isEqualTo: currentUser?.email).get();
+                    if(snap.docs.isEmpty){
+                      await db.collection("users").add(user);
                     }
+                    Navigator.of(context).push(
+                      RouteGenerator.createRoute(const AuthGate()),
+                    );
                   } catch (e){
                     print(e.toString());
                     showDialog(context: context, builder: (context) => const AlertDialog(
