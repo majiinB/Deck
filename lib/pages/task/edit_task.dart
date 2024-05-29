@@ -1,24 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deck/backend/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/task/task.dart';
 
+import '../../backend/models/task.dart';
+
 class EditTaskPage extends StatefulWidget {
-  const EditTaskPage({Key? key});
+  final Task task;
+  const EditTaskPage({super.key, required this.task});
 
   @override
   State<EditTaskPage> createState() => _EditTaskPageState();
 }
 
 class _EditTaskPageState extends State<EditTaskPage> {
+
   //initial values
-  final String taskTitle = 'Buy groceries';
-  final String taskDescription =
-      '"Buy groceries" involves purchasing essential food items and '
-      'household supplies. This task ensures that necessary provisions are '
-      'available for daily use. It contributes to maintaining a well-stocked and '
-      'functional home environment.';
-  final DateTime taskDeadline = DateTime(2024, 5, 30);
+  late final TextEditingController _titleController;
+  late final TextEditingController _descriptionController;
   late final TextEditingController _dateController;
 
   @override
@@ -26,7 +27,9 @@ class _EditTaskPageState extends State<EditTaskPage> {
     super.initState();
 
     _dateController =
-        TextEditingController(text: taskDeadline.toString().split(" ")[0]);
+        TextEditingController(text: widget.task.deadline.toString().split(" ")[0]);
+    _titleController = TextEditingController(text: widget.task.title);
+    _descriptionController = TextEditingController(text: widget.task.description.toString());
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -34,7 +37,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
       context: context,
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
-      initialDate: taskDeadline, //selected date ni user
+      initialDate: widget.task.deadline, //selected date ni user
       errorFormatText: 'Enter valid date',
       errorInvalidText: 'Enter date in valid range',
       fieldHintText: 'Month/Day/Year',
@@ -128,7 +131,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
                 child: BuildTextBox(
                   hintText: "Enter Task Title",
                   showPassword: false,
-                  initialValue: taskTitle, //initial title
+                  controller: _titleController, //initial title
                 ),
               ),
               Padding(
@@ -147,8 +150,9 @@ class _EditTaskPageState extends State<EditTaskPage> {
                 child: BuildTextBox(
                   hintText: "Enter Task Description",
                   showPassword: false,
-                  initialValue: taskDescription,
+                  controller: _descriptionController,
                   isMultiLine: true,
+
                 ),
               ),
               Padding(
@@ -164,7 +168,22 @@ class _EditTaskPageState extends State<EditTaskPage> {
                     fontSize: 16,
                     borderWidth: 0,
                     borderColor: Colors.transparent,
-                    onPressed: () {
+                    onPressed: () async {
+                      if(DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)).isBefore(DateTime.now())){
+                        showDialog(context: context, builder: (context) =>
+                        const AlertDialog(
+                          title: Text("You cannot set the deadline that's already in the past!"),
+                        ));
+                        return;
+                      }
+
+                      final db = FirebaseFirestore.instance;
+                      await db.collection('tasks').doc(widget.task.uid).update({
+                        'title': _titleController.text,
+                        'description': _descriptionController.text,
+                        'deadline': DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
+                      });
+
                       print("save button clicked");
                       Navigator.pop(context);
                       // Navigator.push(

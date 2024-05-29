@@ -13,13 +13,14 @@ class TaskService {
       print(AuthService().getCurrentUser()?.uid);
       // Iterate through the query snapshot to extract document data
       for (var doc in querySnapshot.docs) {
+        String uid = doc.id;
         String title = doc['title'];
         String description = doc['description'];
         String userId = doc['user_id'];
         bool isDone = doc['is_done'];
         DateTime setDate = doc['set_date'].toDate();
         DateTime endDate = doc['end_date'].toDate();
-        list.add(Task(title, description, userId, isDone, setDate, endDate));
+        list.add(Task(uid, title, description, userId, isDone, setDate, endDate));
       }
     } catch (e) {
       print(e);

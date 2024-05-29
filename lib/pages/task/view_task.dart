@@ -37,7 +37,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
           // Navigate to the second page
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const EditTaskPage()),
+            MaterialPageRoute(builder: (context) => EditTaskPage(task: widget.task,)),
           );
         },
       ),
