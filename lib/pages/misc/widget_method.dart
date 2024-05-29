@@ -1,21 +1,22 @@
-
-//import 'dart:ffi';
 import 'dart:io';
-import 'dart:math';
-
+import 'package:deck/backend/auth/auth_utils.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
+import 'package:msh_checkbox/msh_checkbox.dart';
+
+///updated methods as of 05/11/24 1:34AM
+///
+///
+/// ----------------------- S T A R T -------------------------
+/// ---------------------- A P P B A R ------------------------
 
 ///
 ///
-///
-/// A P P B A R
-
-/// DeckBar is an app bar with pencil
+/// DeckBar is an AppBar with the font Nunito (used in typical routes)
 class DeckBar extends StatelessWidget implements PreferredSizeWidget {
   const DeckBar({
     super.key,
@@ -43,7 +44,7 @@ class DeckBar extends StatelessWidget implements PreferredSizeWidget {
         InkWell(
           onTap: onPressed,
           borderRadius:
-          BorderRadius.circular(50), // Adjust the border radius as needed
+              BorderRadius.circular(50), // Adjust the border radius as needed
           child: Padding(
             padding: const EdgeInsets.all(16.0), // Adjust padding as needed
             child: Icon(
@@ -72,26 +73,7 @@ class DeckBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-}
-/// DefaultHome is the Home Page by default in Deck
-class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const HomeAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      centerTitle: true,
-      title: const Text(
-        'deck',
-        style: TextStyle(fontFamily: 'Fraiche', fontSize: 24),
-      ),
-      foregroundColor: DeckColors.primaryColor,
-    );
-  }
-
-  @override
-  Size get preferredSize => AppBar().preferredSize;
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 
 ///
@@ -103,16 +85,19 @@ class AuthBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     required this.color,
     required this.fontSize,
+    this.automaticallyImplyLeading = false,
   });
   final String title;
   final Color color;
   final double fontSize;
+  final bool automaticallyImplyLeading;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0),
       child: AppBar(
+        automaticallyImplyLeading: automaticallyImplyLeading,
         title: Text(
           title,
           style: TextStyle(
@@ -130,125 +115,45 @@ class AuthBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => AppBar().preferredSize;
 }
 
+/// ------------------------- E N D ---------------------------
+/// ---------------------- A P P B A R ------------------------
+
+///############################################################
+
 ///
 ///
-/// TaskPage is the Todo List Page in Deck
-class TaskAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const TaskAppBar({super.key});
+/// ------------------------ S T A R T -------------------------
+/// -------------- R O U T E  A N I M A T I O N ----------------
 
-  @override
-  State<TaskAppBar> createState() => _TaskAppBarState();
+///
+///
+/// RouteGenerator is a widget that handles the animation of pages
+class RouteGenerator {
+  static Route createRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0); // Animation starts from right to left
+        const end = Offset.zero;
+        const curve = Curves.ease;
 
-  @override
-  Size get preferredSize => AppBar().preferredSize;
-}
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-class _TaskAppBarState extends State<TaskAppBar> {
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(
-        'Task Page',
-        style: GoogleFonts.nunito(
-            fontSize: 24, fontWeight: FontWeight.w900, color: DeckColors.white),
-      ),
-      centerTitle: true,
-      foregroundColor: const Color.fromARGB(255, 61, 61, 61),
-      // leading: GestureDetector(
-      //   onTap: () {
-      //     Navigator.pop(context);
-      //   },
-      //   child: const Icon(
-      //     DeckIcons.backArrow,
-      //     size: 24,
-      //   ),
-      // ),
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
     );
   }
 }
 
-///
-///
-/// Navbar with Back Button Plain
-class BackButtonAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const BackButtonAppBar({super.key});
+/// -------------------------- E N D ---------------------------
+/// -------------- R O U T E  A N I M A T I O N ----------------
 
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: const Text('Hi'),
-      foregroundColor: Colors.green,
-    );
-  }
+///############################################################
 
-  @override
-  Size get preferredSize => AppBar().preferredSize;
-}
-
-
-/*------------------ACCOUNT------------------*/
-//cover photo
-class BuildCoverImage extends StatefulWidget {
-  final File? CoverPhotofile;
-  final double borderRadiusContainer, borderRadiusImage;
-
-   BuildCoverImage({Key? key, this.CoverPhotofile,
-     required this.borderRadiusContainer,
-     required this.borderRadiusImage}) : super(key: key);
-
-  @override
-  BuildCoverImageState createState() => BuildCoverImageState();
-}
-class BuildCoverImageState extends State<BuildCoverImage> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      decoration: BoxDecoration (
-        borderRadius: BorderRadius.circular(widget.borderRadiusContainer),
-        color: widget.CoverPhotofile != null ? null : DeckColors.coverImageColorSettings,
-      ),
-        child: ClipRRect(
-        borderRadius: BorderRadius.circular(widget.borderRadiusImage),
-      child: widget.CoverPhotofile != null
-          ? Image.file(
-        widget.CoverPhotofile!,
-        width: double.infinity,
-        height: double.infinity,
-        fit: BoxFit.cover,
-      )
-          : const Placeholder(
-        color: DeckColors.coverImageColorSettings,
-      ),
-        ),
-    );
-  }
-}
-
-//profile photo
-class BuildProfileImage extends StatefulWidget {
-  final File? profilePhotofile;
-
-   BuildProfileImage({Key? key, this.profilePhotofile}) : super(key: key);
-
-  @override
-  BuildProfileImageState createState() => BuildProfileImageState();
-}
-
-class BuildProfileImageState extends State<BuildProfileImage> {
-
-  @override
-  Widget build(BuildContext context) {
-    return CircleAvatar(
-      backgroundColor: widget.profilePhotofile != null ? null : DeckColors.white,
-      backgroundImage: widget.profilePhotofile != null ? FileImage(widget.profilePhotofile!) : null,
-      child: widget.profilePhotofile == null ? Icon(DeckIcons.account, size: 60, color: DeckColors.backgroundColor) : null,
-      radius: 60,
-    );
-  }
-}
-
-//button
 ///
 ///
 /// ------------------------ S T A R T -------------------------
@@ -260,15 +165,12 @@ class BuildProfileImageState extends State<BuildProfileImage> {
 class BuildButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String buttonText;
-  final double height, width, radius;
-  final Color backgroundColor, textColor;
-  final Color? borderColor;
-  final IconData? leftIcon;
-  final IconData? rightIcon;
+  final double height, width, radius, fontSize, borderWidth;
+  final Color backgroundColor, textColor, borderColor;
+  final IconData? icon;
+  final String? svg;
   final Color? iconColor;
-  final double? paddingIconText, size;
-  final FontWeight? fontWeight;
-  final MainAxisAlignment? mainAxisAlignment;
+  final double? paddingIconText, size, svgHeight;
 
   const BuildButton({
     super.key,
@@ -279,14 +181,15 @@ class BuildButton extends StatelessWidget {
     required this.radius,
     required this.backgroundColor,
     required this.textColor,
-    this.borderColor,
-    this.fontWeight,
-    this.leftIcon,
-    this.rightIcon,
+    required this.fontSize,
+    required this.borderWidth,
+    required this.borderColor,
+    this.svgHeight,
+    this.size,
+    this.icon,
+    this.svg,
     this.iconColor,
     this.paddingIconText,
-    this.size,
-    this.mainAxisAlignment,
   });
 
   @override
@@ -300,50 +203,168 @@ class BuildButton extends StatelessWidget {
           backgroundColor: backgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius),
-            side: BorderSide(color: borderColor ?? DeckColors.backgroundColor),
+            side: BorderSide(
+              color: borderColor,
+              width: borderWidth, // Add borderWidth
+            ),
           ),
         ),
         child: Row(
-          mainAxisAlignment: mainAxisAlignment ?? MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (leftIcon != null)
+            if (icon != null)
               Padding(
-                padding: EdgeInsets.only(right: paddingIconText ?? 8.0),
+                padding: EdgeInsets.only(right: paddingIconText ?? 24.0),
                 child: Icon(
-                  leftIcon,
+                  icon,
                   color: iconColor,
                   size: size,
                 ),
               ),
-            Flexible(
-              child: Text(
-                buttonText,
-                style: GoogleFonts.nunito(
-                  fontSize: 16.0,
-                  fontWeight: fontWeight ?? FontWeight.w900,
-                  color: textColor,
+            if (svg != null)
+              Padding(
+                padding: EdgeInsets.only(right: paddingIconText ?? 24.0),
+                child: SvgPicture.asset(
+                  svg!,
+                  height: svgHeight,
                 ),
+              ),
+            Text(
+              buttonText,
+              style: GoogleFonts.nunito(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w900,
+                color: textColor,
               ),
             ),
-            if (rightIcon != null)
-              Padding(
-                padding: EdgeInsets.only(left: paddingIconText ?? 8.0),
-                child: Icon(
-                  rightIcon,
-                  color: iconColor,
-                  size: size,
-                ),
-              ),
           ],
         ),
       ),
     );
   }
 }
+
 /// -------------------------- E N D ---------------------------
 /// ------------------ D E C K  B U T T O N --------------------
 
-//swipe to deleteAndRetrieve
+///############################################################
+
+///
+///
+/// ------------------------ S T A R T -------------------------
+/// ---------------------- A C C O U N T -----------------------
+
+///
+///
+/// BuildCoverImage is a method for Cover Photo
+class BuildCoverImage extends StatefulWidget {
+  final Image? CoverPhotofile;
+  final double borderRadiusContainer, borderRadiusImage;
+
+  const BuildCoverImage(
+      {super.key,
+      this.CoverPhotofile,
+      required this.borderRadiusContainer,
+      required this.borderRadiusImage});
+
+  @override
+  BuildCoverImageState createState() => BuildCoverImageState();
+}
+
+class BuildCoverImageState extends State<BuildCoverImage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(widget.borderRadiusContainer),
+        color: widget.CoverPhotofile != null
+            ? null
+            : DeckColors.coverImageColorSettings,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(widget.borderRadiusImage),
+        child: widget.CoverPhotofile != null
+            ? Image(
+                image: widget.CoverPhotofile!.image,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+              )
+            : const Placeholder(
+                color: DeckColors.coverImageColorSettings,
+              ),
+      ),
+    );
+  }
+}
+class BuildCoverImageUrl extends StatelessWidget {
+  final String? imageUrl;
+  final double borderRadiusContainer, borderRadiusImage;
+  final Color backgroundColor;
+
+  BuildCoverImageUrl({
+    Key? key,
+    this.imageUrl,
+    required this.borderRadiusContainer,
+    required this.borderRadiusImage,
+    this.backgroundColor = Colors.transparent,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadiusContainer),
+        color: imageUrl != null ? null : backgroundColor,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadiusImage),
+        child: imageUrl != null
+            ? Image.network(
+          imageUrl!,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+        )
+            : Container(
+          color: backgroundColor,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+      ),
+    );
+  }
+}
+
+///
+///
+/// BuildProfileImage is a method for Profile Photo
+class BuildProfileImage extends StatefulWidget {
+  final Image? profilePhotofile;
+
+  BuildProfileImage(this.profilePhotofile, {Key? key}) : super(key: key);
+
+  @override
+  BuildProfileImageState createState() => BuildProfileImageState();
+}
+
+class BuildProfileImageState extends State<BuildProfileImage> {
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      backgroundColor: DeckColors.white,
+      backgroundImage: widget.profilePhotofile?.image,
+      radius: 60,
+      child: widget.profilePhotofile?.image == null ? const Icon(DeckIcons.account, size: 60, color: DeckColors.backgroundColor) : null,
+    );
+  }
+}
+
+///
+///
+///SwipeToDeleteAndRetrieve is to delete and retrieve Decks
 class SwipeToDeleteAndRetrieve extends StatelessWidget {
   final Widget child;
   final VoidCallback onDelete;
@@ -351,44 +372,50 @@ class SwipeToDeleteAndRetrieve extends StatelessWidget {
   final bool enableRetrieve;
 
   const SwipeToDeleteAndRetrieve({
-    Key? key,
+    super.key,
     required this.child,
     required this.onDelete,
     this.onRetrieve,
     this.enableRetrieve = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
       key: UniqueKey(),
-      direction: enableRetrieve ? DismissDirection.horizontal : DismissDirection.endToStart,
-      background: enableRetrieve ? Container(
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.only(left: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: DeckColors.primaryColor,
-        ),
-        child: const Icon(Icons.undo, color: DeckColors.white),
-      ) : Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: Colors.red,
-        ),
-        child: Icon(DeckIcons.trash_bin, color: DeckColors.white),
-      ),
-      secondaryBackground: enableRetrieve ? Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: Colors.red, // Red background for delete
-        ),
-        child: Icon(DeckIcons.trash_bin, color: DeckColors.white),
-      ) : null,
+      direction: enableRetrieve
+          ? DismissDirection.horizontal
+          : DismissDirection.endToStart,
+      background: enableRetrieve
+          ? Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(left: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: DeckColors.primaryColor,
+              ),
+              child: const Icon(Icons.undo, color: DeckColors.white),
+            )
+          : Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: Colors.red,
+              ),
+              child: const Icon(DeckIcons.trash_bin, color: DeckColors.white),
+            ),
+      secondaryBackground: enableRetrieve
+          ? Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: Colors.red, // Red background for delete
+              ),
+              child: const Icon(DeckIcons.trash_bin, color: DeckColors.white),
+            )
+          : null,
       onDismissed: (direction) {
         if (direction == DismissDirection.endToStart) {
           onDelete();
@@ -401,26 +428,24 @@ class SwipeToDeleteAndRetrieve extends StatelessWidget {
   }
 }
 
-
-
-//container ng decks, design lang i2 nung container
-/// THIS METHOD IS FOR THE DECKS CONTAINER IN THE ACCOUNT AND RECENTLY DELETED PAGE
+///
+///
+///BuidListOfDecks is a method for Container of Decks but only for design
 class BuildListOfDecks extends StatefulWidget {
-  final File? deckImageFile;
+  final String? deckImageUrl;
   final String titleText, numberText;
   final VoidCallback onDelete;
-  final VoidCallback? onRetrieve, onTap;
+  final VoidCallback? onRetrieve;
   final bool enableSwipeToRetrieve;
 
   const BuildListOfDecks({
     Key? key,
-    this.deckImageFile,
+    this.deckImageUrl,
     required this.titleText,
     required this.numberText,
     required this.onDelete,
     this.onRetrieve,
     this.enableSwipeToRetrieve = true,
-    this.onTap,
   }) : super(key: key);
 
   @override
@@ -428,111 +453,97 @@ class BuildListOfDecks extends StatefulWidget {
 }
 
 class BuildListOfDecksState extends State<BuildListOfDecks> {
-  Color _containerColor = DeckColors.gray;
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) {
-        setState(() {
-          if (widget.onTap != null) {
-            _containerColor = Colors.grey.withOpacity(0.7);
-          }
-        });
-      },
-      onTapUp: (_) {
-        setState(() {
-          _containerColor = DeckColors.gray;
-        });
-        widget.onTap?.call();
-      },
-      onTapCancel: () {
-        setState(() {
-          _containerColor = DeckColors.gray;
-        });
-      },
-      child: SwipeToDeleteAndRetrieve(
-        onDelete: widget.onDelete,
-        onRetrieve: widget.enableSwipeToRetrieve ?   widget.onRetrieve : null,
-        enableRetrieve: widget.enableSwipeToRetrieve,
-        child: Container(
-          padding: const EdgeInsets.all(20.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15.0),
-            color: _containerColor,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                color: widget.deckImageFile != null ? null : DeckColors.white,
-                height: 75,
-                width: 75,
-                child: widget.deckImageFile != null
-                    ? Image.file(
-                  widget.deckImageFile!,
-                  width: 20,
-                  height: 10,
-                  fit: BoxFit.cover,
-                )
-                    : const Placeholder(
-                  color: DeckColors.white,
-                ),
+    return SwipeToDeleteAndRetrieve(
+      onDelete: widget.onDelete,
+      onRetrieve: widget.enableSwipeToRetrieve ? widget.onRetrieve : null,
+      enableRetrieve: widget.enableSwipeToRetrieve,
+      child: Container(
+        padding: const EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          color: DeckColors.gray,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              color: widget.deckImageUrl != null ? null : DeckColors.white,
+              height: 75,
+              width: 75,
+              child: widget.deckImageUrl != null
+                  ? Image.network(
+                widget.deckImageUrl!,
+                width: 20,
+                height: 10,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: DeckColors.white,
+                    child: Icon(Icons.broken_image, color: Colors.grey),
+                  );
+                },
+              )
+                  : const Placeholder(
+                color: DeckColors.white,
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15.0, top: 5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.titleText,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.nunito(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: DeckColors.white,
-                        ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15.0, top: 5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.titleText,
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: DeckColors.white,
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 7.0),
-                        child: Container(
-                          width: 150,
-                          padding: const EdgeInsets.all(5.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16.0),
-                            color: DeckColors.coverImageColorSettings,
-                          ),
-                          child: Text(
-                            widget.numberText,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.nunito(
-                              fontSize: 16,
-                              color: DeckColors.white,
-                            ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 7.0),
+                      child: Container(
+                        width: 150,
+                        padding: const EdgeInsets.all(5.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
+                          color: DeckColors.coverImageColorSettings,
+                        ),
+                        child: Text(
+                          widget.numberText,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.nunito(
+                            fontSize: 16,
+                            color: DeckColors.white,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-//dialog box
+///
+///
+///ShowConfirmationDialog is a method for Confirm Dialog
 class ShowConfirmationDialog extends StatelessWidget {
   final String title;
   final String text;
   final VoidCallback onConfirm;
   final VoidCallback onCancel;
 
-  ShowConfirmationDialog({
+  const ShowConfirmationDialog({
+    super.key,
     required this.title,
     required this.text,
     required this.onConfirm,
@@ -550,22 +561,23 @@ class ShowConfirmationDialog extends StatelessWidget {
             onCancel();
             Navigator.of(context).pop();
           },
-          child: const Text("No"),
+          child: const Text("No", style: TextStyle(color: Colors.red)),
         ),
         TextButton(
           onPressed: () {
             onConfirm();
             Navigator.of(context).pop();
           },
-          child: const Text("Yes"),
+          child: const Text("Yes", style: TextStyle(color: Colors.green)),
         ),
       ],
     );
   }
 }
 
-//used to show the dialog box
-void showConfirmationDialog(BuildContext context, String title, String text, VoidCallback onConfirm, VoidCallback onCancel) {
+//Used to show the Dialog Box
+void showConfirmationDialog(BuildContext context, String title, String text,
+    VoidCallback onConfirm, VoidCallback onCancel) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -579,22 +591,31 @@ void showConfirmationDialog(BuildContext context, String title, String text, Voi
   );
 }
 
-/*------------------ END OF ACCOUNT ------------------*/
+/// -------------------------- E N D ---------------------------
+/// ---------------------- A C C O U N T -----------------------
 
+///############################################################
 
-/*------------------ SETTINGS ------------------*/
+///
+///
+/// ----------------------- S T A R T --------------------------
+/// -------------------- S E T T I N G S -----------------------
 
-//container
-/// THIS METHOD IS FOR THE CONTAINER(change password,recently deleted etc)  IN SETTINGS PAGE
-class BuildContainer extends StatefulWidget {
+// Container for a function in settings
+class BuildSettingsContainer extends StatefulWidget {
   final IconData selectedIcon;
   final IconData? alternateIcon;
   final String nameOfTheContainer;
   final String? alternateText;
   final VoidCallback? onTap;
   final bool showSwitch, showArrow;
+  final Color containerColor;
+  final Color selectedColor;
+  final Color textColor;
+  final Color toggledColor;
+  final ValueChanged<bool>? onToggleChanged;
 
-  const BuildContainer({
+  const BuildSettingsContainer({
     required this.selectedIcon,
     required this.nameOfTheContainer,
     this.alternateIcon,
@@ -602,18 +623,20 @@ class BuildContainer extends StatefulWidget {
     this.showSwitch = false,
     this.showArrow = false,
     this.onTap,
-    Key? key,
-  })  : assert(showSwitch == false || (alternateIcon != null && alternateText != null),
-  ),
-        super(key: key);
+    this.onToggleChanged,
+    required this.containerColor,
+    required this.selectedColor,
+    required this.textColor,
+    required this.toggledColor,
+    super.key,
+  });
 
   @override
-  State<BuildContainer> createState() => _BuildContainerState();
+  State<BuildSettingsContainer> createState() => BuildSettingsContainerState();
 }
 
-class _BuildContainerState extends State<BuildContainer> {
+class BuildSettingsContainerState extends State<BuildSettingsContainer> {
   late bool _isToggled;
-  Color _containerColor = DeckColors.gray;
 
   @override
   void initState() {
@@ -623,86 +646,105 @@ class _BuildContainerState extends State<BuildContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) {
-        setState(() {
+    return Material(
+      borderRadius: BorderRadius.circular(15.0),
+      color: widget.containerColor,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15.0),
+        onTap: () {
           if (widget.onTap != null) {
-            _containerColor = Colors.grey.withOpacity(0.7);
+            widget.onTap!();
           }
-        });
-      },
-      onTapUp: (_) {
-        setState(() {
-          _containerColor = DeckColors.gray;
-        });
-        widget.onTap?.call();
-      },
-      onTapCancel: () {
-        setState(() {
-          _containerColor = DeckColors.gray;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.all(20.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
-          color: _containerColor,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  _isToggled ? widget.alternateIcon! : widget.selectedIcon,
-                  color: _isToggled ? DeckColors.primaryColor : DeckColors.primaryColor,
-                  size: 40,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
-                  child: Text(
-                    _isToggled ? widget.alternateText! : widget.nameOfTheContainer,
-                    style: GoogleFonts.nunito(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: _isToggled ? Colors.white : DeckColors.white,
+        },
+        child: Container(
+          padding: const EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          height: 80,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    _isToggled ? widget.alternateIcon! : widget.selectedIcon,
+                    color:
+                        _isToggled ? widget.toggledColor : widget.selectedColor,
+                    size: 30,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      _isToggled
+                          ? widget.alternateText!
+                          : widget.nameOfTheContainer,
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: _isToggled ? widget.textColor : widget.textColor,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            if (widget.showSwitch)
-              Switch(
-                value: _isToggled,
-                onChanged: (value) {
-                  setState(() {
-                    _isToggled = value;
-                  });
-                },
-                activeColor: DeckColors.primaryColor,
-                inactiveThumbColor: DeckColors.gray,
+                ],
               ),
-            if (widget.showArrow)
-              const Icon(Icons.arrow_right, color: DeckColors.coverImageColorSettings, size: 32,),
-          ],
+              if (widget.showSwitch)
+                Switch(
+                  value: _isToggled,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _isToggled = value;
+                    });
+                    if (widget.onToggleChanged != null) {
+                      widget.onToggleChanged!(value); // Call the callback
+                    }
+                  },
+                  activeColor: DeckColors.primaryColor,
+                  inactiveThumbColor: Colors.white,
+                ),
+              if (widget.showArrow)
+                const Icon(
+                  Icons.arrow_right,
+                  color: Colors.grey,
+                  size: 32,
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-/*------------------ END OF SETTINGS ------------------*/
 
-/*------------------ CHANGE PASSWORD ------------------*/
+///
+///
+///
+
+///
+///
+///
+///
+///
+///
+
+/// ------------------------- E N D ----------------------------
+/// -------------------- S E T T I N G S -----------------------
+
+///############################################################
+
 ///
 ///
 /// ----------------------- S T A R T --------------------------
-/// ------------ T E X T  F I E L D------------------
+/// ------------ C H A N G E  P A S S W O R D ------------------
 class BuildTextBox extends StatefulWidget {
   final String? hintText, initialValue;
   final bool showPassword;
   final IconData? leftIcon;
   final IconData? rightIcon;
   final bool isMultiLine;
+  final bool isReadOnly;
+  final TextEditingController? controller;
+  final VoidCallback? onTap;
 
   const BuildTextBox({
     Key? key,
@@ -711,7 +753,10 @@ class BuildTextBox extends StatefulWidget {
     this.leftIcon,
     this.rightIcon,
     this.initialValue,
+    this.controller,
+    this.onTap,
     this.isMultiLine = false,
+    this.isReadOnly = false,
   }) : super(key: key);
 
   @override
@@ -725,6 +770,9 @@ class BuildTextBoxState extends State<BuildTextBox> {
   Widget build(BuildContext context) {
     return TextFormField(
       autofocus: false,
+      readOnly: widget.isReadOnly,
+      onTap: widget.onTap,
+      controller: widget.controller,
       initialValue: widget.initialValue,
       style: GoogleFonts.nunito(
         color: Colors.white,
@@ -755,119 +803,499 @@ class BuildTextBoxState extends State<BuildTextBox> {
         filled: true,
         fillColor: DeckColors.backgroundColor,
         contentPadding:
-        const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+            const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
         prefixIcon: widget.leftIcon != null
             ? Icon(widget.leftIcon)
             : null, // Change to your desired left icon
         suffixIcon: widget.showPassword
             ? IconButton(
-          icon: _obscureText
-              ? const Icon(Icons.visibility_off)
-              : const Icon(Icons.visibility),
-          onPressed: () {
-            setState(() {
-              _obscureText = !_obscureText;
-            });
-          },
-        )
+                icon: _obscureText
+                    ? const Icon(Icons.visibility_off)
+                    : const Icon(Icons.visibility),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
             : widget.rightIcon != null
-            ? IconButton(
-          icon: Icon(widget.rightIcon),
-          onPressed: () {
-            // Perform action on right icon tap
-          },
-        )
-            : null,
+                ? IconButton(
+                    icon: Icon(widget.rightIcon),
+                    onPressed: () {
+                      // Perform action on right icon tap
+                    },
+                  )
+                : null,
       ),
       obscureText: widget.showPassword ? _obscureText : false,
     );
   }
 }
+
 /// ------------------------- E N D ----------------------------
-/// ------------ T E X T  F I E L D------------------
+/// ------------ C H A N G E  P A S S W O R D ------------------
 
 ///############################################################
-/*------------------ END OF PASSWORD ------------------*/
 
-
-
-/*------------------ EDIT PROFILE ------------------*/
+///
+///
+/// ----------------------- S T A R T --------------------------
+/// --------------- E D I T  P R O F I L E ---------------------
 //icon button
-class BuildIconButton extends StatelessWidget{
+class BuildIconButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
   final Color iconColor, backgroundColor;
+  final double containerWidth, containerHeight;
 
-  const BuildIconButton({super.key,
+  const BuildIconButton({
+    super.key,
     required this.onPressed,
     required this.icon,
     required this.iconColor,
-    required this.backgroundColor
+    required this.backgroundColor,
+    required this.containerWidth,
+    required this.containerHeight,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: containerWidth,
+      height: containerHeight,
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(25),
       ),
       child: IconButton(
-        icon:  Icon(icon, color: iconColor),
+        icon: Icon(icon, color: iconColor),
         onPressed: onPressed,
+        iconSize: 20,
       ),
     );
   }
 }
 
-class BuildContentOfBottomSheet extends StatelessWidget{
+/// ------------------------- E N D ----------------------------
+/// --------------- E D I T  P R O F I L E ---------------------
+
+///############################################################
+
+///
+///
+/// ----------------------- S T A R T --------------------------
+/// -------------- D R O P D O W N  M E N U --------------------
+
+///
+///
+///Dropdown Menu Test
+class CustomDropdown extends StatelessWidget {
+  final List<String> items;
+  final ValueChanged<String?>? onChanged;
+  final FormFieldValidator<String>? validator;
+  final FormFieldSetter<String>? onSaved;
+  final IconData? leftIcon;
+  final Color? leftIconColor;
+
+  const CustomDropdown({
+    required this.items,
+    this.onChanged,
+    this.validator,
+    this.onSaved,
+    this.leftIcon,
+    this.leftIconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField2<String?>(
+      isExpanded: true,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.grey[200],
+        contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+        prefixIcon: leftIcon != null
+            ? Icon(
+                leftIcon,
+                color: leftIconColor,
+              )
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10), // Fixed radius of 10 pixels
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+      ),
+      hint: const Text(
+        'Select an option',
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.amber,
+        ),
+      ),
+      items: items
+          .map((item) => DropdownMenuItem<String?>(
+                value: item,
+                child: Text(
+                  item,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
+                ),
+              ))
+          .toList(),
+      onChanged: onChanged,
+      validator: validator,
+      onSaved: onSaved,
+      iconStyleData: const IconStyleData(
+        icon: Icon(
+          DeckIcons.dropdown,
+          color: Colors.black45,
+        ),
+        iconSize: 24,
+      ),
+      dropdownStyleData: DropdownStyleData(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10), // Fixed radius of 10 pixels
+          color: Colors.grey[200],
+        ),
+      ),
+    );
+  }
+}
+
+/// ------------------------ E N D -----------------------------
+/// -------------- D R O P D O W N  M E N U --------------------
+
+///############################################################
+
+///
+///
+/// ---------------------- S T A R T ---------------------------
+/// ------------------- C H E C K B O X ------------------------
+
+///
+///
+///Checkbox Widget
+class DeckBox extends StatefulWidget {
+  DeckBox({Key? key}) : super(key: key);
+
+  @override
+  State<DeckBox> createState() => DeckBoxState();
+}
+
+class DeckBoxState extends State<DeckBox> {
+  bool isChecked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: MSHCheckbox(
+        size: 24,
+        value: isChecked,
+        colorConfig: MSHColorConfig.fromCheckedUncheckedDisabled(
+          checkedColor: DeckColors.primaryColor,
+        ),
+        style: MSHCheckboxStyle.stroke,
+        onChanged: (selected) {
+          setState(() {
+            isChecked = selected;
+          });
+        },
+      ),
+    );
+  }
+}
+
+/// ------------------------ E N D -----------------------------
+/// ------------------- C H E C K B O X ------------------------
+
+///############################################################
+
+///
+///
+/// ---------------------- S T A R T ---------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
+///
+///
+/// Bottom Sheet
+class BuildContentOfBottomSheet extends StatelessWidget {
   final String bottomSheetButtonText;
   final IconData bottomSheetButtonIcon;
   final VoidCallback onPressed;
 
-  const BuildContentOfBottomSheet({super.key,
-    required this.bottomSheetButtonText,
-    required this.bottomSheetButtonIcon,
-    required this.onPressed});
+  const BuildContentOfBottomSheet(
+      {super.key,
+      required this.bottomSheetButtonText,
+      required this.bottomSheetButtonIcon,
+      required this.onPressed});
   @override
   Widget build(BuildContext context) {
-      return Padding(padding: EdgeInsets.only(top: 10),
-              child: BuildButton(
-                onPressed: onPressed,
-                buttonText: bottomSheetButtonText,
-                height: 70.0,
-                  borderColor: DeckColors.gray,
-                width: MediaQuery.of(context).size.width,
-                backgroundColor: DeckColors.gray,
-                textColor: DeckColors.white, radius: 0.0,
-                leftIcon: bottomSheetButtonIcon,
-                iconColor: DeckColors.white,
-                paddingIconText: 20.0, size: 32,
-              ),
+    return Padding(
+      padding: EdgeInsets.only(top: 10),
+      child: BuildButton(
+        onPressed: onPressed,
+        buttonText: bottomSheetButtonText,
+        height: 70.0,
+        borderColor: Colors.transparent,
+        width: MediaQuery.of(context).size.width,
+        backgroundColor: DeckColors.gray,
+        textColor: DeckColors.white,
+        radius: 0.0,
+        fontSize: 16,
+        borderWidth: 0,
+        iconColor: DeckColors.white,
+        paddingIconText: 20.0,
+        size: 32,
+      ),
     );
   }
-
 }
-/*------------------ END OF EDIT PROFILE ------------------*/
 
-/*------------------ FLASHCARD ------------------*/
+/// ------------------------ E N D -----------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
+///############################################################
+
+///
+///
+/// ---------------------- S T A R T ---------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
+///
+///
+///Floating Action Button
+class DeckFAB extends StatelessWidget {
+  final String text;
+  final Color backgroundColor;
+  final Color foregroundColor;
+  final IconData icon;
+  final VoidCallback onPressed;
+  final double? fontSize;
+
+  const DeckFAB({
+    super.key,
+    required this.text,
+    required this.backgroundColor,
+    required this.foregroundColor,
+    required this.icon,
+    this.fontSize,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      //preferBelow: false,
+      verticalOffset: -13,
+      margin: const EdgeInsets.only(right: 65),
+      message: text,
+      textStyle: GoogleFonts.nunito(
+          fontSize: fontSize ?? 12,
+          fontWeight: FontWeight.w900,
+          color: DeckColors.white),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        //borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: FloatingActionButton(
+        onPressed: () => onPressed(),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        backgroundColor: backgroundColor,
+        foregroundColor: foregroundColor,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// ------------------------ E N D -----------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
+///############################################################
+
+///
+///
+/// ---------------------- S T A R T ---------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
+class IfDeckEmpty extends StatelessWidget {
+  final String ifDeckEmptyText;
+  final double ifDeckEmptyheight;
+
+  const IfDeckEmpty(
+      {super.key,
+      required this.ifDeckEmptyText,
+      required this.ifDeckEmptyheight});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: ifDeckEmptyheight,
+        child: Center(
+          child: Text(
+            ifDeckEmptyText,
+            style: GoogleFonts.nunito(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// ------------------------ E N D -----------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
+///############################################################
+
+///
+///
+/// ---------------------- S T A R T ---------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
+class CustomExpansionTile extends StatefulWidget {
+  const CustomExpansionTile({super.key});
+
+  @override
+  CustomExpansionTileState createState() => CustomExpansionTileState();
+}
+
+class CustomExpansionTileState extends State<CustomExpansionTile> {
+  bool customIcon = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Theme(
+          data: ThemeData(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+          ),
+          child: ExpansionTile(
+            title: Text(
+              'Instructions ',
+              style: GoogleFonts.nunito(
+                color: DeckColors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            trailing: Icon(customIcon
+                ? Icons.keyboard_arrow_up_rounded
+                : Icons.keyboard_arrow_down_rounded),
+            onExpansionChanged: (bool expanded) {
+              setState(() {
+                customIcon = expanded;
+              });
+            },
+            tilePadding: const EdgeInsets.all(10),
+            backgroundColor: DeckColors.gray,
+            collapsedBackgroundColor: DeckColors.gray,
+            collapsedShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: const BorderSide(color: DeckColors.gray),
+            ),
+            children: <Widget>[
+              ListTile(
+                title: Text(
+                  '1. Provide information in the "Enter Description" text field to '
+                  'guide AI in generating content for your flashcards.',
+                  style: GoogleFonts.nunito(
+                    color: DeckColors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  '2. Next, use the "Enter Subject" and "Enter Topic" fields to assist AI in '
+                  'generating a more specific and relevant set of flashcards.',
+                  style: GoogleFonts.nunito(
+                    color: DeckColors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  '3. Optionally, if you want to upload a PDF instead; just upload your existing PDF and '
+                  'it will prompt the application to automatically generate flashcards for you.',
+                  style: GoogleFonts.nunito(
+                    color: DeckColors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  '4.  Ensure that you specified the number of flashcards you desire'
+                  ' for the AI to generate.',
+                  style: GoogleFonts.nunito(
+                    color: DeckColors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  'Note: You have the ability to employ both features simultaneously. Moreover, rest assured that AI-generated flashcards content can be edited by the user.',
+                  style: GoogleFonts.nunito(
+                    color: DeckColors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// ------------------------ E N D -----------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
+///############################################################
+
+///
+///
+/// ---------------------- S T A R T ---------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
 
 /// THIS METHOD IS FOR THE DECKS CONTAINER IN THE FLASHCARD PAGE
 class BuildDeckContainer extends StatefulWidget {
-  final File? deckCoverPhoto;
+  final String? deckCoverPhotoUrl;
   final String titleOfDeck;
-  final VoidCallback onDelete,  onTap;
+  final VoidCallback onDelete;
+  final VoidCallback onTap;
   final VoidCallback? onRetrieve;
   final bool enableSwipeToRetrieve;
 
-
-
   const BuildDeckContainer({
     Key? key,
-
     required this.onDelete,
     this.onRetrieve,
-    this.enableSwipeToRetrieve = true, this.deckCoverPhoto, required this.titleOfDeck,
+    this.enableSwipeToRetrieve = true,
+    this.deckCoverPhotoUrl,
+    required this.titleOfDeck,
     required this.onTap,
   }) : super(key: key);
 
@@ -877,7 +1305,7 @@ class BuildDeckContainer extends StatefulWidget {
 
 class BuildDeckContainerState extends State<BuildDeckContainer> {
   Color _containerColor = DeckColors.gray;
-
+  final String defaultImageUrl = "https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=2b0faebd-9691-4c37-8049-dc30289460c2";
 
   @override
   Widget build(BuildContext context) {
@@ -891,9 +1319,7 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
         setState(() {
           _containerColor = DeckColors.gray;
         });
-        if (widget.onTap != null) {
-          widget.onTap();
-        }
+        widget.onTap();
       },
       onTapCancel: () {
         setState(() {
@@ -919,7 +1345,9 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: widget.deckCoverPhoto != null ? null : DeckColors.white,
+                    color: (widget.deckCoverPhotoUrl != null && widget.deckCoverPhotoUrl != "no_image")
+                        ? null
+                        : DeckColors.coverImageColorSettings,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(15.0),
                       topRight: Radius.circular(15.0),
@@ -932,18 +1360,41 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
                       topLeft: Radius.circular(15.0),
                       topRight: Radius.circular(15.0),
                     ),
-                    child: widget.deckCoverPhoto != null
-                        ? Image.file(
-                      widget.deckCoverPhoto!,
-                      width: 20,
-                      height: 10,
-                      fit: BoxFit.cover,
+                    child: (widget.deckCoverPhotoUrl != null && widget.deckCoverPhotoUrl != "no_image")
+                        ? Image.network(
+                          widget.deckCoverPhotoUrl!,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                          return Image.network(
+                            defaultImageUrl,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: DeckColors.coverImageColorSettings,
+                              child: const Icon(Icons.broken_image, color: Colors.grey),
+                            );
+                          },
+                        );
+                      },
                     )
-                        : const Placeholder(
-                      color: DeckColors.white,
+                        : Image.network(
+                          defaultImageUrl,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: DeckColors.coverImageColorSettings,
+                            child: const Icon(Icons.broken_image, color: Colors.grey),
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 15.0, left: 10, right: 10),
@@ -973,192 +1424,17 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
 }
 
 
-class DeckFAB extends StatelessWidget {
-  final String text;
-  final Color backgroundColor;
-  final Color foregroundColor;
-  final IconData icon;
-  final Function onPressed;
-  final double fontSize;
-  final double borderRadius;
 
-  const DeckFAB({
-    Key? key,
-    required this.text,
-    required this.backgroundColor,
-    required this.foregroundColor,
-    required this.icon,
-    required this.fontSize,
-    required this.onPressed,
-    this.borderRadius = 30.0
-  }) : super(key: key);
+/// ------------------------ E N D -----------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
 
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      verticalOffset: -13,
-      margin: EdgeInsets.only(right: 65),
-      message: text,
-      textStyle: GoogleFonts.nunito(
-        fontSize: fontSize,
-        fontWeight: FontWeight.w900,
-        color: DeckColors.white,
-      ),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-      ),
-      child: FloatingActionButton(
-        onPressed: () => onPressed(),
-        backgroundColor: backgroundColor,
-        foregroundColor: foregroundColor,
-        child: Icon(icon),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius),
-        ),
-      ),
-    );
-  }
-}
-
-class ifDeckEmpty extends StatelessWidget{
-  final String ifDeckEmptyText;
-  final double ifDeckEmptyheight;
-
-  const ifDeckEmpty({super.key, required this.ifDeckEmptyText,
-    required this.ifDeckEmptyheight});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: ifDeckEmptyheight,
-        child: Center(
-          child: Text(
-            ifDeckEmptyText,
-            style: GoogleFonts.nunito(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
-class CustomExpansionTile extends StatefulWidget {
-
-  @override
-  _CustomExpansionTileState createState() => _CustomExpansionTileState();
-}
-
-class _CustomExpansionTileState extends State<CustomExpansionTile> {
-  bool customIcon = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Theme(
-          data: ThemeData(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-          ),
-          child: ExpansionTile(
-                title: Text(
-                    'Instructions ',
-                style: GoogleFonts.nunito(
-                  color: DeckColors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                ),
-                ),
-                trailing: Icon(
-                  customIcon ?  Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded
-                ),
-              onExpansionChanged: (bool expanded){
-                  setState(() {
-                    customIcon = expanded;
-                  });
-              },
-                tilePadding: const EdgeInsets.all(10),
-                backgroundColor: DeckColors.gray,
-                collapsedBackgroundColor: DeckColors.gray,
-                collapsedShape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-                shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: const BorderSide(color: DeckColors.gray),
-              ),
-          
-              children: <Widget>[
-                ListTile(
-                  title: Text(
-                    '1. Provide information in the "Enter Description" text field to '
-                        'guide AI in generating content for your flashcards.',
-                    style: GoogleFonts.nunito(
-                      color: DeckColors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-
-                ListTile(
-                  title: Text(
-                    '2. Next, use the "Enter Subject" and "Enter Topic" fields to assist AI in '
-                        'generating a more specific and relevant set of flashcards.',
-                    style: GoogleFonts.nunito(
-                      color: DeckColors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  title: Text(
-                    '3. Optionally, if you want to upload a PDF instead; just upload your existing PDF and '
-                        'it will prompt the application to automatically generate flashcards for you.',
-                    style: GoogleFonts.nunito(
-                      color: DeckColors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  title: Text(
-                    '4.  Ensure that you specified the number of flashcards you desire'
-                        ' for the AI to generate.',
-                    style: GoogleFonts.nunito(
-                      color: DeckColors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  title: Text(
-                    'Note: You have the ability to employ both features simultaneously. Moreover, rest assured that AI-generated flashcards content can be edited by the user.',
-                    style: GoogleFonts.nunito(
-                      color: DeckColors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-        ),
-      ],
-    );
-  }
-  }
+///############################################################
 
 ///
 ///
-/// ----------------------- S T A R T --------------------------
-/// ------------ T A B  B A R ------------------
+/// ---------------------- S T A R T ---------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
 class BuildTabBar extends StatelessWidget {
   final List<String> titles;
   final int length;
@@ -1201,8 +1477,8 @@ class BuildTabBar extends StatelessWidget {
           ),
           Expanded(
             child: TabBarView(
-                children: tabContent,
-              ),
+              children: tabContent,
+            ),
           ),
         ],
       ),
@@ -1233,15 +1509,16 @@ class BuildTabBar extends StatelessWidget {
     );
   }
 }
-/// ------------------------- E N D ----------------------------
-/// ------------ T A B  B A R------------------
+/// ------------------------ E N D -----------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
 
 ///############################################################
 
 ///
 ///
-/// ----------------------- S T A R T --------------------------
-/// ------------ C O N T A I N E R  O F  E A C H  F L A S H C A R D ------------------
+/// ---------------------- S T A R T ---------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
 
 class BuildContainerOfFlashCards extends StatefulWidget {
   final VoidCallback onDelete;
@@ -1251,8 +1528,8 @@ class BuildContainerOfFlashCards extends StatefulWidget {
   bool isStarShaded;
   final VoidCallback onStarShaded;
   final VoidCallback onStarUnshaded;
-
-   BuildContainerOfFlashCards({
+  
+  BuildContainerOfFlashCards({
     Key? key,
     required this.onDelete,
     required this.isStarShaded,
@@ -1266,10 +1543,12 @@ class BuildContainerOfFlashCards extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<BuildContainerOfFlashCards> createState() => BuildContainerOfFlashCardsState();
+  State<BuildContainerOfFlashCards> createState() =>
+      BuildContainerOfFlashCardsState();
 }
 
-class BuildContainerOfFlashCardsState extends State<BuildContainerOfFlashCards> with SingleTickerProviderStateMixin {
+class BuildContainerOfFlashCardsState extends State<BuildContainerOfFlashCards>
+    with SingleTickerProviderStateMixin {
   Color _containerColor = DeckColors.gray;
 
   @override
@@ -1335,7 +1614,9 @@ class BuildContainerOfFlashCardsState extends State<BuildContainerOfFlashCards> 
                     child: Icon(
                       size: 32,
                       widget.isStarShaded ? Icons.star : Icons.star_border,
-                      color: widget.isStarShaded ? DeckColors.primaryColor : DeckColors.primaryColor,
+                      color: widget.isStarShaded
+                          ? DeckColors.primaryColor
+                          : DeckColors.primaryColor,
                     ),
                   ),
                 ],
@@ -1360,8 +1641,383 @@ class BuildContainerOfFlashCardsState extends State<BuildContainerOfFlashCards> 
     );
   }
 }
+/// ------------------------ E N D -----------------------------
+/// --------------- B O T T O M  S H E E T ---------------------
+
+///#############################################################
+
+///LEILA PART AFAIK
+/// ----------------------- S T A R T ---------------------------
+/// ------------ D E C K  S L I V E R H E A D E R ---------------
+
+///
+///
+///SLiverHeader
+class DeckSliverHeader extends StatelessWidget {
+  final Color backgroundColor;
+  final String headerTitle;
+  final bool? isPinned;
+  final TextStyle textStyle;
+  final double? max;
+  final double? min;
+
+  const DeckSliverHeader({
+    super.key,
+    required this.backgroundColor,
+    required this.headerTitle,
+    required this.textStyle,
+    this.isPinned,
+    this.max,
+    this.min,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPersistentHeader(
+      pinned: isPinned ?? true,
+      floating: false,
+      delegate: DeckDelegate(backgroundColor, headerTitle, textStyle, max, min),
+    );
+  }
+}
+
+class DeckDelegate extends SliverPersistentHeaderDelegate {
+  final Color backgroundColor;
+  final String headerTitle;
+  final TextStyle textStyle;
+  final double? max;
+  final double? min;
+
+  DeckDelegate(
+    this.backgroundColor,
+    this.headerTitle,
+    this.textStyle,
+    this.max,
+    this.min,
+  );
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: backgroundColor,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          headerTitle,
+          style: textStyle,
+        ),
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => max ?? 180;
+
+  @override
+  double get minExtent => min ?? 180;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
+  }
+}
+
+/// ------------------------ E N D -----------------------------
+/// ------------ D E C K  S L I V E R H E A D E R --------------
+
+///############################################################
+
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ T A S K  T I L E  I N  H O M E-----------------
+
+class HomeTaskTile extends StatelessWidget {
+  final String taskName;
+  final String deadline;
+  // final double cardWidth;
+  //final File? deckImage;
+  final VoidCallback? onPressed;
+
+  const HomeTaskTile({
+    super.key,
+    required this.taskName,
+    required this.deadline,
+    required this.onPressed,
+
+    // required this.cardWidth,
+    // required this.deckImage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          color: DeckColors.gray,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      child: Text(
+                        taskName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: DeckColors.white,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        deadline,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: DeckColors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// ------------------------ E N D -----------------------------
+/// ------------ T A S K  T I L E  I N  H O M E-----------------
+
+///############################################################
+
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ D E C K  T I L E  I N  H O M E-----------------
+class HomeDeckTile extends StatelessWidget {
+  final String deckName;
+  final Color deckColor;
+  final double cardWidth;
+  final String? deckImageUrl;
+  final VoidCallback? onPressed;
+
+  const HomeDeckTile({
+    Key? key,
+    required this.deckName,
+    required this.deckColor,
+    required this.cardWidth,
+    this.onPressed,
+    this.deckImageUrl,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.all(0),
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: SizedBox(
+            width: cardWidth,
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: DeckColors.gray,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: deckImageUrl != null
+                        ? Image.network(
+                      deckImageUrl!,
+                      width: cardWidth,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: DeckColors.gray,
+                          child: const Icon(Icons.broken_image, color: Colors.white),
+                        );
+                      },
+                    )
+                        : Container(
+                      color: DeckColors.gray,
+                      child: const Icon(Icons.image_not_supported, color: Colors.white),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.8),
+                          ],
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        deckName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 /// ------------------------- E N D ----------------------------
-/// ------------ C O N T A I N E R  O F  E A C H  F L A S H C A R D------------------
-/*------------------ END OF FLASHCARD ------------------*/
+/// ------------ D E C K  T I L E  I N  H O M E-----------------
 
+///############################################################
+
+///
+/// ----------------------- S T A R T --------------------------
+/// ------------ D E C K  T A S K T I L E ----------------------
+class DeckTaskTile extends StatefulWidget {
+  final String title;
+  final String deadline;
+  final bool isChecked;
+  final ValueChanged<bool?> onChanged;
+  final VoidCallback onDelete;
+  final VoidCallback? onRetrieve, onTap;
+  final bool enableRetrieve;
+
+  const DeckTaskTile({
+    Key? key,
+    required this.title,
+    required this.deadline,
+    required this.isChecked,
+    required this.onChanged,
+    required this.onDelete,
+    this.onRetrieve,
+    this.enableRetrieve = false,
+    this.onTap,
+  }) : super(key: key);
+
+  @override
+  State<DeckTaskTile> createState() => DeckTaskTileState();
+}
+
+class DeckTaskTileState extends State<DeckTaskTile> {
+  Color _containerColor = DeckColors.gray;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          if (widget.onTap != null) {
+            _containerColor = Colors.grey.withOpacity(0.7);
+          }
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _containerColor = DeckColors.gray;
+        });
+        widget.onTap?.call();
+      },
+      onTapCancel: () {
+        setState(() {
+          _containerColor = DeckColors.gray;
+        });
+      },
+      child: SwipeToDeleteAndRetrieve(
+        onRetrieve: widget.enableRetrieve ? widget.onRetrieve : null,
+        enableRetrieve: widget.enableRetrieve,
+        onDelete: widget.onDelete,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15.0),
+            color: DeckColors.gray,
+          ),
+          child: Row(
+            children: [
+              Checkbox(
+                value: widget.isChecked,
+                onChanged: widget.onChanged,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: DeckColors.white,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0),
+                        child: Text(
+                          widget.deadline,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: DeckColors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+/// ------------------------- E N D ----------------------------
+/// ------------ D E C K  T A S K T I L E ----------------------
