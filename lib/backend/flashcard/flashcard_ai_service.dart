@@ -6,6 +6,17 @@ import 'package:http/http.dart' as http;
 
 class FlashcardAiService{
 
+  Future<String> testFunction() async {
+    final res = await http.get(
+      Uri.parse('http://192.168.100.21:8000/hello'),
+    );
+    if(res.statusCode == 200){
+      return res.body;
+    } else {
+      return 'not hellow world';
+    }
+  }
+
   // Method to send data to api gateway
   Future<Map<String, dynamic>> sendData({
     required String id,
@@ -30,7 +41,7 @@ class FlashcardAiService{
 
     // Make the API call
     final response = await http.post(
-      Uri.parse('http://192.168.0.103:8080/message/$id'), //API endpoint
+      Uri.parse('http://192.168.100.21:8000/message/$id'), //API endpoint
       body: jsonEncode(requestBody),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -71,7 +82,7 @@ class FlashcardAiService{
 
     // Make the API call
     final response = await http.get(
-      Uri.parse('http://192.168.0.103:8080/response/$id?thread_id=$threadID&run_id=$runID'), //API endpoint
+      Uri.parse('http://192.168.100.21:8000/response/$id?thread_id=$threadID&run_id=$runID'), //API endpoint
     );
 
     // Check if the response is successful
@@ -86,7 +97,7 @@ class FlashcardAiService{
           for (var questionAnswerPair in questionsList) {
             String question = questionAnswerPair['question'];
             String answer = questionAnswerPair['answer'];
-            Cardai flashcard = new Cardai(question: question, answer: answer);
+            Cardai flashcard = Cardai(question: question, answer: answer);
             flashCards.add(flashcard);
             // Use question and answer as needed
           }

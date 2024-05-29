@@ -1,6 +1,5 @@
 import 'package:deck/backend/task/task_service.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/misc/colors.dart';
@@ -23,9 +22,18 @@ class _TaskPageState extends State<TaskPage> {
   DateTime today = DateTime.now();
   DateTime selectedDay = DateTime.now();
 
+  @override
+  void initState() {
+    super.initState();
+    _getTasks();
+  }
+
   void _getTasks() async{
-    tasks = await TaskService().getTasksOnSpecificDate();
-    setState(() {});
+    List<Task> tasks = await TaskService().getTasksOnSpecificDate();
+    print(tasks.length);
+    setState(() {
+      this.tasks = tasks;
+    });
   }
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
@@ -36,98 +44,13 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   //check if there are task
-  bool isThereTask(DateTime selectedDay, List<DateTime> taskDeadlines) {
-    return taskDeadlines.any((deadline) => isSameDay(deadline, selectedDay));
+  bool isThereTask() {
+    return tasks.isNotEmpty ? true : false;
   }
 
-  //Initial values for testing
-  List<String> taskTitles = [
-    'taskTitle1',
-    'taskTitle2',
-    'taskTitle3',
-    'taskTitle4',
-    'taskTitle5',
-    'taskTitle6',
-    'taskTitle7',
-    'taskTitle8',
-    'taskTitle9',
-    'taskTitle10',
-    'taskTitle11',
-    'taskTitle12',
-    'taskTitle13',
-    'taskTitle14',
-    'taskTitle15',
-    'taskTitle16',
-    'taskTitle17',
-    'taskTitle18',
-    'taskTitle19',
-    'taskTitle20',
-    'taskTitle21',
-    'taskTitle22',
-    'taskTitle23',
-    'taskTitle24',
-    'taskTitle25',
-    'taskTitle26',
-    'taskTitle27'
-  ];
-  List<DateTime> taskDeadlines = [
-    DateTime(2024, 1, 15), // January 15, 2024
-    DateTime(2024, 2, 10), // February 10, 2024
-    DateTime(2024, 3, 5), // March 5, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 12), // May 12, 2024
-    DateTime(2024, 6, 30), // June 30, 2024
-    DateTime(2024, 5, 15), // May 15, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 5), // May 5, 2024
-    DateTime(2024, 4, 20), // April 20, 2024
-    DateTime(2024, 5, 12), // May 12, 2024
-    DateTime(2024, 5, 7), // May 7, 2024
-    DateTime(2024, 5, 1), // May 1, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 19), // May 19, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 3, 5), // March 5, 2024
-    DateTime(2024, 5, 11), // May 11, 2024
-    DateTime(2024, 5, 12), // May 12, 2024
-    DateTime(2024, 5, 13), // May 13, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 7), // May 7, 2024
-  ];
-  List<bool> isDone = [
-    true,
-    false,
-    true,
-    true,
-    false,
-    false,
-    true,
-    false,
-    true,
-    true,
-    false,
-    true,
-    true,
-    false,
-    false,
-    true,
-    false,
-    true,
-    true,
-    false,
-    true,
-    true,
-    false,
-    false,
-    true,
-    false,
-    true,
-  ];
+  List<Task> _eventLoader(DateTime day) {
+    return tasks.where((task) => isSameDay(task.deadline, day)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +91,7 @@ class _TaskPageState extends State<TaskPage> {
             SliverList(
                 delegate: SliverChildListDelegate([
               TableCalendar(
-                // eventLoader: _eventLoader(taskDeadlines),
+                eventLoader: _eventLoader,
                 focusedDay: today,
                 firstDay: DateTime.utc(2020, 1, 1),
                 lastDay: DateTime.utc(DateTime.now().year + 5, 1, 1),
@@ -210,7 +133,7 @@ class _TaskPageState extends State<TaskPage> {
                   leftChevronIcon:
                       const Icon(DeckIcons.back_arrow, color: DeckColors.white),
                   leftChevronMargin: EdgeInsets.zero,
-                  leftChevronPadding: EdgeInsets.only(right: 15),
+                  leftChevronPadding: const EdgeInsets.only(right: 15),
                   rightChevronIcon: Transform(
                     transform: Matrix4.identity()..scale(-1.0, 1.0),
                     child: const Icon(DeckIcons.back_arrow,
@@ -247,39 +170,37 @@ class _TaskPageState extends State<TaskPage> {
                   length: 2,
                   tabContent: [
                     // To Do Tab
-                    if (isThereTask(selectedDay, taskDeadlines))
+                    if (isThereTask())
                       ListView.builder(
                         shrinkWrap:
                             true, // Allow the ListView to wrap its content
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: taskTitles.length,
+                        itemCount: tasks.length,
                         itemBuilder: (context, index) {
-                          if (!isDone[index] &&
-                              isSameDay(taskDeadlines[index], selectedDay)) {
+                          if (!tasks[index].isDone &&
+                              isSameDay(tasks[index].deadline, selectedDay)) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: DeckTaskTile(
-                                title: taskTitles[index],
-                                deadline: taskDeadlines[index]
+                                title: tasks[index].title,
+                                deadline: tasks[index].deadline
                                     .toString()
                                     .split(" ")[0],
-                                isChecked: isDone[index],
+                                isChecked: tasks[index].getIsDone,
                                 onChanged: (newValue) {
                                   setState(() {
-                                    isDone[index] = newValue ?? false;
+                                    tasks[index].setIsDone = newValue ?? false;
                                   });
                                 },
                                 onDelete: () {
-                                  final String deletedTitle = taskTitles[index];
+                                  final String deletedTitle = tasks[index].title;
                                   showConfirmationDialog(
                                     context,
                                     "Delete Item",
                                     "Are you sure you want to delete '$deletedTitle'?",
                                     () {
                                       setState(() {
-                                        taskTitles.removeAt(index);
-                                        taskDeadlines.removeAt(index);
-                                        isDone.removeAt(index);
+                                        tasks.removeAt(index);
                                       });
                                     },
                                     () {
@@ -306,47 +227,45 @@ class _TaskPageState extends State<TaskPage> {
                         },
                       ),
                     // Done Tab
-                    if (!isThereTask(selectedDay, taskDeadlines))
+                    if (!isThereTask())
                       IfDeckEmpty(
                         ifDeckEmptyText: 'No Task for Today.',
                         ifDeckEmptyheight:
                             MediaQuery.of(context).size.height * 0.2,
                       ),
 
-                    if (!isThereTask(selectedDay, taskDeadlines))
+                    if (!isThereTask())
                       IfDeckEmpty(
-                        ifDeckEmptyText: 'No Task fo Today.',
+                        ifDeckEmptyText: 'No Task for Today.',
                         ifDeckEmptyheight:
                             MediaQuery.of(context).size.height * 0.2,
                       ),
 
-                    if (isThereTask(selectedDay, taskDeadlines))
+                    if (isThereTask())
                       ListView.builder(
                         shrinkWrap:
                             true, // Allow the ListView to wrap its content
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: taskTitles.length,
+                        itemCount: tasks.length,
                         itemBuilder: (context, index) {
-                          if (isDone[index] &&
-                              isSameDay(taskDeadlines[index], selectedDay)) {
+                          if (tasks[index].isDone &&
+                              isSameDay(tasks[index].deadline, selectedDay)) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: DeckTaskTile(
-                                title: taskTitles[index],
-                                deadline: taskDeadlines[index]
+                                title: tasks[index].title,
+                                deadline: tasks[index].deadline
                                     .toString()
                                     .split(" ")[0],
-                                isChecked: isDone[index],
+                                isChecked: tasks[index].getIsDone,
                                 onChanged: (newValue) {
                                   setState(() {
-                                    isDone[index] = newValue ?? false;
+                                    tasks[index].setIsDone = newValue ?? false;
                                   });
                                 },
                                 onDelete: () {
                                   setState(() {
-                                    taskTitles.removeAt(index);
-                                    taskDeadlines.removeAt(index);
-                                    isDone.removeAt(index);
+                                    tasks.removeAt(index);
                                   });
                                 },
                               ),

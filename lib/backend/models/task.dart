@@ -1,13 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deck/backend/auth/auth_service.dart';
-
 class Task {
-  String title;
-  String description;
-  final _userId;
+  final String _title;
+  final String _description;
+  final String _userId;
   bool isDone;
-  DateTime createdAt, deadline;
+  final DateTime _createdAt, _deadline;
 
-  Task(this.title, this.description, this._userId, this.isDone, this.createdAt, this.deadline);
+  Task(this._title, this._description, this._userId, this.isDone, this._createdAt, this._deadline);
   String get userId => _userId;
+  String get title => _title;
+  bool get getIsDone => isDone;
+  set setIsDone (bool value){
+    isDone = value;
+  }
+  String get description => _description;
+  DateTime get createdAt => _createdAt;
+  DateTime get deadline => _deadline;
 }
