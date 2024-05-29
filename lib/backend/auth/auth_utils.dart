@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,17 +19,17 @@ class AuthUtils {
     List<String>? list = getSplitDisplayName();
     print(list?.last);
     if(list!.length < 2) return "";
-    return list?.last;
+    return list.last;
   }
 
   String? getFirstName(){
     List<String>? list = getSplitDisplayName();
     String name = "";
     if (list == null || list.isEmpty) return '';
-    if(list!.length < 2) return list?.first;
-    for(int i = 0 ; i < list!.length - 1; i++){
+    if(list.length < 2) return list.first;
+    for(int i = 0 ; i < list.length - 1; i++){
       name += list[i];
-      if(i != list!.length - 1) {
+      if(i != list.length - 1) {
         name += " ";
       }
     }
@@ -72,10 +71,6 @@ class AuthUtils {
         return null;
       }
     }
-  }
-
-  Future<Image?> getCoverPhoto() async {
-    Image? image = await getCoverPhotoUrl();
   }
 
 }
