@@ -1,3 +1,4 @@
+
 import 'package:deck/backend/auth/auth_service.dart';
 import 'package:deck/backend/flashcard/flashcard_service.dart';
 import 'package:deck/backend/flashcard/flashcard_utils.dart';
@@ -79,6 +80,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
     (_cardsCollection.isNotEmpty || _starredCardCollection.isNotEmpty)
         ? 20.0
         : 40.0;
+
     return Scaffold(
       floatingActionButton: DeckFAB(
         text: "Add FlashCard",

@@ -1509,7 +1509,6 @@ class BuildTabBar extends StatelessWidget {
     );
   }
 }
-
 /// ------------------------ E N D -----------------------------
 /// --------------- B O T T O M  S H E E T ---------------------
 
@@ -1520,6 +1519,7 @@ class BuildTabBar extends StatelessWidget {
 /// ---------------------- S T A R T ---------------------------
 /// --------------- B O T T O M  S H E E T ---------------------
 
+
 class BuildContainerOfFlashCards extends StatefulWidget {
   final VoidCallback onDelete;
   final VoidCallback? onRetrieve, onTap;
@@ -1528,7 +1528,7 @@ class BuildContainerOfFlashCards extends StatefulWidget {
   bool isStarShaded;
   final VoidCallback onStarShaded;
   final VoidCallback onStarUnshaded;
-
+  
   BuildContainerOfFlashCards({
     Key? key,
     required this.onDelete,
@@ -1641,7 +1641,6 @@ class BuildContainerOfFlashCardsState extends State<BuildContainerOfFlashCards>
     );
   }
 }
-
 /// ------------------------ E N D -----------------------------
 /// --------------- B O T T O M  S H E E T ---------------------
 

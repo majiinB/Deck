@@ -33,7 +33,7 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
     _descriptionOrAnswerController = TextEditingController(text: widget.card.answer.toString());
     _questionOrTermController = TextEditingController(text: widget.card.question.toString());
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
