@@ -1,6 +1,12 @@
+import 'package:deck/backend/flashcard/flashcard_utils.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../../backend/auth/auth_service.dart';
+import '../../backend/flashcard/flashcard_service.dart';
+import '../../backend/models/deck.dart';
 
 class RecentlyDeletedPage extends StatefulWidget {
   const RecentlyDeletedPage({super.key});
@@ -10,36 +16,61 @@ class RecentlyDeletedPage extends StatefulWidget {
 }
 
 class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
-  List<String> deckTitles = [
-    "Deck ni leila malaki",
-    "Deck ko malaki",
-    "Deck nating lahat malaki",
-    "Mystic Realms",
-    "Tech Titans",
-    "Nature's Symphony",
-    "Cosmic Conquest",
-    "Legends of the East",
-    "Rogue's Gambit"
-  ];
+  final AuthService _authService = AuthService();
+  final FlashcardService _flashcardService = FlashcardService();
+  List<Deck> _decks = [];
+  List<Deck> _filteredDecks = [];
+  Map<String, int> _deckCardCount = {};
+  late User? _user;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
 
-  List<String> deckNumbers = [
-    '69 Cards',
-    '96 Cards',
-    '88 Cards',
-    '72 Cards',
-    '105 Cards',
-    '54 Cards',
-    '80 Cards',
-    '120 Cards',
-    '63 Cards'
-  ];
+  void initState() {
+    super.initState();
+    _user = _authService.getCurrentUser();
+    _initUserDecks(_user);
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _initUserDecks(User? user) async {
+    if (user != null) {
+      String userId = user.uid;
+      List<Deck> decks = await _flashcardService.getDeletedDecksByUserId(userId); // Call method to fetch decks
+      Map<String, int> deckCardCount = {};
+      for(Deck deckCount in decks){
+        int count = await deckCount.getCardCount();
+        deckCardCount[deckCount.deckId] = count;
+      }
+      setState(() {
+        _decks = decks; // Update state with fetched decks
+        _filteredDecks = decks; // Initialize filtered decks
+        _deckCardCount = deckCardCount; // Update state with fetched decks count
+      });
+    }
+  }
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text;
+      _filteredDecks = _decks
+          .where((deck) =>
+          deck.title.toLowerCase().contains(_searchQuery.toLowerCase()))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AuthBar(
         automaticallyImplyLeading: true,
-        title: 'sign up',
+        title: 'Recently Deleted',
         color: DeckColors.primaryColor,
         fontSize: 24,
       ),
@@ -49,8 +80,9 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const BuildTextBox(
+            BuildTextBox(
               hintText: 'Search Decks',
+              controller: _searchController,
               showPassword: false,
               leftIcon: Icons.search,
             ),
@@ -68,8 +100,8 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                     () {
                       //when user clicks yes
                       setState(() {
-                        deckTitles.clear();
-                        deckNumbers.clear();
+                        // deckTitles.clear();
+                        // deckNumbers.clear();
                       });
                     },
                     () {
@@ -94,52 +126,51 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: deckTitles.length,
+                itemCount: _filteredDecks.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6.0),
                     child: BuildListOfDecks(
-                      titleText: deckTitles[index],
-                      numberText: deckNumbers[index],
+                      deckImageUrl: _filteredDecks[index].coverPhoto.toString(),
+                      titleText: _filteredDecks[index].title.toString(),
+                      numberText: _deckCardCount[_filteredDecks[index].deckId].toString() + " Card(s)",
                       onDelete: () {
-                        final String deletedTitle = deckTitles[index];
-                        final String deletedNumber = deckNumbers[index];
-
-                        setState(() {
-                          deckTitles.removeAt(index);
-                          deckNumbers.removeAt(index);
-                        });
+                        String deletedTitle = _filteredDecks[index].title.toString();
+                        Deck removedDeck =  _filteredDecks[index];
+                        _decks.removeAt(index);
                         showConfirmationDialog(
                           context,
                           "Delete Item",
                           "Are you sure you want to delete '$deletedTitle'?",
-                          () {},
                           () {
                             setState(() {
-                              //when the user clicks no
-                              deckTitles.insert(index, deletedTitle);
-                              deckNumbers.insert(index, deletedNumber);
+                              FlashcardService _flashCardService = FlashcardService();
+                              _flashCardService.deleteDeck(removedDeck.deckId);
+                              FlashcardUtils.updateSettingsNeeded.value = true;
+                            });
+                          },
+                          () {
+                            setState(() {
+                              _decks.insert(index, removedDeck);
+                              FlashcardUtils.updateSettingsNeeded.value = true;
                             });
                           },
                         );
                       },
                       onRetrieve: () {
-                        final String retrievedTitle = deckTitles[index];
-                        final String retrievedNumber = deckNumbers[index];
-                        setState(() {
-                          deckTitles.removeAt(index);
-                          deckNumbers.removeAt(index);
-                        });
+                        final String retrievedTitle = _filteredDecks[index].title.toString();
+                        Deck retrievedDeck = _filteredDecks[index];
+                        _decks.removeAt(index);
                         showConfirmationDialog(
                           context,
                           "Retrieve Item",
                           "Are you sure you want to retrieve '$retrievedTitle'?",
-                          () {},
+                          () {
+                            retrievedDeck.updateDeleteStatus(false);
+                          },
                           () {
                             setState(() {
-                              //when the user clicks no
-                              deckTitles.insert(index, retrievedTitle);
-                              deckNumbers.insert(index, retrievedNumber);
+                              _decks.insert(index, retrievedDeck);
                             });
                           },
                         );

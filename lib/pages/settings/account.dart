@@ -13,6 +13,7 @@ import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 
 import '../../backend/flashcard/flashcard_service.dart';
+import '../../backend/flashcard/flashcard_utils.dart';
 import '../../backend/models/deck.dart';
 
 class AccountPage extends StatefulWidget {
@@ -30,12 +31,6 @@ class AccountPageState extends State<AccountPage> {
   Map<String, int> _deckCardCount = {};
   late User? _user;
 
-  // List<String> deckTitles = [
-  //   'Deck ni leila malaki',
-  //   'Deck ko malaki',
-  //   'Deck nating lahat malaki',
-  // ];
-
   List<String> deckNumbers = ['69 Cards', '96 Cards', '88 Cards'];
   late Image? coverUrl;
 
@@ -44,8 +39,14 @@ class AccountPageState extends State<AccountPage> {
     coverUrl = null;
     getCoverUrl();
     super.initState();
+    FlashcardUtils.updateSettingsNeeded.addListener(_updateAccountPage);
     _user = _authService.getCurrentUser();
     _initUserDecks(_user);
+  }
+  @override
+  void dispose() {
+    FlashcardUtils.updateSettingsNeeded.removeListener(_updateAccountPage);
+    super.dispose();
   }
 
   void getCoverUrl() async{
@@ -68,6 +69,14 @@ class AccountPageState extends State<AccountPage> {
         _decks = decks; // Update state with fetched decks
         _deckCardCount = deckCardCount; // Update state with fetched decks count
       });
+    }
+  }
+  void _updateAccountPage() {
+    if (FlashcardUtils.updateSettingsNeeded.value) {
+      setState(() {
+        _initUserDecks(_user);
+      });
+      FlashcardUtils.updateSettingsNeeded.value = false; // Reset the notifier
     }
   }
 
@@ -102,6 +111,7 @@ class AccountPageState extends State<AccountPage> {
                         Navigator.of(context).push(
                           RouteGenerator.createRoute(const SettingPage()),
                         );
+                        _initUserDecks(_user);
                       },
                       icon: DeckIcons.settings,
                       iconColor: DeckColors.white,

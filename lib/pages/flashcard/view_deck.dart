@@ -246,7 +246,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                       // Unfocus the current focus node
                                       //FocusScope.of(context).unfocus();
                                       final String deletedTitle = _filteredCardsCollection[index].question;
-                                      Cards removedDeck = _filteredCardsCollection[index];
+                                      Cards removedCard = _filteredCardsCollection[index];
                                       _filteredCardsCollection.removeAt(index);
                                       showConfirmationDialog(
                                         context,
@@ -254,15 +254,15 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                         "Are you sure you want to delete '$deletedTitle'?",
                                             () {
                                           setState(() {
-                                            removedDeck.updateDeleteStatus(true, widget.deck.deckId);
-                                            _cardsCollection.removeWhere((card) => card.cardId == removedDeck.cardId);
-                                            _starredCardCollection.removeWhere((card) => card.cardId == removedDeck.cardId);
-                                            _filteredStarredCardCollection.removeWhere((card) => card.cardId == removedDeck.cardId);
+                                            removedCard.updateDeleteStatus(true, widget.deck.deckId);
+                                            _cardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                            _starredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                            _filteredStarredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
                                           });
                                         },
                                             () {
                                           setState(() {
-                                            _filteredCardsCollection.insert(index, removedDeck);
+                                            _filteredCardsCollection.insert(index, removedCard);
                                           });
                                         },
                                       );
@@ -339,7 +339,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                     // Unfocus the current focus node
                                     //FocusScope.of(context).unfocus();
                                     final String starredDeletedTitle = _filteredStarredCardCollection[index].question;
-                                    Cards removedDeck = _filteredStarredCardCollection[index];
+                                    Cards removedCard = _filteredStarredCardCollection[index];
                                     _filteredStarredCardCollection.removeAt(index);
                                     showConfirmationDialog(
                                       context,
@@ -347,15 +347,15 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                       "Are you sure you want to delete '$starredDeletedTitle'?",
                                           () {
                                         setState(() {
-                                          removedDeck.updateDeleteStatus(true, widget.deck.deckId);
-                                          _cardsCollection.removeWhere((card) => card.cardId == removedDeck.cardId);
-                                          _starredCardCollection.removeWhere((card) => card.cardId == removedDeck.cardId);
-                                          _filteredCardsCollection.removeWhere((card) => card.cardId == removedDeck.cardId);
+                                          removedCard.updateDeleteStatus(true, widget.deck.deckId);
+                                          _cardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                          _starredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                          _filteredCardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
                                         });
                                       },
                                           () {
                                         setState(() {
-                                          _filteredStarredCardCollection.insert(index, removedDeck);
+                                          _filteredStarredCardCollection.insert(index, removedCard);
                                         });
                                       },
                                     );

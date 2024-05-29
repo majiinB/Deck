@@ -45,7 +45,43 @@ class FlashcardService{
     }
     return decks;
   }
+  Future<List<Deck>> getDeletedDecksByUserId(String userId) async {
+    List<Deck> decks = [];
 
+    try {
+      // Reference to the Firestore collection
+      CollectionReference deckCollection = _firestore.collection('decks');
+
+      // Query the collection for documents with the provided user ID
+      QuerySnapshot querySnapshot = await deckCollection
+          .where('user_id', isEqualTo: userId)
+          .where('is_deleted', isEqualTo: true)
+          .orderBy('title') // Sort decks alphabetically based on title
+          .get();
+
+      // Iterate through the query snapshot to extract document data
+      for (var doc in querySnapshot.docs) {
+        // Extract data from the document
+        String title = doc['title'];
+        String userId = doc['user_id'];
+        String coverPhoto = doc['cover_photo'];
+        bool isDeleted = doc['is_deleted'];
+        bool isPrivate = doc['is_private'];
+        String deckId = doc.id;
+
+        // Extract created_at timestamp and convert it to DateTime
+        Timestamp createdAtTimestamp = doc['created_at'];
+        DateTime createdAt = createdAtTimestamp.toDate();
+
+        // Create a new Deck object and add it to the list
+        decks.add(Deck(title, userId, deckId, isDeleted, isPrivate, createdAt, coverPhoto));
+      }
+    } catch (e) {
+      // Handle errors
+      print('Error retrieving decks: $e');
+    }
+    return decks;
+  }
   Future<List<Deck>> getDecksByUserIdNewestFirst(String userId) async {
     List<Deck> decks = [];
 
@@ -255,6 +291,22 @@ class FlashcardService{
       }
     }
     return fileUrl;
+  }
+  Future<bool> deleteDeck(String deckId) async {
+    try {
+      // Reference to the specific document in the 'deck' collection
+      DocumentReference deckDoc = _firestore.collection('decks').doc(deckId);
+
+      // Delete the document
+      await deckDoc.delete();
+
+      print('Deck with ID $deckId has been deleted successfully.');
+      return true;
+    } catch (e) {
+      // Handle any errors that might occur during the deletion
+      print('Error deleting deck: $e');
+      return false;
+    }
   }
 
 }

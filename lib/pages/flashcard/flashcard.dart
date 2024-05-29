@@ -84,9 +84,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   context,
                   MaterialPageRoute(builder: (context) => AddDeckPage(decks: _decks, userId: userId)),
                 );
-
                 _onSearchChanged();
-
               }catch(e){
                 print('error in navigating add deck $e');
               }
@@ -205,21 +203,20 @@ class _FlashcardPageState extends State<FlashcardPage> {
                         titleOfDeck: _filteredDecks[index].title,
                         onDelete: () {
                           final Deck deletedTitle = _filteredDecks[index];
-
+                          Deck removedDeck =  _filteredDecks[index];
+                          _decks.removeAt(index);
                           showConfirmationDialog(
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
                                 () {
                               setState(() {
-                                _decks.removeWhere((card) => card.deckId == _filteredDecks[index].deckId);
-                                _filteredDecks[index].updateDeleteStatus(true);
-                                _filteredDecks.removeAt(index);
+                                removedDeck.updateDeleteStatus(true);
                               });
                             },
                                 () {
                               setState(() {
-                                //when the user clicks no
+                                _decks.insert(index, removedDeck);
                               });
                             },
                           );
