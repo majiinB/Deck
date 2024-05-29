@@ -214,8 +214,7 @@ class _TaskPageState extends State<TaskPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ViewTaskPage()),
+                                        builder: (context) => ViewTaskPage(task: tasks[index])),
                                   );
                                 },
                               ),

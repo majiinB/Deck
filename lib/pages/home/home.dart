@@ -1,3 +1,5 @@
+import 'package:deck/backend/models/task.dart';
+import 'package:deck/backend/task/task_service.dart';
 import 'package:deck/pages/flashcard/view_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
@@ -25,10 +27,10 @@ class _HomePageState extends State<HomePage> {
   final AuthService _authService = AuthService();
   final FlashcardService _flashcardService = FlashcardService();
   Deck? _latestDeck;
+  List<Task> _tasks = [];
   List<Deck> _decks = [];
   late User? _user;
   //Initial values for testing
-  String userName  = "Pole Andrei Buendia";
   String greeting = "";
 
 
@@ -79,8 +81,9 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _user = _authService.getCurrentUser();
     _initUserDecks(_user);
-    String firstName = userName.isNotEmpty ? userName.split(" ").first : 'User';
-    greeting = "hi, ${firstName.isEmpty ? 'User' : firstName}!";
+    _initUserTasks(_user);
+    String? firstName = _user!.displayName!.isNotEmpty ? _user?.displayName?.split(" ").first : 'User';
+    greeting = "hi, ${firstName!.isEmpty ? 'User' : firstName}!";
   }
 
   void _initUserDecks(User? user) async {
@@ -91,6 +94,14 @@ class _HomePageState extends State<HomePage> {
         _decks = decks; // Update state with fetched decks
       });
     }
+  }
+
+  void _initUserTasks(User? user) async {
+    if (user == null) return;
+    List<Task> tasks = await TaskService().getTasksOnSpecificDate();
+    setState(() {
+      _tasks = tasks;
+    });
   }
 
   @override
@@ -117,19 +128,19 @@ class _HomePageState extends State<HomePage> {
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                childCount: taskTitles.length,
+                childCount: _tasks.length,
                     (context, index) {
                   return LayoutBuilder(builder: (context, BoxConstraints constraints){
                     double cardWidth = constraints.maxWidth;
                     return Padding(padding: const EdgeInsets.symmetric(vertical: 10),
                     child:  HomeTaskTile(
-                      taskName: taskTitles[index],
-                      deadline: taskDeadlines[index].toString().split(" ")[0],
+                      taskName: _tasks[index].title,
+                      deadline: _tasks[index].deadline.toString().split(" ")[0],
                       onPressed: () {
                         print('YOU TOUCHED THE TASK!');
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const /*ViewDeckPage*/ ViewTaskPage()),
+                          MaterialPageRoute(builder: (context) => /*ViewDeckPage*/ ViewTaskPage(task: _tasks[index],)),
                         );
                       },
                     ),);
