@@ -432,21 +432,21 @@ class SwipeToDeleteAndRetrieve extends StatelessWidget {
 ///
 ///BuidListOfDecks is a method for Container of Decks but only for design
 class BuildListOfDecks extends StatefulWidget {
-  final File? deckImageFile;
+  final String? deckImageUrl;
   final String titleText, numberText;
   final VoidCallback onDelete;
   final VoidCallback? onRetrieve;
   final bool enableSwipeToRetrieve;
 
   const BuildListOfDecks({
-    super.key,
-    this.deckImageFile,
+    Key? key,
+    this.deckImageUrl,
     required this.titleText,
     required this.numberText,
     required this.onDelete,
     this.onRetrieve,
     this.enableSwipeToRetrieve = true,
-  });
+  }) : super(key: key);
 
   @override
   State<BuildListOfDecks> createState() => BuildListOfDecksState();
@@ -469,19 +469,25 @@ class BuildListOfDecksState extends State<BuildListOfDecks> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              color: widget.deckImageFile != null ? null : DeckColors.white,
+              color: widget.deckImageUrl != null ? null : DeckColors.white,
               height: 75,
               width: 75,
-              child: widget.deckImageFile != null
-                  ? Image.file(
-                      widget.deckImageFile!,
-                      width: 20,
-                      height: 10,
-                      fit: BoxFit.cover,
-                    )
+              child: widget.deckImageUrl != null
+                  ? Image.network(
+                widget.deckImageUrl!,
+                width: 20,
+                height: 10,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: DeckColors.white,
+                    child: Icon(Icons.broken_image, color: Colors.grey),
+                  );
+                },
+              )
                   : const Placeholder(
-                      color: DeckColors.white,
-                    ),
+                color: DeckColors.white,
+              ),
             ),
             Expanded(
               child: Padding(
@@ -1808,17 +1814,17 @@ class HomeDeckTile extends StatelessWidget {
   final String deckName;
   final Color deckColor;
   final double cardWidth;
-  //final File? deckImage;
+  final String? deckImageUrl;
   final VoidCallback? onPressed;
 
   const HomeDeckTile({
-    super.key,
+    Key? key,
     required this.deckName,
     required this.deckColor,
     required this.cardWidth,
-    required this.onPressed,
-    // required this.deckImage,
-  });
+    this.onPressed,
+    this.deckImageUrl,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1840,6 +1846,26 @@ class HomeDeckTile extends StatelessWidget {
                     color: DeckColors.gray,
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: deckImageUrl != null
+                        ? Image.network(
+                      deckImageUrl!,
+                      width: cardWidth,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: DeckColors.gray,
+                          child: const Icon(Icons.broken_image, color: Colors.white),
+                        );
+                      },
+                    )
+                        : Container(
+                      color: DeckColors.gray,
+                      child: const Icon(Icons.image_not_supported, color: Colors.white),
+                    ),
+                  ),
                 ),
                 Positioned(
                   bottom: 0,
@@ -1854,7 +1880,7 @@ class HomeDeckTile extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.8)
+                            Colors.black.withOpacity(0.8),
                           ],
                         ),
                         borderRadius: const BorderRadius.only(
@@ -1883,6 +1909,7 @@ class HomeDeckTile extends StatelessWidget {
     );
   }
 }
+
 
 /// ------------------------- E N D ----------------------------
 /// ------------ D E C K  T I L E  I N  H O M E-----------------

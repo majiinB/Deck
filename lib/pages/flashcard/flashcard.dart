@@ -31,7 +31,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
   void initState() {
     super.initState();
     _user = _authService.getCurrentUser();
-    _initUserDecks();
+    _initUserDecks(_user);
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -42,10 +42,9 @@ class _FlashcardPageState extends State<FlashcardPage> {
     super.dispose();
   }
 
-  void _initUserDecks() async {
-    _user = _authService.getCurrentUser(); // Get current user
-    if (_user != null) {
-      String userId = _user!.uid;
+  void _initUserDecks(User? user) async {
+    if (user != null) {
+      String userId = user.uid;
       List<Deck> decks = await _flashcardService.getDecksByUserId(userId); // Call method to fetch decks
       Deck? latest = await _flashcardService.getLatestDeckLog(userId);
       setState(() {
@@ -213,6 +212,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                             "Are you sure you want to delete '$deletedTitle'?",
                                 () {
                               setState(() {
+                                _decks.removeWhere((card) => card.deckId == _filteredDecks[index].deckId);
                                 _filteredDecks[index].updateDeleteStatus(true);
                                 _filteredDecks.removeAt(index);
                               });
