@@ -1,6 +1,7 @@
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class RecentlyDeletedPage extends StatefulWidget {
   const RecentlyDeletedPage({super.key});
@@ -55,38 +56,82 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
               leftIcon: Icons.search,
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: BuildButton(
-                onPressed: () {
-                  // ignore: avoid_print
-                  print(
-                      "save button clicked"); //line to test if working ung onPressedLogic XD
-                  showConfirmationDialog(
-                    context,
-                    "Are you sure you want to delete all items?",
-                    "Note: Once you delete the item(s) included, you will no longer be able to retrieve it. Proceed with caution.",
-                    () {
-                      //when user clicks yes
-                      setState(() {
-                        deckTitles.clear();
-                        deckNumbers.clear();
-                      });
-                    },
-                    () {
-                      //when user clicks no
-                      //add logic here
-                    },
-                  );
-                },
-                buttonText: 'Delete All',
-                height: 50.0,
-                width: 200.0,
-                backgroundColor: Colors.red,
-                textColor: DeckColors.white,
-                radius: 10.0,
-                borderColor: Colors.amber,
-                fontSize: 16,
-                borderWidth: 0,
+              padding: const EdgeInsets.only(top: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: BuildButton(
+                      onPressed: () {
+                        // ignore: avoid_print
+                        print(
+                            "save button clicked"); //line to test if working ung onPressedLogic XD
+                        showConfirmationDialog(
+                          context,
+                          "Are you sure you want to retrieve all items?",
+                          "Note: Once you retrieve the item(s) included, they will return to the deck page.",
+                          () {
+                            //when user clicks yes
+                            setState(() {
+                              deckTitles.clear();
+                              deckNumbers.clear();
+                            });
+                          },
+                          () {
+                            //when user clicks no
+                            //add logic here
+                          },
+                        );
+                      },
+                      buttonText: 'Retrieve All',
+                      height: 50.0,
+                      width: double.infinity,
+                      backgroundColor: DeckColors.primaryColor,
+                      textColor: DeckColors.white,
+                      radius: 10.0,
+                      borderColor: Colors.amber,
+                      fontSize: 16,
+                      borderWidth: 0,
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 7.0),
+                      child: BuildButton(
+                        onPressed: () {
+                          // ignore: avoid_print
+                          print(
+                              "save button clicked"); //line to test if working ung onPressedLogic XD
+                          showConfirmationDialog(
+                            context,
+                            "Are you sure you want to retrieve all items?",
+                            "Note: Once you delete the item(s) included, you will no longer be able to retrieve it. Proceed with caution.",
+                                () {
+                              //when user clicks yes
+                              setState(() {
+                                deckTitles.clear();
+                                deckNumbers.clear();
+                              });
+                            },
+                                () {
+                              //when user clicks no
+                              //add logic here
+                            },
+                          );
+                        },
+                        buttonText: 'Delete All',
+                        height: 50.0,
+                        width: double.infinity,
+                        backgroundColor: Colors.red,
+                        textColor: DeckColors.white,
+                        radius: 10.0,
+                        borderColor: Colors.amber,
+                        fontSize: 16,
+                        borderWidth: 0,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Padding(
