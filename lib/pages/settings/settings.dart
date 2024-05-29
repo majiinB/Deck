@@ -32,7 +32,7 @@ class _SettingPageState extends State<SettingPage> {
       ),
       body: SingleChildScrollView(
         padding:
-            const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
+        const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
         child: Column(
           children: <Widget>[
             BuildSettingsContainer(
@@ -43,7 +43,7 @@ class _SettingPageState extends State<SettingPage> {
               alternateIcon: Icons.dark_mode,
               alternateText: 'Dark Mode',
               containerColor:
-                  _isToggled ? Colors.green : Colors.blue, // Container Color
+              _isToggled ? Colors.green : Colors.blue, // Container Color
               selectedColor: DeckColors.primaryColor, // Left Icon Color
               textColor: Colors.white, // Text Color
               toggledColor: Colors.amber,
@@ -126,57 +126,6 @@ class _SettingPageState extends State<SettingPage> {
           ],
         ),
       ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
-            child: Column(
-              children: <Widget>[
-                const BuildContainer(selectedIcon: Icons.light_mode,
-                  nameOfTheContainer: 'Light Mode',
-                    showArrow: false,
-                    showSwitch: true,
-                      alternateIcon: Icons.dark_mode,
-                      alternateText: 'Dark Mode'
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                    child: BuildContainer(
-                      selectedIcon: DeckIcons.lock,
-                      nameOfTheContainer: 'Change Password',
-                      showArrow: true,
-                      showSwitch: false,
-                      onTap: () {
-                        print("Change Password Clicked");
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => changePassword()));
-
-                      },
-                    ),
-                  ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: BuildContainer(
-                    selectedIcon: DeckIcons.trash_bin,
-                    nameOfTheContainer: 'Recently Deleted',
-                    showArrow: true,
-                    showSwitch: false,
-                    onTap: () {
-                      print("Recently Deleted Clicked");
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => RecentlyDeletedPage()));
-
-                    },
-                  ),
-                ),
-                  BuildContainer(selectedIcon: DeckIcons.logout,
-                    nameOfTheContainer: 'Log Out',
-                    showArrow: false,
-                    showSwitch: false,
-                   onTap: () {
-                     print("Log Out Clicked");
-                   },
-                  ),
-              ],
-            ),
-          ),
     );
   }
-
 }
