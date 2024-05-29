@@ -90,19 +90,22 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
               padding: const EdgeInsets.only(top: 20),
               child: BuildButton(
                 onPressed: () {
-                  // ignore: avoid_print
-                  print(
-                      "save button clicked"); //line to test if working ung onPressedLogic XD
                   showConfirmationDialog(
                     context,
                     "Are you sure you want to delete all items?",
                     "Note: Once you delete the item(s) included, you will no longer be able to retrieve it. Proceed with caution.",
-                    () {
-                      //when user clicks yes
+                    () async{
+                      for (Deck deck in List.from(_decks)) {
+                        if (await _flashcardService.deleteDeck(deck.deckId)) {
+                          _decks.removeWhere((d) => d.deckId == deck.deckId);
+                        } else {
+                          continue;
+                        }
+                      }
                       setState(() {
-                        // deckTitles.clear();
-                        // deckNumbers.clear();
+                        _filteredDecks = _decks;
                       });
+                      FlashcardUtils.updateSettingsNeeded.value = true;
                     },
                     () {
                       //when user clicks no
@@ -166,7 +169,10 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                           "Retrieve Item",
                           "Are you sure you want to retrieve '$retrievedTitle'?",
                           () {
-                            retrievedDeck.updateDeleteStatus(false);
+                             setState(() {
+                               retrievedDeck.updateDeleteStatus(false);
+                               FlashcardUtils.updateSettingsNeeded.value = true;
+                             });
                           },
                           () {
                             setState(() {

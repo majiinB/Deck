@@ -59,7 +59,7 @@ class AccountPageState extends State<AccountPage> {
   void _initUserDecks(User? user) async {
     if (user != null) {
       String userId = user.uid;
-      List<Deck> decks = await _flashcardService.getDecksByUserIdNewestFirst(userId); // Call method to fetch decks
+      List<Deck> decks = await _flashcardService.getDecksByUserId(userId); // Call method to fetch decks
       Map<String, int> deckCardCount = {};
       for(Deck deckCount in decks){
         int count = await deckCount.getCardCount();
@@ -213,9 +213,11 @@ class AccountPageState extends State<AccountPage> {
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
                             () {
-                              _deckCardCount.remove(_decks[index].deckId);
-                              _decks[index].updateDeleteStatus(true);
-                              _decks.removeAt(index);
+                              setState(() {
+                                _deckCardCount.remove(_decks[index].deckId);
+                                _decks[index].updateDeleteStatus(true);
+                                _decks.removeAt(index);
+                              });
                             },
                             () {
                               // Wala lang kasi wala naman mangyayari pag nag delete
