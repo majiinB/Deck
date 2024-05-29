@@ -212,6 +212,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                             "Are you sure you want to delete '$deletedTitle'?",
                                 () {
                               setState(() {
+                                _decks.removeWhere((card) => card.deckId == _filteredDecks[index].deckId);
                                 _filteredDecks[index].updateDeleteStatus(true);
                                 _filteredDecks.removeAt(index);
                               });
