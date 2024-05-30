@@ -25,7 +25,9 @@ class TaskProvider extends ChangeNotifier {
   Future<void> editTask(Task task, Map<String, dynamic> data) async {
     final db = FirebaseFirestore.instance;
     await db.collection('tasks').doc(task.uid).update(data);
+    print('added in firebase');
     await TaskService().updateTaskFromLoadedTasks(list, task);
+    print('added in app list');
     notifyListeners();
   }
 

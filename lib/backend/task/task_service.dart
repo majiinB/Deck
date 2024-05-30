@@ -32,21 +32,25 @@ class TaskService {
 
   Future<void> updateTaskFromLoadedTasks(List<Task> list, Task task) async {
     try {
-      DocumentSnapshot snapshot = await _firestore.doc(task.uid).get();
+      print(task.uid);
+      DocumentSnapshot snapshot = await _firestore.collection('tasks').doc(task.uid).get();
+      print(snapshot);
       if (!snapshot.exists) { return; }
       var data = snapshot.data() as Map<String, dynamic>;
       Task loadedTask = Task(
-        data['uid'],
+        task.uid,
         data['title'],
         data['description'],
-        data['userId'],
-        data['isDone'],
-        (data['createdAt'] as Timestamp).toDate(),
-        (data['deadline'] as Timestamp).toDate(),
-        data['isDeleted'],
+        data['user_id'],
+        data['is_done'],
+        data['set_date'].toDate(),
+        data['end_date'].toDate(),
+        data['is_deleted'],
       );
+      print(list.length);
         for (int i = 0; i < list.length; i++) {
-          if (list[i].uid == loadedTask.uid) {
+          print(list[i].uid);
+          if (list[i].uid == task.uid) {
             list[i] = loadedTask;
             print('Task updated: ${loadedTask.toString()}');
           }
