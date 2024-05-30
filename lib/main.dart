@@ -13,14 +13,18 @@ import 'package:deck/pages/misc/colors.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'backend/task/task_provider.dart';
 import 'firebase_options.dart';
 
 void main () async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => TaskProvider()),
+    ],
       child: const MyApp(),
     ),
   );
