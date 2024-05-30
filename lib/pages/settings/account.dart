@@ -12,6 +12,7 @@ import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import '../../backend/flashcard/flashcard_service.dart';
+import '../../backend/flashcard/flashcard_utils.dart';
 import '../../backend/models/deck.dart';
 
 class AccountPage extends StatefulWidget {
@@ -28,14 +29,6 @@ class AccountPageState extends State<AccountPage> {
   List<Deck> _decks = [];
   Map<String, int> _deckCardCount = {};
   late User? _user;
-
-  // List<String> deckTitles = [
-  //   'Deck ni leila malaki',
-  //   'Deck ko malaki',
-  //   'Deck nating lahat malaki',
-  // ];
-
-  List<String> deckNumbers = ['69 Cards', '96 Cards', '88 Cards'];
   late Image? coverUrl;
 
   @override
@@ -43,23 +36,28 @@ class AccountPageState extends State<AccountPage> {
     coverUrl = null;
     getCoverUrl();
     super.initState();
+    FlashcardUtils.updateSettingsNeeded.addListener(_updateAccountPage);
     _user = _authService.getCurrentUser();
     _initUserDecks(_user);
   }
 
-  void getCoverUrl() async{
-      coverUrl = await AuthUtils().getCoverPhotoUrl();
-      setState(() {
+  @override
+  void dispose() {
+    FlashcardUtils.updateSettingsNeeded.removeListener(_updateAccountPage);
+    super.dispose();
+  }
 
-      });
+  void getCoverUrl() async {
+    coverUrl = await AuthUtils().getCoverPhotoUrl();
+    setState(() {});
   }
 
   void _initUserDecks(User? user) async {
     if (user != null) {
       String userId = user.uid;
-      List<Deck> decks = await _flashcardService.getDecksByUserIdNewestFirst(userId); // Call method to fetch decks
+      List<Deck> decks = await _flashcardService.getDecksByUserId(userId); // Call method to fetch decks
       Map<String, int> deckCardCount = {};
-      for(Deck deckCount in decks){
+      for (Deck deckCount in decks) {
         int count = await deckCount.getCardCount();
         deckCardCount[deckCount.deckId] = count;
       }
@@ -67,6 +65,15 @@ class AccountPageState extends State<AccountPage> {
         _decks = decks; // Update state with fetched decks
         _deckCardCount = deckCardCount; // Update state with fetched decks count
       });
+    }
+  }
+
+  void _updateAccountPage() {
+    if (FlashcardUtils.updateSettingsNeeded.value) {
+      setState(() {
+        _initUserDecks(_user);
+      });
+      FlashcardUtils.updateSettingsNeeded.value = false; // Reset the notifier
     }
   }
 
@@ -84,7 +91,10 @@ class AccountPageState extends State<AccountPage> {
                 alignment: Alignment.centerLeft,
                 children: [
                   BuildCoverImage(
-                      borderRadiusContainer: 0, borderRadiusImage: 0, CoverPhotofile: coverUrl,),
+                    borderRadiusContainer: 0,
+                    borderRadiusImage: 0,
+                    CoverPhotofile: coverUrl,
+                  ),
                   Positioned(
                     top: 200,
                     child: Container(
@@ -101,6 +111,7 @@ class AccountPageState extends State<AccountPage> {
                         Navigator.of(context).push(
                           RouteGenerator.createRoute(const SettingPage()),
                         );
+                        _initUserDecks(_user);
                       },
                       icon: DeckIcons.settings,
                       iconColor: DeckColors.white,
@@ -118,8 +129,7 @@ class AccountPageState extends State<AccountPage> {
                         children: [
                           BuildProfileImage(AuthUtils().getPhoto()),
                           Padding(
-                            padding:
-                                const EdgeInsets.only(top: 20.0, left: 8.0),
+                            padding: const EdgeInsets.only(top: 20.0, left: 8.0),
                             child: Text(
                               AuthUtils().getDisplayName() ?? "Guest",
                               style: GoogleFonts.nunito(
@@ -194,20 +204,32 @@ class AccountPageState extends State<AccountPage> {
                         numberText: _deckCardCount[_decks[index].deckId].toString() + " Card(s)",
                         deckImageUrl: _decks[index].coverPhoto.toString(),
                         onDelete: () {
-                          final String deletedTitle = _decks[index].title.toString();
-                          //final String deletedNumber = deckNumbers[index];
-
+                          Deck deletedDeck = _decks[index];
+                          final String deletedTitle = deletedDeck.title.toString();
+                          _decks.removeAt(index);
                           showConfirmationDialog(
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
-                            () {
-                              _deckCardCount.remove(_decks[index].deckId);
-                              _decks[index].updateDeleteStatus(true);
-                              _decks.removeAt(index);
+                                () async {
+                              try {
+                                if (await deletedDeck.updateDeleteStatus(true)) {
+                                  setState(() {
+                                    _deckCardCount.remove(deletedDeck.deckId);
+                                    _decks.removeWhere((d) => d.deckId == deletedDeck.deckId);
+                                  });
+                                }
+                              } catch (e) {
+                                print('Deletion error: $e');
+                                setState(() {
+                                  _decks.insert(index, deletedDeck);
+                                });
+                              }
                             },
-                            () {
-                              // Wala lang kasi wala naman mangyayari pag nag delete
+                                () {
+                              setState(() {
+                                _decks.insert(index, deletedDeck);
+                              });
                             },
                           );
                         },
