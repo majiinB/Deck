@@ -79,6 +79,10 @@ class _AddFlashcardPageState extends State<AddFlashcardPage> {
                         );
                         if (card != null) {
                           widget.cardList.add(card);
+                          await Future.delayed(Duration(milliseconds: 300));
+                          _questionOrTermController.clear();
+                          _descriptionOrAnswerController.clear();
+                          showInformationDialog(context, "Card Added Successfully", "You can now view this card in you deck");
                         }
                       } else {
                         //Navigator.of(context).pop(); // Close the confirmation dialog
