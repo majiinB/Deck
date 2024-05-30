@@ -180,15 +180,14 @@ class _EditTaskPageState extends State<EditTaskPage> {
                         ));
                         return;
                       }
-                      Map<String, dynamic> data = {
+
+                      Provider.of<TaskProvider>(context, listen: false).editTask(widget.task, {
                         'title': _titleController.text,
                         'description': _descriptionController.text,
-                        'end_date': DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
-                      };
-
-                      Provider.of<TaskProvider>(context, listen: false).editTask(widget.task, data);
-                      print("save button clicked");
-                      Navigator.pop(context);
+                        'deadline': DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
+                      }).then((_) {
+                        Navigator.pop(context, TaskService().getTaskById(widget.task.uid));
+                      });
                       // Navigator.push(
                       //   context,
                       //   MaterialPageRoute(builder: (context) => TaskPage()),

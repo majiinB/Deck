@@ -15,12 +15,20 @@ class ViewTaskPage extends StatefulWidget {
 class _ViewTaskPageState extends State<ViewTaskPage> {
   //initial values
   late final TextEditingController _dateController;
+  late Task _task;
 
   @override
   void initState() {
     super.initState();
-
+    _task = widget.task;
     _dateController = TextEditingController(text: widget.task.deadline.toString().split(" ")[0]);
+  }
+
+  void _updateTask(Task updatedTask) {
+    setState(() {
+      _task = updatedTask;
+      _dateController.text = _task.deadline.toString().split(" ")[0];
+    });
   }
 
   @override
@@ -33,12 +41,15 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
         icon: Icons.edit,
         // icon: DeckIcons.pencil,
         iconColor: Colors.white,
-        onPressed: () {
+        onPressed: () async {
           // Navigate to the second page
-          Navigator.push(
+          final updatedTask = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => EditTaskPage(task: widget.task,)),
+            MaterialPageRoute(builder: (context) => EditTaskPage(task: _task)),
           );
+          if (updatedTask != null) {
+            _updateTask(updatedTask);
+          }
         },
       ),
       body: SafeArea(
@@ -54,7 +65,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  widget.task.title,
+                  _task.title,
                   style: const TextStyle(
                     fontFamily: 'Fraiche',
                     fontSize: 20,
@@ -82,7 +93,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
                       ),
                     ),
                     Text(
-                      widget.task.deadline.toString().split(" ")[0],
+                      _task.deadline.toString().split(" ")[0],
                       style: const TextStyle(
                         fontFamily: 'nunito',
                         fontSize: 16,
@@ -99,7 +110,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  widget.task.description,
+                  _task.description,
                   style: const TextStyle(
                     fontFamily: 'nunito',
                     fontSize: 16,

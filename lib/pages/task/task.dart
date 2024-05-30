@@ -189,6 +189,7 @@ class _TaskPageState extends State<TaskPage> {
                                 onChanged: (newValue) {
                                   setState(() {
                                     tasks[index].setIsDone = newValue ?? false;
+                                    Provider.of<TaskProvider>(context, listen: false).setTaskDone(tasks[index]);
                                   });
                                 },
                                 onDelete: () {
@@ -259,6 +260,7 @@ class _TaskPageState extends State<TaskPage> {
                                 onChanged: (newValue) {
                                   setState(() {
                                     tasks[index].setIsDone = newValue ?? false;
+                                    Provider.of<TaskProvider>(context, listen: false).setTaskUndone(tasks[index]);
                                   });
                                 },
                                 onDelete: () {
