@@ -43,6 +43,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
   @override
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
+    FlashcardUtils.updateSettingsNeeded.removeListener(_updateLatestReview);
     _searchController.dispose();
     super.dispose();
   }

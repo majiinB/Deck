@@ -592,6 +592,30 @@ void showConfirmationDialog(BuildContext context, String title, String text,
   );
 }
 
+///
+
+// Method to show an informational dialog
+void showInformationDialog(BuildContext context, String title, String message) {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Prevent dismissal by tapping outside
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Dismiss the dialog
+            },
+            child: const Text("OK", style: TextStyle(color: Colors.blue)),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 /// -------------------------- E N D ---------------------------
 /// ---------------------- A C C O U N T -----------------------
 

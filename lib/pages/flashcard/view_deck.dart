@@ -137,7 +137,6 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
 
                   FlashcardUtils _flashcardUtils = FlashcardUtils();
 
-
                   // Shuffle cards
                   if(starredCards.isNotEmpty) _flashcardUtils.shuffleList(starredCards);
                   if(noStarCard.isNotEmpty) _flashcardUtils.shuffleList(noStarCard);
@@ -149,6 +148,11 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                     User? user = _authService.getCurrentUser();
                     if(user != null){
                       try{
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PlayMyDeckPage(cards: joinedCards, deck: widget.deck,)),
+                        );
+
                         FlashcardService _flashCardService = FlashcardService();
                         await _flashCardService.addDeckLogRecord(
                             deckId: widget.deck.deckId.toString(),
@@ -156,15 +160,12 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                             userId: user.uid.toString(),
                             visitedAt: DateTime.now()
                         );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => PlayMyDeckPage(cards: joinedCards, deck: widget.deck,)),
-                        );
+                        FlashcardUtils.updateLatestReview.value = true;
+
                       }catch(e){
-                        // Do something pag may error pero di ko pa alam eh
+                        print('View Deck Error: $e');
                       }
                     }
-
                   }else{
                     showDialog(
                       context: context,
@@ -245,24 +246,37 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                     titleOfFlashCard: _filteredCardsCollection[index].question,
                                     contentOfFlashCard: _filteredCardsCollection[index].answer,
                                     onDelete: () {
-                                      // Unfocus the current focus node
-                                      //FocusScope.of(context).unfocus();
-                                      final String deletedTitle = _filteredCardsCollection[index].question;
                                       Cards removedCard = _filteredCardsCollection[index];
-                                      _filteredCardsCollection.removeAt(index);
+                                      final String deletedTitle = removedCard.question;
+                                      setState(() {
+                                        _filteredCardsCollection.removeAt(index);
+                                        _cardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                        _filteredStarredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                        _starredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                      });
                                       showConfirmationDialog(
                                         context,
                                         "Delete Item",
                                         "Are you sure you want to delete '$deletedTitle'?",
-                                            () {
-                                          setState(() {
-                                            removedCard.updateDeleteStatus(true, widget.deck.deckId);
-                                            _cardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
-                                            _starredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
-                                            _filteredStarredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
-                                          });
+                                          () async{
+                                            try{
+                                              if(await removedCard.updateDeleteStatus(true, widget.deck.deckId)){
+                                                setState(() {
+                                                  _cardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                                  _starredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                                  _filteredStarredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                                });
+                                              }
+                                            }catch(e){
+                                              print('View Deck Error: $e');
+                                              showInformationDialog(context, 'Card Deletion Unsuccessful', 'An error occurred during the deletion process please try again');
+                                              setState(() {
+                                                _filteredCardsCollection.insert(index, removedCard);
+                                              });
+                                            }
+
                                         },
-                                            () {
+                                        () {
                                           setState(() {
                                             _filteredCardsCollection.insert(index, removedCard);
                                           });
@@ -338,26 +352,39 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                   titleOfFlashCard: _filteredStarredCardCollection[index].question,
                                   contentOfFlashCard: _filteredStarredCardCollection[index].answer,
                                   onDelete: () {
-                                    // Unfocus the current focus node
-                                    //FocusScope.of(context).unfocus();
-                                    final String starredDeletedTitle = _filteredStarredCardCollection[index].question;
                                     Cards removedCard = _filteredStarredCardCollection[index];
-                                    _filteredStarredCardCollection.removeAt(index);
+                                    final String starredDeletedTitle = removedCard.question;
+
+                                    setState(() {
+                                      _cardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                      _filteredCardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                      _filteredStarredCardCollection.removeAt(index);
+                                      _starredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                    });
                                     showConfirmationDialog(
                                       context,
                                       "Delete Item",
                                       "Are you sure you want to delete '$starredDeletedTitle'?",
-                                          () {
-                                        setState(() {
-                                          removedCard.updateDeleteStatus(true, widget.deck.deckId);
-                                          _cardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
-                                          _starredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
-                                          _filteredCardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
-                                        });
+                                      () async{
+                                        try{
+                                          await removedCard.updateDeleteStatus(true, widget.deck.deckId);
+                                        }catch(e){
+                                          print('View Deck Error: $e');
+                                          showInformationDialog(context, 'Card Deletion Unsuccessful', 'An error occurred during the deletion process please try again');
+                                          setState(() {
+                                            _cardsCollection.insert(index, removedCard);
+                                            _filteredCardsCollection.add(removedCard);
+                                            _filteredCardsCollection.add(removedCard);
+                                            _starredCardCollection.insert(index, removedCard);
+                                          });
+                                        }
                                       },
-                                          () {
+                                      () {
                                         setState(() {
-                                          _filteredStarredCardCollection.insert(index, removedCard);
+                                          _cardsCollection.insert(index, removedCard);
+                                          _filteredCardsCollection.add(removedCard);
+                                          _filteredCardsCollection.add(removedCard);
+                                          _starredCardCollection.insert(index, removedCard);
                                         });
                                       },
                                     );
