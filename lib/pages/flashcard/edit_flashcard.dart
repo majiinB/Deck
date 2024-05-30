@@ -134,6 +134,11 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
                                         widget.deck.deckId
                                     );
                                   }
+                                  await Future.delayed(const Duration(milliseconds: 300));
+                                  showInformationDialog(context, "Card Edit Successful", "Card info changed");
+                                  setState(() {
+                                    buttonsEnabled = !buttonsEnabled;
+                                  });
                                 }catch(e){
                                   print('Error saving changes $e');
                                 }
