@@ -18,10 +18,10 @@ class AddDeckPage extends StatefulWidget {
   final List<Deck> decks;
   final String userId;
   const AddDeckPage({
-    Key? key,
+    super.key,
     required this.decks,
     required this.userId
-  }) : super(key: key);
+  });
 
   @override
   _AddDeckPageState createState() => _AddDeckPageState();
@@ -50,7 +50,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
                   'Upload Cover Photo Of Deck (optional)',
                   style: GoogleFonts.nunito(
@@ -88,7 +88,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                     color: DeckColors.gray,
                                     child: Column(children: [
                                       Padding(
-                                        padding: EdgeInsets.only(top: 10),
+                                        padding: const EdgeInsets.only(top: 10),
                                         child: BuildContentOfBottomSheet(
                                           bottomSheetButtonText:
                                               'Upload Cover Photo',
@@ -138,7 +138,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.only(top: 10),
+                                        padding: const EdgeInsets.only(top: 10),
                                         child: BuildContentOfBottomSheet(
                                           bottomSheetButtonText:
                                               'Remove Cover Photo',
@@ -165,14 +165,14 @@ class _AddDeckPageState extends State<AddDeckPage> {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.only(top: 20),
                 child: BuildTextBox(
                     controller: _deckTitleContoller,
                     hintText: 'Enter Deck Title'
                 ),
               ),
               Padding(
-                  padding: EdgeInsets.only(top: 15),
+                  padding: const EdgeInsets.only(top: 15),
                   child: Row(
                     children: [
                       Text(
@@ -183,7 +183,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(left: 25),
+                        padding: const EdgeInsets.only(left: 25),
                         child: Switch(
                           value: _isToggled,
                           onChanged: (value) {
@@ -197,20 +197,20 @@ class _AddDeckPageState extends State<AddDeckPage> {
                       ),
                     ],
                   )),
-              if (_isToggled) CustomExpansionTile(),
+              if (_isToggled) const CustomExpansionTile(),
               if (_isToggled)
                 Padding(
-                  padding: EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.only(top: 20),
                   child: BuildTextBox(hintText: 'Enter Subject', controller: _subjectController,),
                 ),
               if (_isToggled)
                 Padding(
-                  padding: EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.only(top: 20),
                   child: BuildTextBox(hintText: 'Enter Topic', controller: _topicController,),
                 ),
               if (_isToggled)
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
                   child: BuildTextBox(
                       hintText: 'Enter Description', isMultiLine: true, controller: _descriptionController,),
                 ),
@@ -273,17 +273,22 @@ class _AddDeckPageState extends State<AddDeckPage> {
                     ),
                     Expanded(
                       flex: 1,
-                      child: BuildTextBox(hintText: 'File Name', controller: _pickedFileController,),
+                        child: IgnorePointer(
+                          child: BuildTextBox(
+                              hintText: 'File Name',
+                              controller: _pickedFileController,
+                          ),
+                        ),
                     ),
                   ],
                 ),
               if (_isToggled)
                 Padding(
-                  padding: EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.only(top: 20),
                   child: BuildTextBox(hintText: 'Enter Number Of FlashCards', controller: _numCardsController),
                 ),
               Padding(
-                padding: EdgeInsets.only(top: 35),
+                padding: const EdgeInsets.only(top: 35),
                 child: BuildButton(
                   onPressed: () {
                     showConfirmationDialog(context, "Generate Deck",
@@ -357,7 +362,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                               }
 
                               if (flashCardDataList.isEmpty) {
-                                await Future.delayed(Duration(milliseconds: 300));
+                                await Future.delayed(const Duration(milliseconds: 300));
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -412,7 +417,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                     );
                                   }
                                 }else{
-                                  await Future.delayed(Duration(milliseconds: 300)); // Ensure the dialog is fully closed
+                                  await Future.delayed(const Duration(milliseconds: 300)); // Ensure the dialog is fully closed
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -443,7 +448,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                               // Optionally, you can show a snackbar or dialog to inform the user about the error
                             }
                           }else{
-                            await Future.delayed(Duration(milliseconds: 300));
+                            await Future.delayed(const Duration(milliseconds: 300));
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -488,7 +493,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                               );
                             }
                           }else{
-                            await Future.delayed(Duration(milliseconds: 300)); // Ensure the dialog is fully closed
+                            await Future.delayed(const Duration(milliseconds: 300)); // Ensure the dialog is fully closed
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -516,7 +521,13 @@ class _AddDeckPageState extends State<AddDeckPage> {
                       }catch(e){
                         print('error in adding deck: $e');
                       }
-                    }, () {
+                    }, () async {
+                      print("test print");
+                      final msg = await FlashcardAiService().testFunction();
+                      showDialog(context: context, builder: (context) =>
+                          AlertDialog(
+                            title: Text(msg),
+                          ));
                       //when user clicks no
                       //add logic here
                     });

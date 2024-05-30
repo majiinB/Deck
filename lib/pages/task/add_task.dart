@@ -151,7 +151,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     borderWidth: 0,
                     borderColor: Colors.transparent,
                     onPressed: () async {
-                      if(DateTime.parse(_dateController.text).isBefore(DateTime.now())){
+                      print(DateTime.parse(_dateController.text));
+                      print(DateTime.now());
+                      if(DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)).isBefore(DateTime.now())){
                         showDialog(context: context, builder: (context) =>
                             const AlertDialog(
                               title: Text("You cannot set the deadline that's already in the past!"),
@@ -164,7 +166,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         "title": _titleController.text,
                         "description" : _descriptionController.text,
                         "set_date": DateTime.now(),
-                        "end_date": DateTime.parse(_dateController.text),
+                        "end_date": DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
                         "is_done": false,
                       };
 
