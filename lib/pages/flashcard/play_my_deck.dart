@@ -58,8 +58,8 @@ class  _PlayMyDeckPageState extends State<PlayMyDeckPage> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: FlipCard(
-                      front: buildFlipCard(widget.cards[index].question),
-                      back: buildFlipCard(widget.cards[index].answer),
+                      front: buildFlipCard(widget.cards[index].question, DeckColors.white),
+                      back: buildFlipCard(widget.cards[index].answer, DeckColors.primaryColor),
                     ),
                   );
                 },
@@ -119,7 +119,7 @@ class  _PlayMyDeckPageState extends State<PlayMyDeckPage> {
         ),
     );
   }
-  Widget buildFlipCard(String content) {
+  Widget buildFlipCard(String content, Color textColor) {
     return Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(
@@ -142,7 +142,7 @@ class  _PlayMyDeckPageState extends State<PlayMyDeckPage> {
                 child: Text(
                   content,
                   style: GoogleFonts.nunito(
-                      color: DeckColors.white,
+                      color: textColor,
                       fontSize: 24,
                       fontWeight: FontWeight.w500
                   ),

@@ -11,7 +11,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
-
 import '../../backend/flashcard/flashcard_service.dart';
 import '../../backend/flashcard/flashcard_utils.dart';
 import '../../backend/models/deck.dart';

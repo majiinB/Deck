@@ -32,7 +32,7 @@ class _SettingPageState extends State<SettingPage> {
       ),
       body: SingleChildScrollView(
         padding:
-            const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
+        const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
         child: Column(
           children: <Widget>[
             BuildSettingsContainer(
@@ -43,7 +43,7 @@ class _SettingPageState extends State<SettingPage> {
               alternateIcon: Icons.dark_mode,
               alternateText: 'Dark Mode',
               containerColor:
-                  _isToggled ? Colors.green : Colors.blue, // Container Color
+              _isToggled ? Colors.green : Colors.blue, // Container Color
               selectedColor: DeckColors.primaryColor, // Left Icon Color
               textColor: Colors.white, // Text Color
               toggledColor: Colors.amber,

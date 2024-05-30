@@ -1,8 +1,9 @@
+import 'package:deck/pages/flashcard/add_deck.dart';
+import 'package:deck/pages/flashcard/view_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../backend/models/card.dart';
 import '../../backend/models/deck.dart';
 
@@ -11,7 +12,6 @@ class AddFlashcardPage extends StatefulWidget {
   List<Cards> cardList;
   AddFlashcardPage({Key? key, required this.deck, required this.cardList}) : super(key: key);
 
-
   @override
   _AddFlashcardPageState createState() => _AddFlashcardPageState();
 }
@@ -19,7 +19,7 @@ class AddFlashcardPage extends StatefulWidget {
 class _AddFlashcardPageState extends State<AddFlashcardPage> {
   final TextEditingController _descriptionOrAnswerController = TextEditingController();
   final TextEditingController _questionOrTermController = TextEditingController();
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
