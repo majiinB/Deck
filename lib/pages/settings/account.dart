@@ -204,22 +204,28 @@ class AccountPageState extends State<AccountPage> {
                         numberText: _deckCardCount[_decks[index].deckId].toString() + " Card(s)",
                         deckImageUrl: _decks[index].coverPhoto.toString(),
                         onDelete: () {
-                          final String deletedTitle = _decks[index].title.toString();
-                          //final String deletedNumber = deckNumbers[index];
-
+                          Deck deletedDeck = _decks[index];
+                          final String deletedTitle = deletedDeck.title.toString();
+                          _decks.removeAt(index);
                           showConfirmationDialog(
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
-                            () {
-                              setState(() {
-                                _deckCardCount.remove(_decks[index].deckId);
-                                _decks[index].updateDeleteStatus(true);
-                                _decks.removeAt(index);
-                              });
+                            () async{
+                                try{
+                                  if(await deletedDeck.updateDeleteStatus(true)){
+                                    setState(() {
+                                      _deckCardCount.remove(deletedDeck.deckId);
+                                    });
+                                  }
+                                }catch(e){
+                                  print('Deletion error: $e}');
+                                }
                             },
                             () {
-                              // Wala lang kasi wala naman mangyayari pag nag delete
+                              setState(() {
+                                _decks.insert(index, deletedDeck);
+                              });
                             },
                           );
                         },
