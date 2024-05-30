@@ -8,22 +8,17 @@ class TaskService {
 
   Future<List<Task>> getTasksOnSpecificDate() async {
     List<Task> list = [];
-    DateTime currentDate = DateTime.now();
     try {
-      Query query = _firestore.collection('tasks').where('user_id', isEqualTo: AuthService().getCurrentUser()?.uid)
-          .where('set_date', isEqualTo: DateTime(currentDate.year, currentDate.month, currentDate.day)).orderBy('end-date');
-
-      // Query the collection to get the documents
-      QuerySnapshot querySnapshot = await query.get();
-
+      QuerySnapshot querySnapshot = await _firestore.collection('tasks').where('user_id', isEqualTo: AuthService().getCurrentUser()?.uid).get();
+      print(AuthService().getCurrentUser()?.uid);
       // Iterate through the query snapshot to extract document data
       for (var doc in querySnapshot.docs) {
         String title = doc['title'];
         String description = doc['description'];
         String userId = doc['user_id'];
         bool isDone = doc['is_done'];
-        DateTime setDate = doc['set_date'];
-        DateTime endDate = doc['end_date'];
+        DateTime setDate = doc['set_date'].toDate();
+        DateTime endDate = doc['end_date'].toDate();
         list.add(Task(title, description, userId, isDone, setDate, endDate));
       }
     } catch (e) {

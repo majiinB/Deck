@@ -33,7 +33,7 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
     _descriptionOrAnswerController = TextEditingController(text: widget.card.answer.toString());
     _questionOrTermController = TextEditingController(text: widget.card.question.toString());
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,6 +134,11 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
                                         widget.deck.deckId
                                     );
                                   }
+                                  await Future.delayed(const Duration(milliseconds: 300));
+                                  showInformationDialog(context, "Card Edit Successful", "Card info changed");
+                                  setState(() {
+                                    buttonsEnabled = !buttonsEnabled;
+                                  });
                                 }catch(e){
                                   print('Error saving changes $e');
                                 }

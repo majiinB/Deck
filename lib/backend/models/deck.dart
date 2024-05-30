@@ -89,6 +89,30 @@ class Deck{
 
     return questions;
   }
+  Future<int> getCardCount() async {
+    try {
+      // Reference to the questions subcollection with a query to filter out deleted cards
+      CollectionReference questionsCollection = _firestore
+          .collection('decks')
+          .doc(deckId)
+          .collection('questions');
+
+      // Query the collection to get documents where is_deleted is false
+      QuerySnapshot querySnapshot = await questionsCollection
+          .where('is_deleted', isEqualTo: false)
+          .get();
+
+      // Return the number of documents in the query snapshot
+      return querySnapshot.docs.length;
+    } catch (e) {
+      // Handle any errors that might occur during the query
+      print('Error retrieving questions: $e');
+      // Return 0 in case of error
+      return 0;
+    }
+  }
+
+
   Future<Cards?> addQuestionToDeck(String question, String answer) async {
     try {
       // Get the reference to the collection
