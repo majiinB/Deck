@@ -3,6 +3,10 @@ import 'package:deck/backend/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:provider/provider.dart';
+
+import '../../backend/task/task_provider.dart';
+import '../../backend/task/task_service.dart';
 
 class AddTaskPage extends StatefulWidget {
   const AddTaskPage({super.key});
@@ -171,8 +175,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         "is_deleted": false,
                       };
 
-                      final db = FirebaseFirestore.instance;
-                      await db.collection('tasks').add(data);
+                      Provider.of<TaskProvider>(context, listen: false).addTask(data);
                       Navigator.pop(context);
                     }),
               ),

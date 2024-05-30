@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/backend/task/task_provider.dart';
+import 'package:deck/backend/task/task_service.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/task/task.dart';
+import 'package:provider/provider.dart';
 
 import '../../backend/models/task.dart';
 
@@ -21,6 +24,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
   late final TextEditingController _dateController;
+
 
   @override
   void initState() {
@@ -181,9 +185,9 @@ class _EditTaskPageState extends State<EditTaskPage> {
                       await db.collection('tasks').doc(widget.task.uid).update({
                         'title': _titleController.text,
                         'description': _descriptionController.text,
-                        'deadline': DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
+                        'end_date': DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
                       });
-
+                      TaskService().updateTaskFromLoadedTasks(Provider.of<TaskProvider>(context).getList, widget.task);
                       print("save button clicked");
                       Navigator.pop(context);
                       // Navigator.push(
