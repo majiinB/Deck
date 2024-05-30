@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:deck/backend/auth/auth_service.dart';
 import 'package:deck/backend/flashcard/flashcard_service.dart';
 import 'package:deck/backend/models/deck.dart';
@@ -8,6 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../backend/flashcard/flashcard_utils.dart';
 
 class FlashcardPage extends StatefulWidget {
   const FlashcardPage({Key? key}) : super(key: key);
@@ -31,6 +35,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
   void initState() {
     super.initState();
     _user = _authService.getCurrentUser();
+    FlashcardUtils.updateLatestReview.addListener(_updateLatestReview);
     _initUserDecks(_user);
     _searchController.addListener(_onSearchChanged);
   }
@@ -63,6 +68,15 @@ class _FlashcardPageState extends State<FlashcardPage> {
           deck.title.toLowerCase().contains(_searchQuery.toLowerCase()))
           .toList();
     });
+  }
+  void _updateLatestReview() async{
+    if (FlashcardUtils.updateLatestReview.value) {
+      Deck? latest = await _flashcardService.getLatestDeckLog(_user!.uid);
+      setState(() {
+        _initUserDecks(_user);
+      });
+      FlashcardUtils.updateLatestReview.value = false; // Reset the notifier
+    }
   }
 
   @override
@@ -204,18 +218,34 @@ class _FlashcardPageState extends State<FlashcardPage> {
                         onDelete: () {
                           Deck removedDeck =  _filteredDecks[index];
                           final String deletedTitle = removedDeck.title.toString();
-                          _decks.removeAt(index);
+                          setState(() {
+                            _filteredDecks.removeAt(index);
+                            _decks.removeWhere((card) => card.deckId == removedDeck.deckId);
+                          });
                           showConfirmationDialog(
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
-                              () async{
-                              if(await removedDeck.updateDeleteStatus(true))
-                              setState(() {
-                                removedDeck.updateDeleteStatus(true);
-                              });
+                            () async{
+                              try{
+                                if(await removedDeck.updateDeleteStatus(true)){
+                                    if(_latestDeck != null){
+                                      if(_latestDeck?.deckId == removedDeck.deckId){
+                                        Deck? latest = await _flashcardService.getLatestDeckLog(_user!.uid);
+                                        setState(() {
+                                          _latestDeck = latest;
+                                        });
+                                      }
+                                    }
+                                  }
+                              }catch(e){
+                                print('Flash Card Page Deletion Error: $e');
+                                setState(() {
+                                  _decks.insert(index, removedDeck);
+                                });
+                              }
                             },
-                                () {
+                            () {
                               setState(() {
                                 _decks.insert(index, removedDeck);
                               });

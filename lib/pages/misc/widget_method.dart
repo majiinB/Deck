@@ -580,6 +580,7 @@ void showConfirmationDialog(BuildContext context, String title, String text,
     VoidCallback onConfirm, VoidCallback onCancel) {
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return ShowConfirmationDialog(
         title: title,

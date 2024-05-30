@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class FlashcardUtils{
   static final ValueNotifier<bool> updateSettingsNeeded = ValueNotifier<bool>(false);
+  static final ValueNotifier<bool> updateLatestReview = ValueNotifier<bool>(false);
   void shuffleList(List items) {
     final random = Random();
     for (var i = items.length - 1; i > 0; i--) {
