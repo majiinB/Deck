@@ -1,9 +1,11 @@
+import 'package:deck/backend/task/task_provider.dart';
 import 'package:deck/backend/task/task_service.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:deck/pages/task/view_task.dart';
 import 'package:deck/pages/task/add_task.dart';
@@ -17,8 +19,6 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
-  List<Task> tasks = [];
-
   DateTime today = DateTime.now();
   DateTime selectedDay = DateTime.now();
 
@@ -29,11 +29,7 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   void _getTasks() async{
-    List<Task> tasks = await TaskService().getTasksOnSpecificDate();
-    print(tasks.length);
-    setState(() {
-      this.tasks = tasks;
-    });
+    await Provider.of<TaskProvider>(context, listen:false).loadTasks();
   }
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
@@ -43,17 +39,20 @@ class _TaskPageState extends State<TaskPage> {
     });
   }
 
-  //check if there are task
-  bool isThereTask() {
-    return tasks.isNotEmpty ? true : false;
-  }
-
-  List<Task> _eventLoader(DateTime day) {
-    return tasks.where((task) => isSameDay(task.deadline, day)).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<TaskProvider>(context);
+    final tasks = provider.getList;
+
+    //check if there are task
+    bool isThereTask() {
+      return tasks.isNotEmpty ? true : false;
+    }
+
+    List<Task> _eventLoader(DateTime day) {
+      return tasks.where((task) => isSameDay(task.deadline, day)).toList();
+    }
+
     return Scaffold(
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 100),
@@ -214,8 +213,7 @@ class _TaskPageState extends State<TaskPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ViewTaskPage()),
+                                        builder: (context) => ViewTaskPage(task: tasks[index])),
                                   );
                                 },
                               ),
