@@ -26,6 +26,7 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
 
+  @override
   void initState() {
     super.initState();
     _user = _authService.getCurrentUser();
@@ -45,9 +46,9 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
       String userId = user.uid;
       List<Deck> decks = await _flashcardService.getDeletedDecksByUserId(userId); // Call method to fetch decks
       Map<String, int> deckCardCount = {};
-      for(Deck deckCount in decks){
-        int count = await deckCount.getCardCount();
-        deckCardCount[deckCount.deckId] = count;
+      for (Deck deck in decks) {
+        int count = await deck.getCardCount();
+        deckCardCount[deck.deckId] = count;
       }
       setState(() {
         _decks = decks; // Update state with fetched decks
@@ -56,6 +57,7 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
       });
     }
   }
+
   void _onSearchChanged() {
     setState(() {
       _searchQuery = _searchController.text;
@@ -77,7 +79,7 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
       ),
       body: SingleChildScrollView(
         padding:
-            const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
+        const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -96,22 +98,21 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                     child: BuildButton(
                       onPressed: () {
                         // ignore: avoid_print
-                        print(
-                            "save button clicked"); //line to test if working ung onPressedLogic XD
+                        print("save button clicked"); //line to test if working ung onPressedLogic XD
                         showConfirmationDialog(
                           context,
                           "Are you sure you want to retrieve all items?",
                           "Note: Once you retrieve the item(s) included, they will return to the deck page.",
-                          () {
-                            //when user clicks yes
+                              () {
+                            // when user clicks yes
                             setState(() {
-                              deckTitles.clear();
-                              deckNumbers.clear();
+                              // deckTitles.clear();
+                              // deckNumbers.clear();
                             });
                           },
-                          () {
-                            //when user clicks no
-                            //add logic here
+                              () {
+                            // when user clicks no
+                            // add logic here
                           },
                         );
                       },
@@ -132,29 +133,27 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                       child: BuildButton(
                         onPressed: () {
                           // ignore: avoid_print
-                          print(
-                              "save button clicked"); //line to test if working ung onPressedLogic XD
+                          print("save button clicked"); //line to test if working ung onPressedLogic XD
                           showConfirmationDialog(
                             context,
                             "Are you sure you want to Delete all items?",
                             "Note: Once you delete the item(s) included, you will no longer be able to retrieve it. Proceed with caution.",
-                              () {
-                             for (Deck deck in List.from(_decks)) {
-                              if (await _flashcardService.deleteDeck(deck.deckId)) {
-                                _decks.removeWhere((d) => d.deckId == deck.deckId);
-                              } else {
-                                continue;
+                                () async {
+                              for (Deck deck in List.from(_decks)) {
+                                if (await _flashcardService.deleteDeck(deck.deckId)) {
+                                  _decks.removeWhere((d) => d.deckId == deck.deckId);
+                                } else {
+                                  continue;
+                                }
                               }
-                             }
-                             setState(() {
-                              _filteredDecks = _decks;
-                             });
-                              FlashcardUtils.updateSettingsNeeded.value = true;
+                              setState(() {
+                                _filteredDecks = _decks;
                               });
+                              FlashcardUtils.updateSettingsNeeded.value = true;
                             },
                                 () {
-                              //when user clicks no
-                              //add logic here
+                              // when user clicks no
+                              // add logic here
                             },
                           );
                         },
@@ -188,20 +187,20 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                       numberText: _deckCardCount[_filteredDecks[index].deckId].toString() + " Card(s)",
                       onDelete: () {
                         String deletedTitle = _filteredDecks[index].title.toString();
-                        Deck removedDeck =  _filteredDecks[index];
+                        Deck removedDeck = _filteredDecks[index];
                         _decks.removeAt(index);
                         showConfirmationDialog(
                           context,
                           "Delete Item",
                           "Are you sure you want to delete '$deletedTitle'?",
-                          () {
+                              () {
                             setState(() {
                               FlashcardService _flashCardService = FlashcardService();
                               _flashCardService.deleteDeck(removedDeck.deckId);
                               FlashcardUtils.updateSettingsNeeded.value = true;
                             });
                           },
-                          () {
+                              () {
                             setState(() {
                               _decks.insert(index, removedDeck);
                               FlashcardUtils.updateSettingsNeeded.value = true;
@@ -217,13 +216,13 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                           context,
                           "Retrieve Item",
                           "Are you sure you want to retrieve '$retrievedTitle'?",
-                          () {
-                             setState(() {
-                               retrievedDeck.updateDeleteStatus(false);
-                               FlashcardUtils.updateSettingsNeeded.value = true;
-                             });
+                              () {
+                            setState(() {
+                              retrievedDeck.updateDeleteStatus(false);
+                              FlashcardUtils.updateSettingsNeeded.value = true;
+                            });
                           },
-                          () {
+                              () {
                             setState(() {
                               _decks.insert(index, retrievedDeck);
                             });
@@ -235,7 +234,7 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),
