@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/models/task.dart';
 import 'package:deck/backend/task/task_service.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,13 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> addTask(Map<String, dynamic> taskData) async {
     await TaskService().addTaskFromLoadedTasks(list, taskData);
+    notifyListeners();
+  }
+
+  Future<void> editTask(Task task, Map<String, dynamic> data) async {
+    final db = FirebaseFirestore.instance;
+    await db.collection('tasks').doc(task.uid).update(data);
+    await TaskService().updateTaskFromLoadedTasks(list, task);
     notifyListeners();
   }
 

@@ -36,7 +36,7 @@ class TaskService {
       if (!snapshot.exists) { return; }
       var data = snapshot.data() as Map<String, dynamic>;
       Task loadedTask = Task(
-        snapshot.id,
+        data['uid'],
         data['title'],
         data['description'],
         data['userId'],

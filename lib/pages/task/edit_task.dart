@@ -180,14 +180,13 @@ class _EditTaskPageState extends State<EditTaskPage> {
                         ));
                         return;
                       }
-
-                      final db = FirebaseFirestore.instance;
-                      await db.collection('tasks').doc(widget.task.uid).update({
+                      Map<String, dynamic> data = {
                         'title': _titleController.text,
                         'description': _descriptionController.text,
                         'end_date': DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
-                      });
-                      TaskService().updateTaskFromLoadedTasks(Provider.of<TaskProvider>(context).getList, widget.task);
+                      };
+
+                      Provider.of<TaskProvider>(context, listen: false).editTask(widget.task, data);
                       print("save button clicked");
                       Navigator.pop(context);
                       // Navigator.push(
