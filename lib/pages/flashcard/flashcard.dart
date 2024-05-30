@@ -202,14 +202,15 @@ class _FlashcardPageState extends State<FlashcardPage> {
                         deckCoverPhotoUrl: _filteredDecks[index].coverPhoto,
                         titleOfDeck: _filteredDecks[index].title,
                         onDelete: () {
-                          final Deck deletedTitle = _filteredDecks[index];
                           Deck removedDeck =  _filteredDecks[index];
+                          final String deletedTitle = removedDeck.title.toString();
                           _decks.removeAt(index);
                           showConfirmationDialog(
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
-                                () {
+                              () async{
+                              if(await removedDeck.updateDeleteStatus(true))
                               setState(() {
                                 removedDeck.updateDeleteStatus(true);
                               });

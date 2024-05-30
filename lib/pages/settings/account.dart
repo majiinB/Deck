@@ -220,6 +220,9 @@ class AccountPageState extends State<AccountPage> {
                                   }
                                 }catch(e){
                                   print('Deletion error: $e}');
+                                  setState(() {
+                                    _decks.insert(index, deletedDeck);
+                                  });
                                 }
                             },
                             () {
