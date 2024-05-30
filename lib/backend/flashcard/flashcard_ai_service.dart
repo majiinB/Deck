@@ -8,7 +8,7 @@ class FlashcardAiService{
 
   Future<String> testFunction() async {
     final res = await http.get(
-      Uri.parse('http://192.168.100.21:8000/hello'),
+      Uri.parse('http://192.168.0.26:8080/hello'),
     );
     if(res.statusCode == 200){
       return res.body;
@@ -41,7 +41,7 @@ class FlashcardAiService{
 
     // Make the API call
     final response = await http.post(
-      Uri.parse('http://192.168.100.21:8000/message/$id'), //API endpoint
+      Uri.parse('http://192.168.0.26:8080/message/$id'), //API endpoint
       body: jsonEncode(requestBody),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -82,7 +82,7 @@ class FlashcardAiService{
 
     // Make the API call
     final response = await http.get(
-      Uri.parse('http://192.168.100.21:8000/response/$id?thread_id=$threadID&run_id=$runID'), //API endpoint
+      Uri.parse('http://192.168.0.26:8080/response/$id?thread_id=$threadID&run_id=$runID'), //API endpoint
     );
 
     // Check if the response is successful
