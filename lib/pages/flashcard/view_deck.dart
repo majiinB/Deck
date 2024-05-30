@@ -1,4 +1,3 @@
-
 import 'package:deck/backend/auth/auth_service.dart';
 import 'package:deck/backend/flashcard/flashcard_service.dart';
 import 'package:deck/backend/flashcard/flashcard_utils.dart';
@@ -39,16 +38,16 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
   void _initDeckCards() async {
     List<Cards> cards = await widget.deck.getCard();
     List<Cards> starredCards = [];
-    for (int i = 0; i < cards.length; i++) {
-      if (cards[i].isStarred) {
-        starredCards.add(cards[i]);
+    for (var card in cards) {
+      if (card.isStarred) {
+        starredCards.add(card);
       }
     }
     setState(() {
       _cardsCollection = cards;
       _starredCardCollection = starredCards;
-      _filteredCardsCollection = cards;
-      _filteredStarredCardCollection = starredCards;
+      _filteredCardsCollection = List.from(cards);
+      _filteredStarredCardCollection = List.from(starredCards);
     });
   }
 
@@ -92,8 +91,8 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => AddFlashcardPage(
-                deck: widget.deck,
-                cardList: _cardsCollection,
+              deck: widget.deck,
+              cardList: _cardsCollection,
             )),
           );
         },
@@ -258,25 +257,25 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                         context,
                                         "Delete Item",
                                         "Are you sure you want to delete '$deletedTitle'?",
-                                          () async{
-                                            try{
-                                              if(await removedCard.updateDeleteStatus(true, widget.deck.deckId)){
-                                                setState(() {
-                                                  _cardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
-                                                  _starredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
-                                                  _filteredStarredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
-                                                });
-                                              }
-                                            }catch(e){
-                                              print('View Deck Error: $e');
-                                              showInformationDialog(context, 'Card Deletion Unsuccessful', 'An error occurred during the deletion process please try again');
+                                            () async{
+                                          try{
+                                            if(await removedCard.updateDeleteStatus(true, widget.deck.deckId)){
                                               setState(() {
-                                                _filteredCardsCollection.insert(index, removedCard);
+                                                _cardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                                _starredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
+                                                _filteredStarredCardCollection.removeWhere((card) => card.cardId == removedCard.cardId);
                                               });
                                             }
+                                          }catch(e){
+                                            print('View Deck Error: $e');
+                                            showInformationDialog(context, 'Card Deletion Unsuccessful', 'An error occurred during the deletion process please try again');
+                                            setState(() {
+                                              _filteredCardsCollection.insert(index, removedCard);
+                                            });
+                                          }
 
                                         },
-                                        () {
+                                            () {
                                           setState(() {
                                             _filteredCardsCollection.insert(index, removedCard);
                                           });
@@ -300,6 +299,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                       setState(() {
                                         try {
                                           _filteredCardsCollection[index].updateStarredStatus(true, widget.deck.deckId);
+                                          _starredCardCollection.add(_filteredCardsCollection[index]);
                                           _filteredStarredCardCollection.add(_filteredCardsCollection[index]);
                                           _filteredCardsCollection[index].isStarred = true;
                                         } catch (e) {
@@ -311,10 +311,11 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                       setState(() {
                                         try {
                                           _filteredCardsCollection[index].updateStarredStatus(false, widget.deck.deckId);
+                                          _starredCardCollection.removeWhere((card) => card.cardId == _filteredCardsCollection[index].cardId);
                                           _filteredStarredCardCollection.removeWhere((card) => card.cardId == _filteredCardsCollection[index].cardId);
                                           _filteredCardsCollection[index].isStarred = false;
                                         } catch (e) {
-                                          print('star shaded error: $e');
+                                          print('star unshaded error: $e');
                                         }
                                       });
                                     },
@@ -365,7 +366,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                       context,
                                       "Delete Item",
                                       "Are you sure you want to delete '$starredDeletedTitle'?",
-                                      () async{
+                                          () async{
                                         try{
                                           await removedCard.updateDeleteStatus(true, widget.deck.deckId);
                                         }catch(e){
@@ -374,16 +375,16 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                           setState(() {
                                             _cardsCollection.insert(index, removedCard);
                                             _filteredCardsCollection.add(removedCard);
-                                            _filteredCardsCollection.add(removedCard);
+                                            _filteredStarredCardCollection.add(removedCard);
                                             _starredCardCollection.insert(index, removedCard);
                                           });
                                         }
                                       },
-                                      () {
+                                          () {
                                         setState(() {
                                           _cardsCollection.insert(index, removedCard);
                                           _filteredCardsCollection.add(removedCard);
-                                          _filteredCardsCollection.add(removedCard);
+                                          _filteredStarredCardCollection.add(removedCard);
                                           _starredCardCollection.insert(index, removedCard);
                                         });
                                       },
@@ -403,16 +404,17 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                   },
                                   isStarShaded: true,
                                   onStarShaded: () {
-                                    //No action kasi lagi naman shaded yung andito
+                                    // No action because it's always shaded here
                                   },
                                   onStarUnshaded: () {
                                     setState(() {
                                       try {
                                         _filteredStarredCardCollection[index].updateStarredStatus(false, widget.deck.deckId);
                                         _filteredStarredCardCollection[index].isStarred = false;
+                                        _starredCardCollection.removeWhere((card) => card.cardId == _filteredStarredCardCollection[index].cardId);
                                         _filteredStarredCardCollection.removeWhere((card) => card.cardId == _filteredStarredCardCollection[index].cardId);
                                       } catch (e) {
-                                        print('star shaded error: $e');
+                                        print('star unshaded error: $e');
                                       }
                                     });
                                   },

@@ -29,8 +29,6 @@ class AccountPageState extends State<AccountPage> {
   List<Deck> _decks = [];
   Map<String, int> _deckCardCount = {};
   late User? _user;
-
-  List<String> deckNumbers = ['69 Cards', '96 Cards', '88 Cards'];
   late Image? coverUrl;
 
   @override
@@ -42,17 +40,16 @@ class AccountPageState extends State<AccountPage> {
     _user = _authService.getCurrentUser();
     _initUserDecks(_user);
   }
+
   @override
   void dispose() {
     FlashcardUtils.updateSettingsNeeded.removeListener(_updateAccountPage);
     super.dispose();
   }
 
-  void getCoverUrl() async{
-      coverUrl = await AuthUtils().getCoverPhotoUrl();
-      setState(() {
-
-      });
+  void getCoverUrl() async {
+    coverUrl = await AuthUtils().getCoverPhotoUrl();
+    setState(() {});
   }
 
   void _initUserDecks(User? user) async {
@@ -60,7 +57,7 @@ class AccountPageState extends State<AccountPage> {
       String userId = user.uid;
       List<Deck> decks = await _flashcardService.getDecksByUserId(userId); // Call method to fetch decks
       Map<String, int> deckCardCount = {};
-      for(Deck deckCount in decks){
+      for (Deck deckCount in decks) {
         int count = await deckCount.getCardCount();
         deckCardCount[deckCount.deckId] = count;
       }
@@ -70,6 +67,7 @@ class AccountPageState extends State<AccountPage> {
       });
     }
   }
+
   void _updateAccountPage() {
     if (FlashcardUtils.updateSettingsNeeded.value) {
       setState(() {
@@ -93,7 +91,10 @@ class AccountPageState extends State<AccountPage> {
                 alignment: Alignment.centerLeft,
                 children: [
                   BuildCoverImage(
-                      borderRadiusContainer: 0, borderRadiusImage: 0, CoverPhotofile: coverUrl,),
+                    borderRadiusContainer: 0,
+                    borderRadiusImage: 0,
+                    CoverPhotofile: coverUrl,
+                  ),
                   Positioned(
                     top: 200,
                     child: Container(
@@ -128,8 +129,7 @@ class AccountPageState extends State<AccountPage> {
                         children: [
                           BuildProfileImage(AuthUtils().getPhoto()),
                           Padding(
-                            padding:
-                                const EdgeInsets.only(top: 20.0, left: 8.0),
+                            padding: const EdgeInsets.only(top: 20.0, left: 8.0),
                             child: Text(
                               AuthUtils().getDisplayName() ?? "Guest",
                               style: GoogleFonts.nunito(
@@ -211,21 +211,22 @@ class AccountPageState extends State<AccountPage> {
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
-                            () async{
-                                try{
-                                  if(await deletedDeck.updateDeleteStatus(true)){
-                                    setState(() {
-                                      _deckCardCount.remove(deletedDeck.deckId);
-                                    });
-                                  }
-                                }catch(e){
-                                  print('Deletion error: $e}');
+                                () async {
+                              try {
+                                if (await deletedDeck.updateDeleteStatus(true)) {
                                   setState(() {
-                                    _decks.insert(index, deletedDeck);
+                                    _deckCardCount.remove(deletedDeck.deckId);
+                                    _decks.removeWhere((d) => d.deckId == deletedDeck.deckId);
                                   });
                                 }
+                              } catch (e) {
+                                print('Deletion error: $e');
+                                setState(() {
+                                  _decks.insert(index, deletedDeck);
+                                });
+                              }
                             },
-                            () {
+                                () {
                               setState(() {
                                 _decks.insert(index, deletedDeck);
                               });
