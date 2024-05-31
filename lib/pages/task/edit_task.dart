@@ -24,8 +24,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
   late final TextEditingController _dateController;
-
-
   @override
   void initState() {
     super.initState();
@@ -35,7 +33,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
     _titleController = TextEditingController(text: widget.task.title);
     _descriptionController = TextEditingController(text: widget.task.description.toString());
   }
-
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,

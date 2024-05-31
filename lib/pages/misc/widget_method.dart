@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:msh_checkbox/msh_checkbox.dart';
-
 ///updated methods as of 05/11/24 1:34AM
 ///
 ///
@@ -621,7 +620,6 @@ void showInformationDialog(BuildContext context, String title, String message) {
     },
   );
 }
-
 /// -------------------------- E N D ---------------------------
 /// ---------------------- A C C O U N T -----------------------
 
@@ -906,7 +904,6 @@ class BuildIconButton extends StatelessWidget {
     );
   }
 }
-
 /// ------------------------- E N D ----------------------------
 /// --------------- E D I T  P R O F I L E ---------------------
 
@@ -1186,7 +1183,6 @@ class IfDeckEmpty extends StatelessWidget {
     );
   }
 }
-
 /// ------------------------ E N D -----------------------------
 /// --------------- B O T T O M  S H E E T ---------------------
 
@@ -1939,7 +1935,6 @@ class HomeDeckTile extends StatelessWidget {
     );
   }
 }
-
 
 /// ------------------------- E N D ----------------------------
 /// ------------ D E C K  T I L E  I N  H O M E-----------------

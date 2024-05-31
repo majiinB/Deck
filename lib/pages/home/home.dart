@@ -9,7 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
-
 import '../../backend/auth/auth_service.dart';
 import '../../backend/flashcard/flashcard_service.dart';
 import '../../backend/models/deck.dart';
@@ -41,7 +40,6 @@ class _HomePageState extends State<HomePage> {
   // ['taskTitle3',DateTime(2024, 5, 15),false]
   // ];
 
-
   List<String> taskTitles = [
     'taskTitle1','taskTitle2','taskTitle3',
     'a long taskTitle4','a very very very long taskTitle5',
@@ -70,7 +68,6 @@ class _HomePageState extends State<HomePage> {
   DateTime today = DateTime.now();
   DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
   DateTime selectedDay = DateTime.now();
-
   // void goToPage(int pageIndex) {
   //   setState(() {
   //     index = pageIndex;
