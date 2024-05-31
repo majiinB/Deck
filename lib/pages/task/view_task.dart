@@ -1,33 +1,28 @@
-
+import 'package:deck/backend/models/task.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/task/edit_task.dart';
 
 class ViewTaskPage extends StatefulWidget {
-  const ViewTaskPage({Key? key});
+  final Task task;
+  const ViewTaskPage({super.key, required this.task});
 
   @override
   State<ViewTaskPage> createState() => _ViewTaskPageState();
 }
 
 class _ViewTaskPageState extends State<ViewTaskPage> {
-
   //initial values
-  final String taskTitle = 'Buy groceries for samggggg Buy groceries for samggggg';
-  final String taskDescription = '"Buy groceries" involves purchasing essential food items and '
-      'household supplies. This task ensures that necessary provisions are '
-      'available for daily use. It contributes to maintaining a well-stocked and '
-      'functional home environment.';
-  final DateTime taskDeadline = DateTime(2024, 5, 30);
   late final TextEditingController _dateController;
 
   @override
   void initState() {
     super.initState();
 
-    _dateController = TextEditingController(text: taskDeadline.toString().split(" ")[0]);
+    _dateController = TextEditingController(text: widget.task.deadline.toString().split(" ")[0]);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +37,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
           // Navigate to the second page
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const EditTaskPage()),
+            MaterialPageRoute(builder: (context) => EditTaskPage(task: widget.task,)),
           );
         },
       ),
@@ -59,7 +54,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  taskTitle,
+                  widget.task.title,
                   style: const TextStyle(
                     fontFamily: 'Fraiche',
                     fontSize: 20,
@@ -87,7 +82,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
                       ),
                     ),
                     Text(
-                      taskDeadline.toString().split(" ")[0],
+                      widget.task.deadline.toString().split(" ")[0],
                       style: const TextStyle(
                         fontFamily: 'nunito',
                         fontSize: 16,
@@ -104,7 +99,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  taskDescription,
+                  widget.task.description,
                   style: const TextStyle(
                     fontFamily: 'nunito',
                     fontSize: 16,
@@ -117,7 +112,6 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
           ),
         ),
       ),
-
     );
   }
 }
