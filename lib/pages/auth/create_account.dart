@@ -206,11 +206,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
                     try{
                       final authService = AuthService();
-                      await authService.signUpWithEmail(emailController.text, passwordController.text);
+                      String name = "Anon ${getAdjective()}";
+                      await authService.signUpWithEmail(emailController.text, passwordController.text, name);
 
                       final user = <String, dynamic> {
                         "email": emailController.text,
-                        "name": "Anonymous ${getAdjective()}",
+                        "name": name,
                         "user_id":  authService.getCurrentUser()?.uid,
                         "cover_photo": "",
                       };

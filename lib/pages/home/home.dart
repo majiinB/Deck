@@ -83,8 +83,7 @@ class _HomePageState extends State<HomePage> {
     _user = _authService.getCurrentUser();
     _initUserDecks(_user);
     _initUserTasks(_user);
-    String? firstName = _user!.displayName!.isNotEmpty ? _user?.displayName?.split(" ").first : 'User';
-    greeting = "hi, ${firstName!.isEmpty ? 'User' : firstName}!";
+    _initGreeting();
   }
 
   void _initUserDecks(User? user) async {
@@ -99,6 +98,17 @@ class _HomePageState extends State<HomePage> {
 
   void _initUserTasks(User? user) async {
     await Provider.of<TaskProvider>(context, listen:false).loadTasks();
+  }
+
+  void _initGreeting() {
+    _user?.reload();
+    String? firstName = _user?.displayName?.split(" ").first ?? 'User';
+    print(firstName);
+    print(_user?.displayName);
+    setState(() {
+      greeting = "hi, $firstName!";
+      print(greeting);
+    });
   }
 
   @override
