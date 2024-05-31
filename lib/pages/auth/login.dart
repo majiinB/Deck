@@ -1,15 +1,21 @@
-import 'package:deck/main.dart';
-import 'package:deck/pages/auth/create_account.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deck/backend/auth/auth_gate.dart';
 import 'package:deck/pages/auth/recover_account.dart';
 import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../backend/auth/auth_service.dart';
+
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -33,42 +39,43 @@ class LoginPage extends StatelessWidget {
                     color: DeckColors.accentColor,
                     child: Image.asset('assets/images/Deck-Logo.png')),
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 30),
+              Padding(
+                padding: const EdgeInsets.only(top: 30),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Email',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     BuildTextBox(
                       hintText: 'Enter Email Address',
                       showPassword: false,
                       leftIcon: DeckIcons.account,
+                      controller: emailController,
                     ),
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 10),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Password',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     BuildTextBox(
@@ -76,6 +83,7 @@ class LoginPage extends StatelessWidget {
                       showPassword: false,
                       leftIcon: DeckIcons.lock,
                       rightIcon: Icons.search,
+                      controller: passwordController,
                     ),
                   ],
                 ),
@@ -85,7 +93,7 @@ class LoginPage extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).push(
-                      RouteGenerator.createRoute(const RecoverAccountPage()),
+                      RouteGenerator.createRoute(RecoverAccountPage()),
                     );
                   },
                   borderRadius: BorderRadius.circular(8),
@@ -108,10 +116,36 @@ class LoginPage extends StatelessWidget {
                 height: 100,
               ),
               BuildButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    RouteGenerator.createRoute(const MainPage()),
-                  );
+                onPressed: () async {
+                  try{
+                    await AuthService().signInWithEmail(emailController.text, passwordController.text);
+                    Navigator.of(context).push(
+                      RouteGenerator.createRoute(const AuthGate()),
+                    );
+                  } on FirebaseAuthException catch(e){
+                    String message = '';
+                    if(e.code == 'wrong-password'){
+                      message = 'Wrong password!';
+                    } else if (e.code == 'user-not-found') {
+                      message = 'User not found!';
+                    } else if (e.code == 'invalid-email') {
+                      message = 'Invalid email format!';
+                    } else if (e.code == 'too-many-requests') {
+                      message = 'Too many failed attempts, try again later!';
+                    } else {
+                      message = 'Error logging in user!';
+                    }
+                    showDialog(context: context, builder: (context) =>
+                     AlertDialog(
+                      title: Text(message),
+                    ));
+                  } catch (e) {
+                    print(e.toString());
+                    showDialog(context: context, builder: (context) =>
+                    const AlertDialog(
+                      title: Text("Error logging in user!"),
+                    ));
+                  }
                 },
                 buttonText: 'Log In',
                 height: 60,
@@ -153,10 +187,32 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               BuildButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    RouteGenerator.createRoute(const MainPage()),
-                  );
+                onPressed: () async{
+                  final authService = AuthService();
+                  try {
+                    final currentUser = await authService.signUpWithGoogle();
+
+                    final user = <String, dynamic> {
+                      "email": currentUser?.email,
+                      "name": currentUser?.displayName,
+                      "uid": currentUser?.uid,
+                      "cover_photo": "",
+                    };
+
+                    final db = FirebaseFirestore.instance;
+                    final snap = await db.collection("users").where('email',isEqualTo: currentUser?.email).get();
+                    if(snap.docs.isEmpty){
+                      await db.collection("users").add(user);
+                    }
+                    Navigator.of(context).push(
+                      RouteGenerator.createRoute(const AuthGate()),
+                    );
+                  } catch (e){
+                    print(e.toString());
+                    showDialog(context: context, builder: (context) => const AlertDialog(
+                      title: Text("Error signing in."),
+                    ));
+                  }
                 },
                 buttonText: 'Continue with Google',
                 height: 60,

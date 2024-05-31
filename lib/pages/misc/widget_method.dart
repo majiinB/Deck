@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:deck/backend/auth/auth_utils.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -257,15 +258,14 @@ class BuildButton extends StatelessWidget {
 ///
 /// BuildCoverImage is a method for Cover Photo
 class BuildCoverImage extends StatefulWidget {
-  final File? CoverPhotofile;
+  final Image? CoverPhotofile;
   final double borderRadiusContainer, borderRadiusImage;
 
-  BuildCoverImage(
-      {Key? key,
+  const BuildCoverImage(
+      {super.key,
       this.CoverPhotofile,
       required this.borderRadiusContainer,
-      required this.borderRadiusImage})
-      : super(key: key);
+      required this.borderRadiusImage});
 
   @override
   BuildCoverImageState createState() => BuildCoverImageState();
@@ -285,8 +285,8 @@ class BuildCoverImageState extends State<BuildCoverImage> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.borderRadiusImage),
         child: widget.CoverPhotofile != null
-            ? Image.file(
-                widget.CoverPhotofile!,
+            ? Image(
+                image: widget.CoverPhotofile!.image,
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
@@ -298,14 +298,53 @@ class BuildCoverImageState extends State<BuildCoverImage> {
     );
   }
 }
+class BuildCoverImageUrl extends StatelessWidget {
+  final String? imageUrl;
+  final double borderRadiusContainer, borderRadiusImage;
+  final Color backgroundColor;
+
+  BuildCoverImageUrl({
+    Key? key,
+    this.imageUrl,
+    required this.borderRadiusContainer,
+    required this.borderRadiusImage,
+    this.backgroundColor = Colors.transparent,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadiusContainer),
+        color: imageUrl != null ? null : backgroundColor,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadiusImage),
+        child: imageUrl != null
+            ? Image.network(
+          imageUrl!,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+        )
+            : Container(
+          color: backgroundColor,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+      ),
+    );
+  }
+}
 
 ///
 ///
 /// BuildProfileImage is a method for Profile Photo
 class BuildProfileImage extends StatefulWidget {
-  final File? profilePhotofile;
+  final Image? profilePhotofile;
 
-  BuildProfileImage({Key? key, this.profilePhotofile}) : super(key: key);
+  BuildProfileImage(this.profilePhotofile, {Key? key}) : super(key: key);
 
   @override
   BuildProfileImageState createState() => BuildProfileImageState();
@@ -314,16 +353,17 @@ class BuildProfileImage extends StatefulWidget {
 class BuildProfileImageState extends State<BuildProfileImage> {
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      backgroundColor:
-          widget.profilePhotofile != null ? null : DeckColors.white,
-      backgroundImage: widget.profilePhotofile != null
-          ? FileImage(widget.profilePhotofile!)
-          : null,
-      child: widget.profilePhotofile == null
-          ? Icon(DeckIcons.account, size: 60, color: DeckColors.backgroundColor)
-          : null,
-      radius: 60,
+    return Container(
+      decoration: BoxDecoration(
+      border: Border.all(color: DeckColors.backgroundColor, width: 5.0),
+      shape: BoxShape.circle,
+    ),
+      child: CircleAvatar(
+        backgroundColor: DeckColors.white,
+        backgroundImage: widget.profilePhotofile?.image,
+        radius: 60,
+        child: widget.profilePhotofile?.image == null ? const Icon(DeckIcons.account, size: 60, color: DeckColors.backgroundColor) : null,
+      ),
     );
   }
 }
@@ -398,21 +438,21 @@ class SwipeToDeleteAndRetrieve extends StatelessWidget {
 ///
 ///BuidListOfDecks is a method for Container of Decks but only for design
 class BuildListOfDecks extends StatefulWidget {
-  final File? deckImageFile;
+  final String? deckImageUrl;
   final String titleText, numberText;
   final VoidCallback onDelete;
   final VoidCallback? onRetrieve;
   final bool enableSwipeToRetrieve;
 
   const BuildListOfDecks({
-    super.key,
-    this.deckImageFile,
+    Key? key,
+    this.deckImageUrl,
     required this.titleText,
     required this.numberText,
     required this.onDelete,
     this.onRetrieve,
     this.enableSwipeToRetrieve = true,
-  });
+  }) : super(key: key);
 
   @override
   State<BuildListOfDecks> createState() => BuildListOfDecksState();
@@ -435,19 +475,25 @@ class BuildListOfDecksState extends State<BuildListOfDecks> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              color: widget.deckImageFile != null ? null : DeckColors.white,
+              color: widget.deckImageUrl != null ? null : DeckColors.white,
               height: 75,
               width: 75,
-              child: widget.deckImageFile != null
-                  ? Image.file(
-                      widget.deckImageFile!,
-                      width: 20,
-                      height: 10,
-                      fit: BoxFit.cover,
-                    )
+              child: widget.deckImageUrl != null
+                  ? Image.network(
+                widget.deckImageUrl!,
+                width: 20,
+                height: 10,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: DeckColors.white,
+                    child: Icon(Icons.broken_image, color: Colors.grey),
+                  );
+                },
+              )
                   : const Placeholder(
-                      color: DeckColors.white,
-                    ),
+                color: DeckColors.white,
+              ),
             ),
             Expanded(
               child: Padding(
@@ -521,14 +567,14 @@ class ShowConfirmationDialog extends StatelessWidget {
             onCancel();
             Navigator.of(context).pop();
           },
-          child: const Text("No"),
+          child: const Text("No", style: TextStyle(color: Colors.red)),
         ),
         TextButton(
           onPressed: () {
             onConfirm();
             Navigator.of(context).pop();
           },
-          child: const Text("Yes"),
+          child: const Text("Yes", style: TextStyle(color: Colors.green)),
         ),
       ],
     );
@@ -540,12 +586,37 @@ void showConfirmationDialog(BuildContext context, String title, String text,
     VoidCallback onConfirm, VoidCallback onCancel) {
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return ShowConfirmationDialog(
         title: title,
         text: text,
         onConfirm: onConfirm,
         onCancel: onCancel,
+      );
+    },
+  );
+}
+
+///
+
+// Method to show an informational dialog
+void showInformationDialog(BuildContext context, String title, String message) {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Prevent dismissal by tapping outside
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Dismiss the dialog
+            },
+            child: const Text("OK", style: TextStyle(color: Colors.blue)),
+          ),
+        ],
       );
     },
   );
@@ -1205,7 +1276,7 @@ class CustomExpansionTileState extends State<CustomExpansionTile> {
               ),
               ListTile(
                 title: Text(
-                  '4.  Ensure that you specified the number of flashcards you desire'
+                  '4.  Ensure that you specified the number (2-20) of flashcards you desire'
                   ' for the AI to generate.',
                   style: GoogleFonts.nunito(
                     color: DeckColors.white,
@@ -1242,21 +1313,22 @@ class CustomExpansionTileState extends State<CustomExpansionTile> {
 
 /// THIS METHOD IS FOR THE DECKS CONTAINER IN THE FLASHCARD PAGE
 class BuildDeckContainer extends StatefulWidget {
-  final File? deckCoverPhoto;
+  final String? deckCoverPhotoUrl;
   final String titleOfDeck;
-  final VoidCallback onDelete, onTap;
+  final VoidCallback onDelete;
+  final VoidCallback onTap;
   final VoidCallback? onRetrieve;
   final bool enableSwipeToRetrieve;
 
   const BuildDeckContainer({
-    super.key,
+    Key? key,
     required this.onDelete,
     this.onRetrieve,
     this.enableSwipeToRetrieve = true,
-    this.deckCoverPhoto,
+    this.deckCoverPhotoUrl,
     required this.titleOfDeck,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   State<BuildDeckContainer> createState() => BuildDeckContainerState();
@@ -1264,6 +1336,7 @@ class BuildDeckContainer extends StatefulWidget {
 
 class BuildDeckContainerState extends State<BuildDeckContainer> {
   Color _containerColor = DeckColors.gray;
+  final String defaultImageUrl = "https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=2b0faebd-9691-4c37-8049-dc30289460c2";
 
   @override
   Widget build(BuildContext context) {
@@ -1277,9 +1350,7 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
         setState(() {
           _containerColor = DeckColors.gray;
         });
-        if (widget.onTap != null) {
-          widget.onTap();
-        }
+        widget.onTap();
       },
       onTapCancel: () {
         setState(() {
@@ -1305,8 +1376,9 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color:
-                        widget.deckCoverPhoto != null ? null : DeckColors.white,
+                    color: (widget.deckCoverPhotoUrl != null && widget.deckCoverPhotoUrl != "no_image")
+                        ? null
+                        : DeckColors.coverImageColorSettings,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(15.0),
                       topRight: Radius.circular(15.0),
@@ -1319,22 +1391,44 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
                       topLeft: Radius.circular(15.0),
                       topRight: Radius.circular(15.0),
                     ),
-                    child: widget.deckCoverPhoto != null
-                        ? Image.file(
-                            widget.deckCoverPhoto!,
-                            width: 20,
-                            height: 10,
+                    child: (widget.deckCoverPhotoUrl != null && widget.deckCoverPhotoUrl != "no_image")
+                        ? Image.network(
+                          widget.deckCoverPhotoUrl!,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                          return Image.network(
+                            defaultImageUrl,
+                            width: double.infinity,
+                            height: double.infinity,
                             fit: BoxFit.cover,
-                          )
-                        : const Placeholder(
-                            color: DeckColors.white,
-                          ),
+                            errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: DeckColors.coverImageColorSettings,
+                              child: const Icon(Icons.broken_image, color: Colors.grey),
+                            );
+                          },
+                        );
+                      },
+                    )
+                        : Image.network(
+                          defaultImageUrl,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: DeckColors.coverImageColorSettings,
+                            child: const Icon(Icons.broken_image, color: Colors.grey),
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                ),
                 Expanded(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(top: 15.0, left: 10, right: 10),
+                    padding: const EdgeInsets.only(top: 15.0, left: 10, right: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1359,6 +1453,8 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
     );
   }
 }
+
+
 
 /// ------------------------ E N D -----------------------------
 /// --------------- B O T T O M  S H E E T ---------------------
@@ -1444,7 +1540,6 @@ class BuildTabBar extends StatelessWidget {
     );
   }
 }
-
 /// ------------------------ E N D -----------------------------
 /// --------------- B O T T O M  S H E E T ---------------------
 
@@ -1455,6 +1550,7 @@ class BuildTabBar extends StatelessWidget {
 /// ---------------------- S T A R T ---------------------------
 /// --------------- B O T T O M  S H E E T ---------------------
 
+
 class BuildContainerOfFlashCards extends StatefulWidget {
   final VoidCallback onDelete;
   final VoidCallback? onRetrieve, onTap;
@@ -1463,7 +1559,7 @@ class BuildContainerOfFlashCards extends StatefulWidget {
   bool isStarShaded;
   final VoidCallback onStarShaded;
   final VoidCallback onStarUnshaded;
-
+  
   BuildContainerOfFlashCards({
     Key? key,
     required this.onDelete,
@@ -1576,7 +1672,6 @@ class BuildContainerOfFlashCardsState extends State<BuildContainerOfFlashCards>
     );
   }
 }
-
 /// ------------------------ E N D -----------------------------
 /// --------------- B O T T O M  S H E E T ---------------------
 
@@ -1749,17 +1844,17 @@ class HomeDeckTile extends StatelessWidget {
   final String deckName;
   final Color deckColor;
   final double cardWidth;
-  //final File? deckImage;
+  final String? deckImageUrl;
   final VoidCallback? onPressed;
 
   const HomeDeckTile({
-    super.key,
+    Key? key,
     required this.deckName,
     required this.deckColor,
     required this.cardWidth,
-    required this.onPressed,
-    // required this.deckImage,
-  });
+    this.onPressed,
+    this.deckImageUrl,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1781,6 +1876,26 @@ class HomeDeckTile extends StatelessWidget {
                     color: DeckColors.gray,
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: deckImageUrl != null
+                        ? Image.network(
+                      deckImageUrl!,
+                      width: cardWidth,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: DeckColors.gray,
+                          child: const Icon(Icons.broken_image, color: Colors.white),
+                        );
+                      },
+                    )
+                        : Container(
+                      color: DeckColors.gray,
+                      child: const Icon(Icons.image_not_supported, color: Colors.white),
+                    ),
+                  ),
                 ),
                 Positioned(
                   bottom: 0,
@@ -1795,7 +1910,7 @@ class HomeDeckTile extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.8)
+                            Colors.black.withOpacity(0.8),
                           ],
                         ),
                         borderRadius: const BorderRadius.only(
@@ -1824,6 +1939,7 @@ class HomeDeckTile extends StatelessWidget {
     );
   }
 }
+
 
 /// ------------------------- E N D ----------------------------
 /// ------------ D E C K  T I L E  I N  H O M E-----------------

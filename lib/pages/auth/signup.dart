@@ -1,4 +1,5 @@
-import 'package:deck/main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deck/backend/auth/auth_gate.dart';
 import 'package:deck/pages/auth/create_account.dart';
 import 'package:deck/pages/auth/login.dart';
 import 'package:deck/pages/misc/colors.dart';
@@ -6,6 +7,8 @@ import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../backend/auth/auth_service.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
@@ -37,11 +40,34 @@ class SignUpPage extends StatelessWidget {
                 height: 20,
               ),
               BuildButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    RouteGenerator.createRoute(const MainPage()),
-                  );
-                },
+                onPressed: () async {
+                    final authService = AuthService();
+                    try {
+                      final currentUser = await authService.signUpWithGoogle();
+                      final user = <String, dynamic> {
+                        "email": currentUser?.email,
+                        "name": currentUser?.displayName,
+                        "user_id": currentUser?.uid,
+                        "cover_photo": "",
+                      };
+
+                      final db = FirebaseFirestore.instance;
+                      final snap = await db.collection("users").where('email',isEqualTo: currentUser?.email).get();
+                      if(snap.docs.isEmpty){
+                        await db.collection("users").add(user);
+                      }
+
+                      Navigator.of(context).push(
+                        RouteGenerator.createRoute(const AuthGate()),
+                      );
+
+                    } catch (e){
+                      print(e.toString());
+                      showDialog(context: context, builder: (context) => const AlertDialog(
+                      title: Text("Error signing in."),
+                      ));
+                    }
+                  },
                 buttonText: 'Continue with Google',
                 height: 60,
                 width: MediaQuery.of(context).size.width,
@@ -118,7 +144,7 @@ class SignUpPage extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         Navigator.of(context).push(
-                          RouteGenerator.createRoute(const LoginPage()),
+                          RouteGenerator.createRoute(LoginPage()),
                         );
                       },
                       borderRadius: BorderRadius.circular(8),

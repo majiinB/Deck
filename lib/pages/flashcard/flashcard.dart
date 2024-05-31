@@ -1,39 +1,111 @@
+import 'dart:ffi';
+
+import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/backend/flashcard/flashcard_service.dart';
+import 'package:deck/backend/models/deck.dart';
 import 'package:deck/pages/flashcard/add_deck.dart';
 import 'package:deck/pages/flashcard/view_deck.dart';
 import 'package:deck/pages/misc/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../backend/flashcard/flashcard_utils.dart';
+
 class FlashcardPage extends StatefulWidget {
-  const FlashcardPage({Key? key});
+  const FlashcardPage({Key? key}) : super(key: key);
 
   @override
   _FlashcardPageState createState() => _FlashcardPageState();
 }
 
 class _FlashcardPageState extends State<FlashcardPage> {
-  List<String> deckTitles = [
-    'Deck ni leila malaki',
-    'Deck ko malaki',
-    'Deck nating lahat malaki',
-  ];
+  final AuthService _authService = AuthService();
+  final FlashcardService _flashcardService = FlashcardService();
+  Deck? _latestDeck;
+  List<Deck> _decks = [];
+  List<Deck> _filteredDecks = [];
+  late User? _user;
+
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _user = _authService.getCurrentUser();
+    FlashcardUtils.updateLatestReview.addListener(_updateLatestReview);
+    _initUserDecks(_user);
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    FlashcardUtils.updateSettingsNeeded.removeListener(_updateLatestReview);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _initUserDecks(User? user) async {
+    if (user != null) {
+      String userId = user.uid;
+      List<Deck> decks = await _flashcardService.getDecksByUserId(userId); // Call method to fetch decks
+      Deck? latest = await _flashcardService.getLatestDeckLog(userId);
+      setState(() {
+        _decks = decks; // Update state with fetched decks
+        _filteredDecks = decks; // Initialize filtered decks
+        _latestDeck = latest;
+      });
+    }
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text;
+      _filteredDecks = _decks
+          .where((deck) =>
+          deck.title.toLowerCase().contains(_searchQuery.toLowerCase()))
+          .toList();
+    });
+  }
+  void _updateLatestReview() async{
+    if (FlashcardUtils.updateLatestReview.value) {
+      Deck? latest = await _flashcardService.getLatestDeckLog(_user!.uid);
+      setState(() {
+        _initUserDecks(_user);
+      });
+      FlashcardUtils.updateLatestReview.value = false; // Reset the notifier
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: DeckFAB(
-        text: "Add Deck",
-        fontSize: 12,
-        icon: Icons.add,
-        foregroundColor: DeckColors.primaryColor,
-        backgroundColor: DeckColors.gray,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddDeckPage()),
-          );
-        },
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: DeckFAB(
+          text: "Add Deck",
+          fontSize: 12,
+          icon: Icons.add,
+          foregroundColor: DeckColors.primaryColor,
+          backgroundColor: DeckColors.gray,
+          onPressed: () async{
+            if(_user != null){
+              try{
+                String userId = _user!.uid.toString();
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddDeckPage(decks: _decks, userId: userId)),
+                );
+                _onSearchChanged();
+              }catch(e){
+                print('error in navigating add deck $e');
+              }
+            }
+          },
+        ),
       ),
       appBar: const DeckBar(
         title: 'Flash Card',
@@ -45,7 +117,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (deckTitles.isNotEmpty)
+            if (_latestDeck != null)
               Text(
                 'Latest Review',
                 style: GoogleFonts.nunito(
@@ -55,11 +127,11 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   letterSpacing: 1,
                 ),
               ),
-            if (deckTitles.isNotEmpty)
+            if (_latestDeck != null)
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -68,7 +140,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Deck ni Leila 101',
+                        _latestDeck!.title.toString(),
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.nunito(
                           color: DeckColors.white,
@@ -85,7 +157,8 @@ class _FlashcardPageState extends State<FlashcardPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ViewDeckPage()),
+                                  builder: (context) =>
+                                      ViewDeckPage(deck: _latestDeck!)),
                             );
                           },
                           buttonText: 'Continue Learning',
@@ -103,11 +176,11 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   ),
                 ),
               ),
-            if (deckTitles.isEmpty)
+            if (_decks.isEmpty)
               IfDeckEmpty(
                   ifDeckEmptyText: 'No Deck(s) Available',
                   ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.7),
-            if (deckTitles.isNotEmpty)
+            if (_decks.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: Text(
@@ -120,42 +193,62 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   ),
                 ),
               ),
-            if (deckTitles.isNotEmpty)
-              const Padding(
-                padding: EdgeInsets.only(top: 20.0),
+            if (_decks.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0),
                 child: BuildTextBox(
+                  controller: _searchController,
                   hintText: 'Search Decks',
                   showPassword: false,
                   rightIcon: Icons.search,
                 ),
               ),
-            if (deckTitles.isNotEmpty)
+            if (_decks.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 10.0),
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: deckTitles.length,
+                  itemCount: _filteredDecks.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: BuildDeckContainer(
-                        titleOfDeck: deckTitles[index],
+                        deckCoverPhotoUrl: _filteredDecks[index].coverPhoto,
+                        titleOfDeck: _filteredDecks[index].title,
                         onDelete: () {
-                          final String deletedTitle = deckTitles[index];
-
+                          Deck removedDeck =  _filteredDecks[index];
+                          final String deletedTitle = removedDeck.title.toString();
+                          setState(() {
+                            _filteredDecks.removeAt(index);
+                            _decks.removeWhere((card) => card.deckId == removedDeck.deckId);
+                          });
                           showConfirmationDialog(
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
-                            () {
-                              setState(() {
-                                deckTitles.removeAt(index);
-                              });
+                            () async{
+                              try{
+                                if(await removedDeck.updateDeleteStatus(true)){
+                                    if(_latestDeck != null){
+                                      if(_latestDeck?.deckId == removedDeck.deckId){
+                                        Deck? latest = await _flashcardService.getLatestDeckLog(_user!.uid);
+                                        setState(() {
+                                          _latestDeck = latest;
+                                        });
+                                      }
+                                    }
+                                  }
+                              }catch(e){
+                                print('Flash Card Page Deletion Error: $e');
+                                setState(() {
+                                  _decks.insert(index, removedDeck);
+                                });
+                              }
                             },
                             () {
                               setState(() {
-                                //when the user clicks no
+                                _decks.insert(index, removedDeck);
                               });
                             },
                           );
@@ -166,7 +259,8 @@ class _FlashcardPageState extends State<FlashcardPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ViewDeckPage()),
+                                builder: (context) =>
+                                    ViewDeckPage(deck: _filteredDecks[index])),
                           );
                         },
                       ),

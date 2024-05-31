@@ -1,8 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/backend/auth/auth_utils.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/misc/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../../backend/profile/profile_utils.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -12,6 +21,25 @@ class EditProfile extends StatefulWidget {
 }
 
 class EditProfileState extends State<EditProfile> {
+  final TextEditingController firstNameController = TextEditingController(text: AuthUtils().getFirstName());
+  final TextEditingController lastNameController = TextEditingController(text: AuthUtils().getLastName());
+  final TextEditingController emailController = TextEditingController(text: AuthUtils().getEmail());
+
+  XFile? pfpFile, coverFile;
+  late Image? photoUrl, coverUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    photoUrl = AuthUtils().getPhoto();
+    coverUrl = null;
+    getCoverUrl();
+  }
+
+  void getCoverUrl() async {
+    coverUrl = await AuthUtils().getCoverPhotoUrl();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,11 +56,11 @@ class EditProfileState extends State<EditProfile> {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                BuildCoverImage(borderRadiusContainer: 0, borderRadiusImage: 0),
+                BuildCoverImage(borderRadiusContainer: 0, borderRadiusImage: 0, CoverPhotofile: coverUrl,),
                 Positioned(
                   top: 150,
                   left: 10,
-                  child: BuildProfileImage(),
+                  child: BuildProfileImage(photoUrl),
                 ),
                 Positioned(
                   top: 140,
@@ -55,22 +83,31 @@ class EditProfileState extends State<EditProfile> {
                               color: DeckColors.gray,
                               child: Column(children: [
                                 Padding(
-                                  padding: EdgeInsets.only(top: 10),
+                                  padding: const EdgeInsets.only(top: 10),
                                   child: BuildContentOfBottomSheet(
                                     bottomSheetButtonText: 'Upload Cover Photo',
                                     bottomSheetButtonIcon: Icons.image,
-                                    onPressed: () {
-                                      print("It is working");
+                                    onPressed: () async {
+                                      ImagePicker imagePicker = ImagePicker();
+                                      XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+                                      if(file == null) return;
+                                      setState(() {
+                                        coverUrl = Image.file(File(file!.path));
+                                      });
+                                      coverFile = file;
                                     },
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(top: 10),
+                                  padding: const EdgeInsets.only(top: 10),
                                   child: BuildContentOfBottomSheet(
                                     bottomSheetButtonText: 'Remove Cover Photo',
                                     bottomSheetButtonIcon: Icons.remove_circle,
                                     onPressed: () {
-                                      print("It is working");
+                                      setState(() {
+                                        coverUrl = null;
+                                      });
+                                      coverFile = null;
                                     },
                                   ),
                                 ),
@@ -107,22 +144,31 @@ class EditProfileState extends State<EditProfile> {
                             color: DeckColors.gray,
                             child: Column(children: [
                               Padding(
-                                padding: EdgeInsets.only(top: 10),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: BuildContentOfBottomSheet(
                                   bottomSheetButtonText: 'Upload Profile Photo',
                                   bottomSheetButtonIcon: Icons.image,
-                                  onPressed: () {
-                                    print("It is working");
+                                  onPressed: () async {
+                                    ImagePicker imagePicker = ImagePicker();
+                                    XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+                                    if(file == null) return;
+                                    setState(() {
+                                      photoUrl = Image.file(File(file!.path));
+                                    });
+                                    pfpFile = file;
                                   },
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(top: 10),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: BuildContentOfBottomSheet(
                                   bottomSheetButtonText: 'Remove Profile Photo',
                                   bottomSheetButtonIcon: Icons.remove_circle,
                                   onPressed: () {
-                                    print("It is working");
+                                    setState(() {
+                                      photoUrl = null;
+                                    });
+                                    pfpFile = null;
                                   },
                                 ),
                               ),
@@ -136,20 +182,21 @@ class EditProfileState extends State<EditProfile> {
                   iconColor: DeckColors.white,
                   backgroundColor: DeckColors.accentColor,
                 )),
-            const Padding(
-              padding: EdgeInsets.only(top: 60, left: 16, right: 16),
-              child: BuildTextBox(initialValue: 'Pole', showPassword: false),
+            Padding(
+              padding: const EdgeInsets.only(top: 60, left: 16, right: 16),
+              child: BuildTextBox(showPassword: false, hintText: "First Name", controller: firstNameController,),
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-              child: BuildTextBox(
-                  initialValue: 'Di - Maguiba', showPassword: false),
+            Padding(
+              padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
+              child: BuildTextBox(showPassword: false, hintText: "Last Name", controller: lastNameController,),
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+            Padding(
+              padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
               child: BuildTextBox(
-                  initialValue: 'poledimaguibaumaalogalog@gmail.com',
-                  showPassword: false),
+                  showPassword: false,
+                  hintText: "Email",
+                  controller: emailController,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 40, left: 16, right: 16),
@@ -161,9 +208,63 @@ class EditProfileState extends State<EditProfile> {
                     context,
                     "Save Account Information",
                     "Are you sure you want to change your account information?",
-                    () {
-                      //when user clicks yes
-                      //add logic here
+                    () async {
+                      User? user = AuthService().getCurrentUser();
+                      String newName = '';
+                      if(lastNameController.text.isEmpty){
+                        newName = firstNameController.text;
+                      } else {
+                        newName = "${firstNameController.text} ${lastNameController.text}";
+                      }
+                      String uniqueFileName = '${AuthService().getCurrentUser()?.uid}';
+                      try {
+
+                        if(user?.displayName != newName){
+                          user?.updateDisplayName(newName);
+                        }
+
+                        if(user?.email != emailController.text){
+                          user?.updateEmail(emailController.text);
+                        }
+
+                        Reference refRoot = FirebaseStorage.instance.ref();
+                        if (pfpFile != null) {
+                          Reference refDirPfpImg = refRoot.child('userProfiles/${AuthService().getCurrentUser()?.uid}');
+                          Reference refPfpUpload = refDirPfpImg.child(uniqueFileName);
+
+                          bool pfpExists = await ProfileUtils().doesFileExist(refPfpUpload);
+                          if(pfpExists) return;
+
+                          await refPfpUpload.putFile(File(pfpFile!.path));
+                          String photoUrl = await refPfpUpload.getDownloadURL();
+                          await AuthService().getCurrentUser()?.updatePhotoURL(photoUrl);
+                        }
+
+                        if (coverFile != null) {
+                          Reference refDirCoverImg = refRoot.child('userCovers/${AuthService().getCurrentUser()?.uid}');
+                          Reference refCoverUpload = refDirCoverImg.child(uniqueFileName);
+                          bool coverExists = await ProfileUtils().doesFileExist(refCoverUpload);
+                          if(coverExists) return;
+                          await refCoverUpload.putFile(File(coverFile!.path));
+                          String photoCover = await refCoverUpload.getDownloadURL();
+
+                          final db = FirebaseFirestore.instance;
+                          var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
+
+                          // Check if the document exists
+                          if (querySnapshot.docs.isNotEmpty) {
+                            var doc = querySnapshot.docs.first;
+                            String docId = doc.id;
+
+                            // Update the existing document with the new field
+                            await db.collection('users').doc(docId).update({'cover_photo': photoCover,});
+                          } else {
+                            print('Document not found');
+                          }
+                        }
+                      } catch (e) {
+                        print(e);
+                      }
                     },
                     () {
                       //when user clicks no
@@ -186,8 +287,7 @@ class EditProfileState extends State<EditProfile> {
               padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
               child: BuildButton(
                 onPressed: () {
-                  print(
-                      "cancel button clicked"); //line to test if working ung onPressedLogic XD
+                  print("cancel button clicked"); //line to test if working ung onPressedLogic XD
                   Navigator.pop(context);
                 },
                 buttonText: 'Cancel',

@@ -1,8 +1,13 @@
-import 'package:deck/main.dart';
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deck/backend/auth/auth_gate.dart';
+import 'package:deck/backend/auth/auth_service.dart';
 import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,6 +20,27 @@ class CreateAccountPage extends StatefulWidget {
 }
 
 class _CreateAccountPageState extends State<CreateAccountPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  String getAdjective(){
+
+    List<String> adjective = [
+      'Long', 'Short', 'Thick', 'Thin', 'Curved', 'Straight', 'Hard', 'Soft', 'Smooth',
+      'Rough', 'Firm', 'Stiff', 'Limp', 'Engorged', 'Swollen', 'Massive',
+      'Turgid', 'Plump', 'Slender', 'Enlarged', 'Lengthy', 'Trim', 'Sturdy', 'Malleable',
+      'Elastic', 'Pulsating', 'Robust', 'Lithe', 'Luscious', 'Muscular', 'Rigid', 'Tender', 'Prominent', 'Noticeable',
+      'Substantial', 'Compact', 'Potent', 'Dominant', 'Stretched', 'Expansive', 'Defined', 'Well-endowed'
+    ];
+
+    return "${adjective[Random().nextInt(adjective.length)]}_${getRandomNumber()}";
+  }
+
+  int getRandomNumber(){
+    return 10000 + Random().nextInt(99999 + 1);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,71 +55,74 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           padding: const EdgeInsets.only(left: 30, right: 30),
           child: Column(
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Email',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     BuildTextBox(
                       hintText: 'Enter Email Address',
                       showPassword: false,
                       leftIcon: DeckIcons.account,
+                      controller: emailController,
                     ),
                   ],
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Create New Password',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     BuildTextBox(
                       hintText: 'Enter New Password',
                       showPassword: true,
                       leftIcon: DeckIcons.lock,
+                      controller: passwordController,
                     ),
                   ],
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Confirm New Password',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     BuildTextBox(
                       hintText: 'Confirm Password',
                       showPassword: true,
                       leftIcon: DeckIcons.lock,
+                      controller: confirmPasswordController,
                     ),
                   ],
                 ),
@@ -166,10 +195,58 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: BuildButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      RouteGenerator.createRoute(const MainPage()),
-                    );
+                  onPressed: () async {
+                    if(passwordController.text != confirmPasswordController.text) {
+                      showDialog(context: context, builder: (context) =>
+                      const AlertDialog(
+                        title: Text("Passwords do not match!"),
+                      ));
+                      return;
+                    }
+
+                    try{
+                      final authService = AuthService();
+                      await authService.signUpWithEmail(emailController.text, passwordController.text);
+
+                      final user = <String, dynamic> {
+                        "email": emailController.text,
+                        "name": "Anonymous ${getAdjective()}",
+                        "user_id":  authService.getCurrentUser()?.uid,
+                        "cover_photo": "",
+                      };
+
+                      final db = FirebaseFirestore.instance;
+                      await db.collection("users").add(user);
+
+                      Navigator.of(context).push(
+                        RouteGenerator.createRoute(const AuthGate()),
+                      );
+                    } on FirebaseAuthException catch (e) {
+                      String message = '';
+                      print(e.toString());
+                      if(e.code == 'invalid-email'){
+                        message = "Invalid email format!";
+                      } else if (e.code == 'email-already-in-use'){
+                        message = "Email already taken!";
+                      } else if (e.code == 'weak-password'){
+                        message = "Password should be atleast 6 characters!";
+                      } else if (e.code == 'email-already-in-use'){
+                        message = "Email already in use!";
+                      } else {
+                        message = "Error creating your account!";
+                      }
+                      showDialog(context: context, builder: (context) =>
+                          AlertDialog(
+                            title: Text(message),
+                      ));
+                    } catch (e) {
+                      print(e.toString());
+                      showDialog(context: context, builder: (context) =>
+                          const AlertDialog(
+                            title: Text("Error creating your account!"),
+                          ));
+                    }
+
                   },
                   buttonText: 'Join the Deck Party!',
                   height: 60,

@@ -1,10 +1,19 @@
+import 'dart:ffi';
+import 'dart:typed_data';
+
+import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/backend/auth/auth_utils.dart';
 import 'package:deck/pages/settings/edit_profile.dart';
 import 'package:deck/pages/settings/settings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import '../../backend/flashcard/flashcard_service.dart';
+import '../../backend/flashcard/flashcard_utils.dart';
+import '../../backend/models/deck.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -14,13 +23,59 @@ class AccountPage extends StatefulWidget {
 }
 
 class AccountPageState extends State<AccountPage> {
-  List<String> deckTitles = [
-    'Deck ni leila malaki',
-    'Deck ko malaki',
-    'Deck nating lahat malaki',
-  ];
+  String name = '';
+  final AuthService _authService = AuthService();
+  final FlashcardService _flashcardService = FlashcardService();
+  List<Deck> _decks = [];
+  Map<String, int> _deckCardCount = {};
+  late User? _user;
+  late Image? coverUrl;
 
-  List<String> deckNumbers = ['69 Cards', '96 Cards', '88 Cards'];
+  @override
+  void initState() {
+    coverUrl = null;
+    getCoverUrl();
+    super.initState();
+    FlashcardUtils.updateSettingsNeeded.addListener(_updateAccountPage);
+    _user = _authService.getCurrentUser();
+    _initUserDecks(_user);
+  }
+
+  @override
+  void dispose() {
+    FlashcardUtils.updateSettingsNeeded.removeListener(_updateAccountPage);
+    super.dispose();
+  }
+
+  void getCoverUrl() async {
+    coverUrl = await AuthUtils().getCoverPhotoUrl();
+    setState(() {});
+  }
+
+  void _initUserDecks(User? user) async {
+    if (user != null) {
+      String userId = user.uid;
+      List<Deck> decks = await _flashcardService.getDecksByUserId(userId); // Call method to fetch decks
+      Map<String, int> deckCardCount = {};
+      for (Deck deckCount in decks) {
+        int count = await deckCount.getCardCount();
+        deckCardCount[deckCount.deckId] = count;
+      }
+      setState(() {
+        _decks = decks; // Update state with fetched decks
+        _deckCardCount = deckCardCount; // Update state with fetched decks count
+      });
+    }
+  }
+
+  void _updateAccountPage() {
+    if (FlashcardUtils.updateSettingsNeeded.value) {
+      setState(() {
+        _initUserDecks(_user);
+      });
+      FlashcardUtils.updateSettingsNeeded.value = false; // Reset the notifier
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +91,10 @@ class AccountPageState extends State<AccountPage> {
                 alignment: Alignment.centerLeft,
                 children: [
                   BuildCoverImage(
-                      borderRadiusContainer: 0, borderRadiusImage: 0),
+                    borderRadiusContainer: 0,
+                    borderRadiusImage: 0,
+                    CoverPhotofile: coverUrl,
+                  ),
                   Positioned(
                     top: 200,
                     child: Container(
@@ -53,6 +111,7 @@ class AccountPageState extends State<AccountPage> {
                         Navigator.of(context).push(
                           RouteGenerator.createRoute(const SettingPage()),
                         );
+                        _initUserDecks(_user);
                       },
                       icon: DeckIcons.settings,
                       iconColor: DeckColors.white,
@@ -68,12 +127,11 @@ class AccountPageState extends State<AccountPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          BuildProfileImage(),
+                          BuildProfileImage(AuthUtils().getPhoto()),
                           Padding(
-                            padding:
-                                const EdgeInsets.only(top: 20.0, left: 8.0),
+                            padding: const EdgeInsets.only(top: 20.0, left: 8.0),
                             child: Text(
-                              "POLE - DI MAGUIBA",
+                              AuthUtils().getDisplayName() ?? "Guest",
                               style: GoogleFonts.nunito(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
@@ -84,7 +142,7 @@ class AccountPageState extends State<AccountPage> {
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0),
                             child: Text(
-                              "poledimaguibaumaalogalog@gmail.com",
+                              AuthUtils().getEmail() ?? "guest@guest.com",
                               style: GoogleFonts.nunito(
                                 fontSize: 16,
                                 color: DeckColors.white,
@@ -132,36 +190,49 @@ class AccountPageState extends State<AccountPage> {
                   ),
                 ),
               ),
+              if (_decks.isEmpty)
+                IfDeckEmpty(
+                    ifDeckEmptyText: 'No Deck(s) Available',
+                    ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.4),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: deckTitles.length,
+                  itemCount: _decks.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: BuildListOfDecks(
-                        titleText: deckTitles[index],
-                        numberText: deckNumbers[index],
+                        titleText: _decks[index].title.toString(),
+                        numberText: _deckCardCount[_decks[index].deckId].toString() + " Card(s)",
+                        deckImageUrl: _decks[index].coverPhoto.toString(),
                         onDelete: () {
-                          final String deletedTitle = deckTitles[index];
-                          final String deletedNumber = deckNumbers[index];
-
-                          setState(() {
-                            deckTitles.removeAt(index);
-                            deckNumbers.removeAt(index);
-                          });
+                          Deck deletedDeck = _decks[index];
+                          final String deletedTitle = deletedDeck.title.toString();
+                          _decks.removeAt(index);
                           showConfirmationDialog(
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
-                            () {},
-                            () {
+                                () async {
+                              try {
+                                if (await deletedDeck.updateDeleteStatus(true)) {
+                                  setState(() {
+                                    _deckCardCount.remove(deletedDeck.deckId);
+                                    _decks.removeWhere((d) => d.deckId == deletedDeck.deckId);
+                                  });
+                                }
+                              } catch (e) {
+                                print('Deletion error: $e');
+                                setState(() {
+                                  _decks.insert(index, deletedDeck);
+                                });
+                              }
+                            },
+                                () {
                               setState(() {
-                                //when the user clicks no
-                                deckTitles.insert(index, deletedTitle);
-                                deckNumbers.insert(index, deletedNumber);
+                                _decks.insert(index, deletedDeck);
                               });
                             },
                           );
