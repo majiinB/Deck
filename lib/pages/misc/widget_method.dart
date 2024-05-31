@@ -353,11 +353,17 @@ class BuildProfileImage extends StatefulWidget {
 class BuildProfileImageState extends State<BuildProfileImage> {
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      backgroundColor: DeckColors.white,
-      backgroundImage: widget.profilePhotofile?.image,
-      radius: 60,
-      child: widget.profilePhotofile?.image == null ? const Icon(DeckIcons.account, size: 60, color: DeckColors.backgroundColor) : null,
+    return Container(
+      decoration: BoxDecoration(
+      border: Border.all(color: DeckColors.backgroundColor, width: 5.0),
+      shape: BoxShape.circle,
+    ),
+      child: CircleAvatar(
+        backgroundColor: DeckColors.white,
+        backgroundImage: widget.profilePhotofile?.image,
+        radius: 60,
+        child: widget.profilePhotofile?.image == null ? const Icon(DeckIcons.account, size: 60, color: DeckColors.backgroundColor) : null,
+      ),
     );
   }
 }
@@ -1270,7 +1276,7 @@ class CustomExpansionTileState extends State<CustomExpansionTile> {
               ),
               ListTile(
                 title: Text(
-                  '4.  Ensure that you specified the number of flashcards you desire'
+                  '4.  Ensure that you specified the number (2-20) of flashcards you desire'
                   ' for the AI to generate.',
                   style: GoogleFonts.nunito(
                     color: DeckColors.white,

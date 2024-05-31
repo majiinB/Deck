@@ -190,6 +190,10 @@ class AccountPageState extends State<AccountPage> {
                   ),
                 ),
               ),
+              if (_decks.isEmpty)
+                IfDeckEmpty(
+                    ifDeckEmptyText: 'No Deck(s) Available',
+                    ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.4),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ListView.builder(

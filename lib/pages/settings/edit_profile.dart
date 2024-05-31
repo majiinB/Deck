@@ -184,16 +184,17 @@ class EditProfileState extends State<EditProfile> {
                 )),
             Padding(
               padding: const EdgeInsets.only(top: 60, left: 16, right: 16),
-              child: BuildTextBox(showPassword: false, controller: firstNameController,),
+              child: BuildTextBox(showPassword: false, hintText: "First Name", controller: firstNameController,),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
-              child: BuildTextBox(showPassword: false, controller: lastNameController,),
+              child: BuildTextBox(showPassword: false, hintText: "Last Name", controller: lastNameController,),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
               child: BuildTextBox(
                   showPassword: false,
+                  hintText: "Email",
                   controller: emailController,
               ),
             ),
