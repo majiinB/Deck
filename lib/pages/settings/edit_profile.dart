@@ -34,10 +34,15 @@ class EditProfileState extends State<EditProfile> {
     photoUrl = AuthUtils().getPhoto();
     coverUrl = null;
     getCoverUrl();
+
+    print(coverUrl);
   }
 
   void getCoverUrl() async {
     coverUrl = await AuthUtils().getCoverPhotoUrl();
+    setState(() {
+
+    });
   }
 
   @override
@@ -237,8 +242,9 @@ class EditProfileState extends State<EditProfile> {
                           await refPfpUpload.putFile(File(pfpFile!.path));
                           String photoUrl = await refPfpUpload.getDownloadURL();
                           await AuthService().getCurrentUser()?.updatePhotoURL(photoUrl);
+                        } else {
+                          await AuthService().getCurrentUser()?.updatePhotoURL(null);
                         }
-
                         if (coverFile != null) {
                           Reference refDirCoverImg = refRoot.child('userCovers/${AuthService().getCurrentUser()?.uid}');
                           Reference refCoverUpload = refDirCoverImg.child(uniqueFileName);
@@ -260,16 +266,31 @@ class EditProfileState extends State<EditProfile> {
                           } else {
                             print('Document not found');
                           }
+                        } else {
+                          final db = FirebaseFirestore.instance;
+                          var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
+
+                          // Check if the document exists
+                          if (querySnapshot.docs.isNotEmpty) {
+                            var doc = querySnapshot.docs.first;
+                            String docId = doc.id;
+
+                            // Update the existing document with the new field
+                            await db.collection('users').doc(docId).update({'cover_photo': '',});
+                          } else {
+                            print('Document not found');
+                          }
                         }
                       } catch (e) {
                         print(e);
                       }
-                    },
+                    } ,
                     () {
                       //when user clicks no
                       //add logic here
                     },
                   );
+                  Navigator.pop(context);
                 },
                 buttonText: 'Save Changes',
                 height: 50.0,
