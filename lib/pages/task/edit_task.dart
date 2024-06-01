@@ -173,21 +173,28 @@ class _EditTaskPageState extends State<EditTaskPage> {
                     borderWidth: 0,
                     borderColor: Colors.transparent,
                     onPressed: () async {
-                      if(DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)).isBefore(DateTime.now())){
-                        showDialog(context: context, builder: (context) =>
-                        const AlertDialog(
-                          title: Text("You cannot set the deadline that's already in the past!"),
-                        ));
-                        return;
-                      }
+                      showConfirmationDialog(
+                          context,
+                          "Save Task Information",
+                          "Are you sure you want to change this task's information?",
+                          (){
+                            if(DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)).isBefore(DateTime.now())){
+                              showDialog(context: context, builder: (context) =>
+                              const AlertDialog(
+                                title: Text("You cannot set the deadline that's already in the past!"),
+                              ));
+                              return;
+                            }
 
-                      Provider.of<TaskProvider>(context, listen: false).editTask(widget.task, {
-                        'title': _titleController.text,
-                        'description': _descriptionController.text,
-                        'deadline': DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
-                      }).then((_) {
-                        Navigator.pop(context, TaskService().getTaskById(widget.task.uid));
-                      });
+                            Provider.of<TaskProvider>(context, listen: false).editTask(widget.task, {
+                              'title': _titleController.text,
+                              'description': _descriptionController.text,
+                              'deadline': DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
+                            }).then((_) {
+                              Navigator.pop(context, TaskService().getTaskById(widget.task.uid));
+                            });
+                          }, (){}
+                      );
                       // Navigator.push(
                       //   context,
                       //   MaterialPageRoute(builder: (context) => TaskPage()),
