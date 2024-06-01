@@ -23,6 +23,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+  final DeckBox checkBox = DeckBox();
 
   String getAdjective(){
 
@@ -134,7 +135,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   children: [
                     SizedBox(
                       width: 30,
-                      child: DeckBox(),
+                      child: checkBox,
                     ),
                     const SizedBox(
                       width: 5,
@@ -196,11 +197,13 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 padding: const EdgeInsets.only(top: 30),
                 child: BuildButton(
                   onPressed: () async {
+                    if(!checkBox.isChecked){
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please check the checkbox!')));
+                      return;
+                    }
+
                     if(passwordController.text != confirmPasswordController.text) {
-                      showDialog(context: context, builder: (context) =>
-                      const AlertDialog(
-                        title: Text("Passwords do not match!"),
-                      ));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords do not match!')));
                       return;
                     }
 
@@ -236,16 +239,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       } else {
                         message = "Error creating your account!";
                       }
-                      showDialog(context: context, builder: (context) =>
-                          AlertDialog(
-                            title: Text(message),
-                      ));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
                     } catch (e) {
                       print(e.toString());
-                      showDialog(context: context, builder: (context) =>
-                          const AlertDialog(
-                            title: Text("Error creating your account!"),
-                          ));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something is wrong!')));
                     }
 
                   },

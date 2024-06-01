@@ -1003,6 +1003,7 @@ class CustomDropdown extends StatelessWidget {
 ///
 ///Checkbox Widget
 class DeckBox extends StatefulWidget {
+  bool isChecked = false;
   DeckBox({Key? key}) : super(key: key);
 
   @override
@@ -1010,21 +1011,24 @@ class DeckBox extends StatefulWidget {
 }
 
 class DeckBoxState extends State<DeckBox> {
-  bool isChecked = false;
+
+  bool isChecked() {
+    return widget.isChecked;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: MSHCheckbox(
         size: 24,
-        value: isChecked,
+        value: widget.isChecked,
         colorConfig: MSHColorConfig.fromCheckedUncheckedDisabled(
           checkedColor: DeckColors.primaryColor,
         ),
         style: MSHCheckboxStyle.stroke,
         onChanged: (selected) {
           setState(() {
-            isChecked = selected;
+            widget.isChecked = selected;
           });
         },
       ),
