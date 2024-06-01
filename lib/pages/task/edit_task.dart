@@ -8,6 +8,7 @@ import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/task/task.dart';
 import 'package:provider/provider.dart';
 
+import '../../backend/auth/auth_utils.dart';
 import '../../backend/models/task.dart';
 
 class EditTaskPage extends StatefulWidget {
@@ -34,6 +35,16 @@ class _EditTaskPageState extends State<EditTaskPage> {
         TextEditingController(text: widget.task.deadline.toString().split(" ")[0]);
     _titleController = TextEditingController(text: widget.task.title);
     _descriptionController = TextEditingController(text: widget.task.description.toString());
+  }
+
+  Future<DateTime?> _getDeadline() async {
+    final db = FirebaseFirestore.instance;
+    var querySnapshot = await db.collection('tasks').where('user_id', isEqualTo: AuthService().getCurrentUser()?.uid).get();
+    if(querySnapshot.docs.isNotEmpty){
+      var deadline = querySnapshot.docs.first['end_date'];
+      return deadline.toDate();
+    }
+    return null;
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -172,18 +183,24 @@ class _EditTaskPageState extends State<EditTaskPage> {
                     fontSize: 16,
                     borderWidth: 0,
                     borderColor: Colors.transparent,
-                    onPressed: () async {
+                    onPressed: () {
                       showConfirmationDialog(
                           context,
                           "Save Task Information",
                           "Are you sure you want to change this task's information?",
-                          (){
-                            if(DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)).isBefore(DateTime.now())){
-                              showDialog(context: context, builder: (context) =>
-                              const AlertDialog(
-                                title: Text("You cannot set the deadline that's already in the past!"),
-                              ));
+                          () async{
+                            if(_dateController.text.isEmpty || _titleController.text.isEmpty || _descriptionController.text.isEmpty){
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fill all the text fields before saving!')));
                               return;
+                            }
+
+                            DateTime date = DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59));
+                            DateTime? storedDeadline = await _getDeadline();
+                            if(storedDeadline != date) {
+                              if (date.isBefore(DateTime.now())) {
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You cannot set the deadline in the past!')));
+                                return;
+                              }
                             }
 
                             Provider.of<TaskProvider>(context, listen: false).editTask(widget.task, {
