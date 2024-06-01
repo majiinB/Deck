@@ -10,7 +10,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
+import '../../backend/profile/profile_provider.dart';
 import '../../backend/profile/profile_utils.dart';
 
 class EditProfile extends StatefulWidget {
@@ -31,18 +33,87 @@ class EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    photoUrl = AuthUtils().getPhoto();
-    coverUrl = null;
-    getCoverUrl();
-
-    print(coverUrl);
+    getUrls();
   }
 
-  void getCoverUrl() async {
+  void getUrls() async {
+    photoUrl = null;
+    coverUrl = null;
     coverUrl = await AuthUtils().getCoverPhotoUrl();
     setState(() {
-
+      photoUrl = AuthUtils().getPhoto();
+      print(coverUrl);
     });
+  }
+
+  Future<void> updateAccountInformation(BuildContext context) async {
+    User? user = AuthService().getCurrentUser();
+    String newName = getNewName();
+    String uniqueFileName = '${AuthService().getCurrentUser()?.uid}-${DateTime.now().millisecondsSinceEpoch}';
+
+    await _updateDisplayName(user, newName);
+    await _updateEmail(user);
+    await _updateProfilePhoto(user, uniqueFileName);
+    await _updateCoverPhoto(uniqueFileName, context);
+  }
+
+  String getNewName() {
+    if (lastNameController.text.isEmpty) {
+      return firstNameController.text;
+    } else {
+      return "${firstNameController.text} ${lastNameController.text}";
+    }
+  }
+
+  Future<void> _updateDisplayName(User? user, String newName) async {
+    if (user?.displayName != newName) {
+      await user?.updateDisplayName(newName);
+    }
+  }
+
+  Future<void> _updateEmail(User? user) async {
+    if (user?.email != emailController.text) {
+      await user?.updateEmail(emailController.text);
+    }
+  }
+
+  Future<void> _updateProfilePhoto(User? user, String uniqueFileName) async {
+    if (photoUrl != null && pfpFile != null) {
+      Reference refRoot = FirebaseStorage.instance.ref();
+      Reference refDirPfpImg = refRoot.child('userProfiles/${user?.uid}');
+      Reference refPfpUpload = refDirPfpImg.child(uniqueFileName);
+
+      bool pfpExists = await ProfileUtils().doesFileExist(refPfpUpload);
+      if (!pfpExists) {
+        await refPfpUpload.putFile(File(pfpFile!.path));
+        String newPhotoUrl = await refPfpUpload.getDownloadURL();
+        await user?.updatePhotoURL(newPhotoUrl);
+      }
+    }
+  }
+
+  Future<void> _updateCoverPhoto(String uniqueFileName, BuildContext context) async {
+    if (coverUrl != null && coverFile != null) {
+      Reference refRoot = FirebaseStorage.instance.ref();
+      Reference refDirCoverImg = refRoot.child('userCovers/${AuthService().getCurrentUser()?.uid}');
+      Reference refCoverUpload = refDirCoverImg.child(uniqueFileName);
+
+      bool coverExists = await ProfileUtils().doesFileExist(refCoverUpload);
+      if (!coverExists) {
+        await refCoverUpload.putFile(File(coverFile!.path));
+        String photoCover = await refCoverUpload.getDownloadURL();
+
+        final db = FirebaseFirestore.instance;
+        var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          var doc = querySnapshot.docs.first;
+          String docId = doc.id;
+
+          await db.collection('users').doc(docId).update({'cover_photo': photoCover});
+        }
+      }
+    }
   }
 
   @override
@@ -98,8 +169,8 @@ class EditProfileState extends State<EditProfile> {
                                       if(file == null) return;
                                       setState(() {
                                         coverUrl = Image.file(File(file!.path));
+                                        coverFile = file;
                                       });
-                                      coverFile = file;
                                     },
                                   ),
                                 ),
@@ -159,8 +230,8 @@ class EditProfileState extends State<EditProfile> {
                                     if(file == null) return;
                                     setState(() {
                                       photoUrl = Image.file(File(file!.path));
+                                      pfpFile = file;
                                     });
-                                    pfpFile = file;
                                   },
                                 ),
                               ),
@@ -213,76 +284,14 @@ class EditProfileState extends State<EditProfile> {
                     "Save Account Information",
                     "Are you sure you want to change your account information?",
                     () async {
-                      User? user = AuthService().getCurrentUser();
-                      String newName = '';
-                      if(lastNameController.text.isEmpty){
-                        newName = firstNameController.text;
-                      } else {
-                        newName = "${firstNameController.text} ${lastNameController.text}";
-                      }
-                      String uniqueFileName = '${AuthService().getCurrentUser()?.uid}';
                       try {
-
-                        if(user?.displayName != newName){
-                          user?.updateDisplayName(newName);
-                        }
-
-                        if(user?.email != emailController.text){
-                          user?.updateEmail(emailController.text);
-                        }
-
-                        Reference refRoot = FirebaseStorage.instance.ref();
-                        if (pfpFile != null) {
-                          Reference refDirPfpImg = refRoot.child('userProfiles/${AuthService().getCurrentUser()?.uid}');
-                          Reference refPfpUpload = refDirPfpImg.child(uniqueFileName);
-
-                          bool pfpExists = await ProfileUtils().doesFileExist(refPfpUpload);
-                          if(pfpExists) return;
-
-                          await refPfpUpload.putFile(File(pfpFile!.path));
-                          String photoUrl = await refPfpUpload.getDownloadURL();
-                          await AuthService().getCurrentUser()?.updatePhotoURL(photoUrl);
-                        } else {
-                          await AuthService().getCurrentUser()?.updatePhotoURL(null);
-                        }
-                        if (coverFile != null) {
-                          Reference refDirCoverImg = refRoot.child('userCovers/${AuthService().getCurrentUser()?.uid}');
-                          Reference refCoverUpload = refDirCoverImg.child(uniqueFileName);
-                          bool coverExists = await ProfileUtils().doesFileExist(refCoverUpload);
-                          if(coverExists) return;
-                          await refCoverUpload.putFile(File(coverFile!.path));
-                          String photoCover = await refCoverUpload.getDownloadURL();
-
-                          final db = FirebaseFirestore.instance;
-                          var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
-
-                          // Check if the document exists
-                          if (querySnapshot.docs.isNotEmpty) {
-                            var doc = querySnapshot.docs.first;
-                            String docId = doc.id;
-
-                            // Update the existing document with the new field
-                            await db.collection('users').doc(docId).update({'cover_photo': photoCover,});
-                          } else {
-                            print('Document not found');
-                          }
-                        } else {
-                          final db = FirebaseFirestore.instance;
-                          var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
-
-                          // Check if the document exists
-                          if (querySnapshot.docs.isNotEmpty) {
-                            var doc = querySnapshot.docs.first;
-                            String docId = doc.id;
-
-                            // Update the existing document with the new field
-                            await db.collection('users').doc(docId).update({'cover_photo': '',});
-                          } else {
-                            print('Document not found');
-                          }
-                        }
-                      } catch (e) {
+                        await updateAccountInformation(context);
+                        Provider.of<ProfileProvider>(context, listen: false).updateProfile();
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Updated account information!')));
+                        Navigator.pop(context,true);
+                      } catch (e){
                         print(e);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update account information: $e')));
                       }
                     } ,
                     () {
@@ -290,7 +299,6 @@ class EditProfileState extends State<EditProfile> {
                       //add logic here
                     },
                   );
-                  Navigator.pop(context);
                 },
                 buttonText: 'Save Changes',
                 height: 50.0,

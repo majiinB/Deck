@@ -1,4 +1,5 @@
 import 'package:deck/backend/auth/auth_gate.dart';
+import 'package:deck/backend/profile/profile_provider.dart';
 import 'package:deck/pages/flashcard/flashcard.dart';
 import 'package:deck/pages/home/home.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
@@ -24,6 +25,7 @@ void main () async {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => TaskProvider()),
+        ChangeNotifierProvider(create: (context) => ProfileProvider()),
     ],
       child: const MyApp(),
     ),
