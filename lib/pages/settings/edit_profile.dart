@@ -51,18 +51,26 @@ class EditProfileState extends State<EditProfile> {
     String newName = getNewName();
     String uniqueFileName = '${AuthService().getCurrentUser()?.uid}-${DateTime.now().millisecondsSinceEpoch}';
 
+    if(firstNameController.text.isEmpty || lastNameController.text.isEmpty || emailController.text.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fill all the text fields!')));
+      return;
+    }
+
     await _updateDisplayName(user, newName);
-    await _updateEmail(user);
+    bool isEmailValid = await _updateEmail(user);
+    if(!isEmailValid) {
+      return;
+    }
     await _updateProfilePhoto(user, uniqueFileName);
     await _updateCoverPhoto(uniqueFileName, context);
+
+    Provider.of<ProfileProvider>(context, listen: false).updateProfile();
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Updated account information!')));
+    Navigator.pop(context,true);
   }
 
   String getNewName() {
-    if (lastNameController.text.isEmpty) {
-      return firstNameController.text;
-    } else {
-      return "${firstNameController.text} ${lastNameController.text}";
-    }
+    return "${firstNameController.text} ${lastNameController.text}";
   }
 
   Future<void> _updateDisplayName(User? user, String newName) async {
@@ -71,10 +79,19 @@ class EditProfileState extends State<EditProfile> {
     }
   }
 
-  Future<void> _updateEmail(User? user) async {
-    if (user?.email != emailController.text) {
+  Future<bool> _updateEmail(User? user) async {
+    try {
       await user?.updateEmail(emailController.text);
+      return true;
+    } on FirebaseAuthException catch (e){
+      String message = '';
+      if(e.code == 'invalid-email'){
+        message = 'Invalid email format!';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      return false;
     }
+
   }
 
   Future<void> _updateProfilePhoto(User? user, String uniqueFileName) async {
@@ -286,9 +303,6 @@ class EditProfileState extends State<EditProfile> {
                     () async {
                       try {
                         await updateAccountInformation(context);
-                        Provider.of<ProfileProvider>(context, listen: false).updateProfile();
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Updated account information!')));
-                        Navigator.pop(context,true);
                       } catch (e){
                         print(e);
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update account information: $e')));
