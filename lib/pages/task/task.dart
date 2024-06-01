@@ -204,7 +204,8 @@ class _TaskPageState extends State<TaskPage> {
                                       });
                                     },
                                     () {
-                                      // Handle cancel deletion
+                                      setState(() {
+                                      });
                                     },
                                   );
                                 },
@@ -264,10 +265,23 @@ class _TaskPageState extends State<TaskPage> {
                                   });
                                 },
                                 onDelete: () {
-                                  setState(() {
-                                    tasks.removeAt(index);
-                                  });
+                                  final String deletedTitle = tasks[index].title;
+                                  showConfirmationDialog(
+                                    context,
+                                    "Delete Item",
+                                    "Are you sure you want to delete '$deletedTitle'?",
+                                        () {
+                                      setState(() {
+                                        tasks.removeAt(index);
+                                      });
+                                    },
+                                        () {
+                                      setState(() {
+                                      });
+                                    },
+                                  );
                                 },
+                                enableRetrieve: false,
                               ),
                             );
                           } else {

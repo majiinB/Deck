@@ -522,13 +522,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                       }catch(e){
                         print('error in adding deck: $e');
                       }
-                    }, () async {
-                      print("test print");
-                      final msg = await FlashcardAiService().testFunction();
-                      showDialog(context: context, builder: (context) =>
-                          AlertDialog(
-                            title: Text(msg),
-                          ));
+                    }, () {
                       //when user clicks no
                       //add logic here
                     });

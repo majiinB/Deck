@@ -14,6 +14,7 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> loadTasks() async {
     list = await TaskService().getTasksOnSpecificDate();
+    orderListByEarliestDeadline();
     notifyListeners();
   }
 
@@ -47,6 +48,10 @@ class TaskProvider extends ChangeNotifier {
     });
     await TaskService().updateTaskFromLoadedTasks(list, task);
     notifyListeners();
+  }
+
+  void orderListByEarliestDeadline(){
+    list.sort((a, b) => a.deadline.compareTo(b.deadline));
   }
 
 }
