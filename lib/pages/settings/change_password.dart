@@ -109,6 +109,7 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                                 }
                                 AuthService().resetPass(newPasswordController.text);
                                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Success! Please check your email.')));
+                                Navigator.pop(context);
                               } on FirebaseAuthException catch (e){
                                 String message = '';
                                 if(e.code == 'user-mismatch'){
