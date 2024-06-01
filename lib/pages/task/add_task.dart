@@ -173,6 +173,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         "end_date": DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
                         "is_done": false,
                         "is_deleted": false,
+                        "done_date": DateTime.now(),
                       };
 
                       Provider.of<TaskProvider>(context, listen: false).addTask(data);

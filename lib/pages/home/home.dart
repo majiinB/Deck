@@ -8,11 +8,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../backend/auth/auth_service.dart';
 import '../../backend/flashcard/flashcard_service.dart';
 import '../../backend/models/deck.dart';
+import '../../backend/task/task_provider.dart';
 import '../task/view_task.dart';
 // import 'package:deck/pages/account/account.dart';
 
@@ -27,7 +29,6 @@ class _HomePageState extends State<HomePage> {
   final AuthService _authService = AuthService();
   final FlashcardService _flashcardService = FlashcardService();
   Deck? _latestDeck;
-  List<Task> _tasks = [];
   List<Deck> _decks = [];
   late User? _user;
   //Initial values for testing
@@ -82,8 +83,7 @@ class _HomePageState extends State<HomePage> {
     _user = _authService.getCurrentUser();
     _initUserDecks(_user);
     _initUserTasks(_user);
-    String? firstName = _user!.displayName!.isNotEmpty ? _user?.displayName?.split(" ").first : 'User';
-    greeting = "hi, ${firstName!.isEmpty ? 'User' : firstName}!";
+    _initGreeting();
   }
 
   void _initUserDecks(User? user) async {
@@ -97,15 +97,25 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _initUserTasks(User? user) async {
-    if (user == null) return;
-    List<Task> tasks = await TaskService().getTasksOnSpecificDate();
+    await Provider.of<TaskProvider>(context, listen:false).loadTasks();
+  }
+
+  void _initGreeting() {
+    _user?.reload();
+    String? firstName = _user?.displayName?.split(" ").first ?? 'User';
+    print(firstName);
+    print(_user?.displayName);
     setState(() {
-      _tasks = tasks;
+      greeting = "hi, $firstName!";
+      print(greeting);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<TaskProvider>(context);
+    final _tasks = provider.getList;
+
     return Scaffold(
         body:SafeArea(
           top: true,
@@ -128,24 +138,27 @@ class _HomePageState extends State<HomePage> {
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                childCount: _tasks.length,
-                    (context, index) {
-                  return LayoutBuilder(builder: (context, BoxConstraints constraints){
-                    double cardWidth = constraints.maxWidth;
-                    return Padding(padding: const EdgeInsets.symmetric(vertical: 10),
-                    child:  HomeTaskTile(
-                      taskName: _tasks[index].title,
-                      deadline: _tasks[index].deadline.toString().split(" ")[0],
-                      onPressed: () {
-                        print('YOU TOUCHED THE TASK!');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => /*ViewDeckPage*/ ViewTaskPage(task: _tasks[index],)),
-                        );
-                      },
-                    ),);
-                  });
-                }),
+                childCount: _tasks.length, (context, index) {
+                  if(_tasks[index].isDone == false){
+                    return LayoutBuilder(builder: (context, BoxConstraints constraints){
+                      double cardWidth = constraints.maxWidth;
+                      return Padding(padding: const EdgeInsets.symmetric(vertical: 10),
+                      child:  HomeTaskTile(
+                        taskName: _tasks[index].title,
+                        deadline: _tasks[index].deadline.toString().split(" ")[0],
+                        onPressed: () {
+                          print('YOU TOUCHED THE TASK!');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => /*ViewDeckPage*/ ViewTaskPage(task: _tasks[index],)),
+                          );
+                        },
+                      ),);
+                    });
+                  } else {
+                    return const SizedBox();
+                  }
+                  }),
             ),
             const DeckSliverHeader(
               backgroundColor: DeckColors.backgroundColor,
