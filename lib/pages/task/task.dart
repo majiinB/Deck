@@ -147,9 +147,7 @@ class _TaskPageState extends State<TaskPage> {
                     ),
                     shape: BoxShape.circle,
                   ),
-                  selectedTextStyle:const TextStyle(
-                    color: DeckColors.primaryColor
-                  ),
+
                   todayDecoration:const BoxDecoration(
                     color: Colors.transparent,
                     shape: BoxShape.circle,
