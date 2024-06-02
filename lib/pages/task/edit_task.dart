@@ -25,8 +25,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
   late final TextEditingController _dateController;
-
-
   @override
   void initState() {
     super.initState();
@@ -36,7 +34,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     _titleController = TextEditingController(text: widget.task.title);
     _descriptionController = TextEditingController(text: widget.task.description.toString());
   }
-
+  
   Future<DateTime?> _getDeadline() async {
     final db = FirebaseFirestore.instance;
     var querySnapshot = await db.collection('tasks').where('user_id', isEqualTo: AuthService().getCurrentUser()?.uid).get();
@@ -46,7 +44,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     }
     return null;
   }
-
+  
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,

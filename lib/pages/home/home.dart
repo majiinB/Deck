@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
-
 import '../../backend/auth/auth_service.dart';
 import '../../backend/fcm/notifications_service.dart';
 import '../../backend/flashcard/flashcard_service.dart';
@@ -43,36 +42,34 @@ class _HomePageState extends State<HomePage> {
   // ['taskTitle3',DateTime(2024, 5, 15),false]
   // ];
 
-
-  List<String> taskTitles = [
-    'taskTitle1','taskTitle2','taskTitle3',
-    'a long taskTitle4','a very very very long taskTitle5',
-    'taskTitle6','taskTitle7','taskTitle8',
-    'a long taskTitl9','a very very very long taskTitle10',
-  ];
-  List<DateTime> taskDeadlines = [
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 15), // May 14, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 15), // May 12, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 15), // May 14, 2024
-    DateTime(2024, 5, 14), // May 14, 2024
-    DateTime(2024, 5, 15), // May 12, 2024
-  ];
-  List<bool> isDone = [
-    false, false,false,
-    false,false,
-    false, false,false,
-    false,false
-  ];
+  // List<String> taskTitles = [
+  //   'taskTitle1','taskTitle2','taskTitle3',
+  //   'a long taskTitle4','a very very very long taskTitle5',
+  //   'taskTitle6','taskTitle7','taskTitle8',
+  //   'a long taskTitl9','a very very very long taskTitle10',
+  // ];
+  // List<DateTime> taskDeadlines = [
+  //   DateTime(2024, 5, 14), // May 14, 2024
+  //   DateTime(2024, 5, 14), // May 14, 2024
+  //   DateTime(2024, 5, 15), // May 14, 2024
+  //   DateTime(2024, 5, 14), // May 14, 2024
+  //   DateTime(2024, 5, 15), // May 12, 2024
+  //   DateTime(2024, 5, 14), // May 14, 2024
+  //   DateTime(2024, 5, 14), // May 14, 2024
+  //   DateTime(2024, 5, 15), // May 14, 2024
+  //   DateTime(2024, 5, 14), // May 14, 2024
+  //   DateTime(2024, 5, 15), // May 12, 2024
+  // ];
+  // List<bool> isDone = [
+  //   false, false,false,
+  //   false,false,
+  //   false, false,false,
+  //   false,false
+  // ];
 
   DateTime today = DateTime.now();
   DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
   DateTime selectedDay = DateTime.now();
-
   // void goToPage(int pageIndex) {
   //   setState(() {
   //     index = pageIndex;
@@ -133,78 +130,95 @@ class _HomePageState extends State<HomePage> {
           minimum: const EdgeInsets.only(left: 20, right: 20),
         child: CustomScrollView(
           slivers: <Widget>[
-            DeckSliverHeader(
-                backgroundColor: DeckColors.backgroundColor,
+              DeckSliverHeader(
+                backgroundColor: Colors.transparent,
                 headerTitle: greeting,
                 textStyle: const TextStyle(  color: DeckColors.primaryColor,
                   fontFamily: 'Fraiche',
                   fontSize: 56,
                 ),
-              isPinned: false,
-              max: 100,
-              min: 100,
-            ),
-            SliverList(
+                isPinned: false,
+                max: 100,
+                min: 100,
+                hasIcon: false,
+              ),
+            if (_tasks.isEmpty && _decks.isEmpty) SliverToBoxAdapter(
+                child: ifCollectionEmpty(ifCollectionEmptyText: "Start Creating Your\nTask and Flashcards!",
+                    ifCollectionEmptySubText: "No content is currently\navailable",
+                    ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 1)
+            )
+            else if (_tasks.isEmpty && _decks.isNotEmpty ) SliverToBoxAdapter(
+                child: ifCollectionEmpty(ifCollectionEmptyText: "No Task(s) Available",
+                    ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.3)
+            )
+            else if(_tasks.isNotEmpty) SliverList(
               delegate: SliverChildBuilderDelegate(
-                childCount: _tasks.length, (context, index) {
-                  if(_tasks[index].isDone == false){
+                  childCount: _tasks.length,
+                      (context, index) {
                     return LayoutBuilder(builder: (context, BoxConstraints constraints){
                       double cardWidth = constraints.maxWidth;
                       return Padding(padding: const EdgeInsets.symmetric(vertical: 10),
-                      child:  HomeTaskTile(
-                        taskName: _tasks[index].title,
-                        deadline: _tasks[index].deadline.toString().split(" ")[0],
-                        onPressed: () {
-                          print('YOU TOUCHED THE TASK!');
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => /*ViewDeckPage*/ ViewTaskPage(task: _tasks[index],)),
-                          );
-                        },
-                      ),);
+                        child:  HomeTaskTile(
+                          taskName: _tasks[index].title,
+                          deadline: _tasks[index].deadline.toString().split(" ")[0],
+                          onPressed: () {
+                            print('YOU TOUCHED THE TASK!');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => /*ViewDeckPage*/ ViewTaskPage(task: _tasks[index],)),
+                            );
+                          },
+                        ),);
                     });
-                  } else {
-                    return const SizedBox();
-                  }
                   }),
-            ),
-            const DeckSliverHeader(
-              backgroundColor: DeckColors.backgroundColor,
+            ) ,
+
+            if((_tasks.isNotEmpty || _decks.isNotEmpty)) const DeckSliverHeader(
+              backgroundColor:  Colors.transparent,
               headerTitle: "Recently Added",
               textStyle: TextStyle(  color: DeckColors.white,
                 fontFamily: 'Fraiche',
                 fontSize: 24,
+
               ),
               isPinned: false,
               max: 50,
               min: 50,
+                hasIcon: false,
             ),
-            SliverGrid(
+
+            if (_decks.isEmpty  && _tasks.isNotEmpty ) SliverToBoxAdapter(
+              child: ifCollectionEmpty(ifCollectionEmptyText: "No Deck(s) Available",
+                  ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.3)
+            )
+            else if(_decks.isNotEmpty) SliverGrid(
                 delegate: SliverChildBuilderDelegate(
-                        childCount: _decks.length,
+                    childCount: _decks.length,
                         (context, index) {
-                  return LayoutBuilder(builder: (context, BoxConstraints constraints){
-                    double cardWidth = constraints.maxWidth;
-                    return HomeDeckTile(
-                      deckName: _decks[index].title.toString(),
-                      deckImageUrl: _decks[index].coverPhoto.toString(),
-                      deckColor:DeckColors.gray,
-                      cardWidth: cardWidth - 8,
-                      onPressed: () {
-                        print('U TOUCHED MI DECK!');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ViewDeckPage(deck: _decks[index])), /// WALA PALA SAKEN MGA PAGES NI GAB HEHE
+                      return LayoutBuilder(builder: (context, BoxConstraints constraints){
+                        double cardWidth = constraints.maxWidth;
+                        return HomeDeckTile(
+                          deckName: _decks[index].title.toString(),
+                          deckImageUrl: _decks[index].coverPhoto.toString(),
+                          deckColor:DeckColors.gray,
+                          cardWidth: cardWidth - 8,
+                          onPressed: () {
+                            print('U TOUCHED MI DECK!');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ViewDeckPage(deck: _decks[index])), /// WALA PALA SAKEN MGA PAGES NI GAB HEHE
+                            );
+                          },
                         );
-                      },
-                    );
-                  });
-                }),
+                      });
+                    }),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
-                ))
+                )
+              ),
+            SliverPadding(padding: EdgeInsets.symmetric(vertical: 60))
           ],
         )
         ),
