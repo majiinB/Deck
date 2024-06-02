@@ -199,9 +199,7 @@ class _TaskPageState extends State<TaskPage> {
                                     "Delete Item",
                                     "Are you sure you want to delete '$deletedTitle'?",
                                     () {
-                                      setState(() {
-                                        tasks.removeAt(index);
-                                      });
+                                      Provider.of<TaskProvider>(context, listen: false).deleteTask(tasks[index].uid);
                                     },
                                     () {
                                       setState(() {
@@ -271,9 +269,7 @@ class _TaskPageState extends State<TaskPage> {
                                     "Delete Item",
                                     "Are you sure you want to delete '$deletedTitle'?",
                                         () {
-                                      setState(() {
-                                        tasks.removeAt(index);
-                                      });
+                                          Provider.of<TaskProvider>(context, listen: false).deleteTask(tasks[index].uid);
                                     },
                                         () {
                                       setState(() {
