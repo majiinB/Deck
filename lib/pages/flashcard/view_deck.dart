@@ -87,14 +87,22 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
         icon: Icons.add,
         foregroundColor: DeckColors.primaryColor,
         backgroundColor: DeckColors.gray,
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async{
+          final newCard = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => AddFlashcardPage(
               deck: widget.deck,
-              cardList: _cardsCollection,
             )),
           );
+          if (newCard != null) {
+            setState(() {
+              _cardsCollection.add(newCard);
+              if (newCard.isStarred) {
+                _starredCardCollection.add(newCard);
+              }
+              _filterFlashcards();
+            });
+          }
         },
       ),
       appBar: const DeckBar(

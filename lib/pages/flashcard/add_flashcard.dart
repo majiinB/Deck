@@ -9,8 +9,7 @@ import '../../backend/models/deck.dart';
 
 class AddFlashcardPage extends StatefulWidget {
   Deck deck;
-  List<Cards> cardList;
-  AddFlashcardPage({Key? key, required this.deck, required this.cardList}) : super(key: key);
+  AddFlashcardPage({Key? key, required this.deck}) : super(key: key);
 
   @override
   _AddFlashcardPageState createState() => _AddFlashcardPageState();
@@ -78,10 +77,8 @@ class _AddFlashcardPageState extends State<AddFlashcardPage> {
                               _descriptionOrAnswerController.text.toString(),
                             );
                             if (card != null) {
-                              widget.cardList.add(card);
                               await Future.delayed(Duration(milliseconds: 300));
-                              _questionOrTermController.clear();
-                              _descriptionOrAnswerController.clear();
+                              Navigator.pop(context, card);
                               showInformationDialog(context, "Card Added Successfully", "You can now view this card in you deck");
                             }
                           } else {
