@@ -215,67 +215,65 @@ class _TaskPageState extends State<TaskPage> {
                     // To Do Tab
                     if (isThereTaskForDay(today,true))
                       ListView.builder(
-    shrinkWrap:
-    true, // Allow the ListView to wrap its content
-    physics: const NeverScrollableScrollPhysics(),
-    itemCount: tasks.length,
-    itemBuilder: (context, index) {
-    if (!tasks[index].isDone &&
-    isSameDay(tasks[index].deadline, selectedDay)) {
-    return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 10),
-    child: DeckTaskTile(
-    title: tasks[index].title,
-    deadline: tasks[index].deadline
-        .toString()
-        .split(" ")[0],
-    isChecked: tasks[index].getIsDone,
-    onChanged: (newValue) {
-    setState(() {
-    tasks[index].setIsDone = newValue ?? false;
-    });
-    },
-    onDelete: () {
-    final String deletedTitle = tasks[index].title;
-    showConfirmationDialog(
-    context,
-    "Delete Item",
-    "Are you sure you want to delete '$deletedTitle'?",
-    () {
-    setState(() {
-    tasks.removeAt(index);
-    });
-    },
-    () {
-    // Handle cancel deletion
-    },
-    );
-    },
-    enableRetrieve: false,
-    onTap: () {
-    print("Clicked task tile!");
-    Navigator.push(
-    context,
-    MaterialPageRoute(
-    builder: (context) => ViewTaskPage(task: tasks[index])),
-    );
-    },
-    ),
-    );
-    } else {
-    return const SizedBox(
-    height: 0); // Placeholder for empty space
-    }
-    },
-    )
+      shrinkWrap:
+      true, // Allow the ListView to wrap its content
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+      if (!tasks[index].isDone &&
+      isSameDay(tasks[index].deadline, selectedDay)) {
+      return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: DeckTaskTile(
+      title: tasks[index].title,
+      deadline: tasks[index].deadline
+          .toString()
+          .split(" ")[0],
+      isChecked: tasks[index].getIsDone,
+      onChanged: (newValue) {
+      setState(() {
+      tasks[index].setIsDone = newValue ?? false;
+      });
+      },
+      onDelete: () {
+      final String deletedTitle = tasks[index].title;
+      showConfirmationDialog(
+      context,
+      "Delete Item",
+      "Are you sure you want to delete '$deletedTitle'?",
+      () {
+      setState(() {
+      tasks.removeAt(index);
+      });
+      },
+      () {
+      // Handle cancel deletion
+      },
+      );
+      },
+      enableRetrieve: false,
+      onTap: () {
+      print("Clicked task tile!");
+      Navigator.push(
+      context,
+      MaterialPageRoute(
+      builder: (context) => ViewTaskPage(task: tasks[index])),
+      );
+      },
+      ),
+      );
+      } else {
+      return const SizedBox(
+      height: 0); // Placeholder for empty space
+      }
+      },
+      )
                     else
                       ifCollectionEmpty(
                       ifCollectionEmptyText: 'No Task for Today.',
                       ifCollectionEmptyheight:
                       MediaQuery.of(context).size.height * 0.2,
                     ),
-
-
 
                     // Done Tab
                     if (isThereTaskForDay(today,false))

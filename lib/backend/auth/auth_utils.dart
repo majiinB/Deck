@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deck/backend/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,7 +55,7 @@ class AuthUtils {
   Future<Image?> getCoverPhotoUrl() async {
     final db = FirebaseFirestore.instance;
     var querySnapshot = await db.collection('users')
-        .where('email', isEqualTo: AuthUtils().getEmail())
+        .where('user_id', isEqualTo: AuthService().getCurrentUser()?.uid)
         .limit(1)
         .get();
 
@@ -65,7 +66,7 @@ class AuthUtils {
 
       // Update the existing document with the new field
       final snap = await db.collection('users').doc(docId).get();
-      if(snap.exists && snap.get('cover_photo') != ""){
+      if(snap.exists){
         return Image.network(snap.get('cover_photo'));
       } else {
         return null;
