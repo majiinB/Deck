@@ -199,12 +199,11 @@ class _TaskPageState extends State<TaskPage> {
                                     "Delete Item",
                                     "Are you sure you want to delete '$deletedTitle'?",
                                     () {
-                                      setState(() {
-                                        tasks.removeAt(index);
-                                      });
+                                      Provider.of<TaskProvider>(context, listen: false).deleteTask(tasks[index].uid);
                                     },
                                     () {
-                                      // Handle cancel deletion
+                                      setState(() {
+                                      });
                                     },
                                   );
                                 },
@@ -264,10 +263,21 @@ class _TaskPageState extends State<TaskPage> {
                                   });
                                 },
                                 onDelete: () {
-                                  setState(() {
-                                    tasks.removeAt(index);
-                                  });
+                                  final String deletedTitle = tasks[index].title;
+                                  showConfirmationDialog(
+                                    context,
+                                    "Delete Item",
+                                    "Are you sure you want to delete '$deletedTitle'?",
+                                        () {
+                                          Provider.of<TaskProvider>(context, listen: false).deleteTask(tasks[index].uid);
+                                    },
+                                        () {
+                                      setState(() {
+                                      });
+                                    },
+                                  );
                                 },
+                                enableRetrieve: false,
                               ),
                             );
                           } else {

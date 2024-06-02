@@ -14,6 +14,8 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> loadTasks() async {
     list = await TaskService().getTasksOnSpecificDate();
+    orderListByEarliestDeadline();
+    removeDeletedTasks();
     notifyListeners();
   }
 
@@ -47,6 +49,23 @@ class TaskProvider extends ChangeNotifier {
     });
     await TaskService().updateTaskFromLoadedTasks(list, task);
     notifyListeners();
+  }
+
+  void orderListByEarliestDeadline(){
+    list.sort((a, b) => a.deadline.compareTo(b.deadline));
+  }
+
+  void removeDeletedTasks(){
+    list.removeWhere((task) => task.isDeleted);
+    notifyListeners();
+  }
+
+  Future<void> deleteTask(String id) async{
+    final db = FirebaseFirestore.instance;
+    await db.collection('tasks').doc(id).update({
+      'is_deleted': true,
+    });
+    await loadTasks();
   }
 
 }
