@@ -70,54 +70,54 @@ class _AddFlashcardPageState extends State<AddFlashcardPage> {
                   "Add Flash Card",
                   "Are you sure you want to add this flash card on your deck?",
                       () async {
-                    try {
-                      if (_descriptionOrAnswerController.text.isNotEmpty &&
-                          _questionOrTermController.text.isNotEmpty) {
-                        Cards? card = await widget.deck.addQuestionToDeck(
-                          _questionOrTermController.text.toString(),
-                          _descriptionOrAnswerController.text.toString(),
-                        );
-                        if (card != null) {
-                          widget.cardList.add(card);
-                          await Future.delayed(Duration(milliseconds: 300));
-                          _questionOrTermController.clear();
-                          _descriptionOrAnswerController.clear();
-                          showInformationDialog(context, "Card Added Successfully", "You can now view this card in you deck");
-                        }
-                      } else {
-                        //Navigator.of(context).pop(); // Close the confirmation dialog
-                        await Future.delayed(Duration(milliseconds: 300)); // Ensure the dialog is fully closed
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Input Error'),
-                              content: const Text('Please fill out all of the input fields.'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(); // Close the dialog
-                                  },
-                                  child: const Text(
-                                    'Close',
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                        try {
+                          if (_descriptionOrAnswerController.text.isNotEmpty &&
+                              _questionOrTermController.text.isNotEmpty) {
+                            Cards? card = await widget.deck.addQuestionToDeck(
+                              _questionOrTermController.text.toString(),
+                              _descriptionOrAnswerController.text.toString(),
                             );
-                          },
-                        );
-                      }
-                    } catch (e) {
-                      print('add card error: $e');
-                    }
-                  },
+                            if (card != null) {
+                              widget.cardList.add(card);
+                              await Future.delayed(Duration(milliseconds: 300));
+                              _questionOrTermController.clear();
+                              _descriptionOrAnswerController.clear();
+                              showInformationDialog(context, "Card Added Successfully", "You can now view this card in you deck");
+                            }
+                          } else {
+                            //Navigator.of(context).pop(); // Close the confirmation dialog
+                            await Future.delayed(Duration(milliseconds: 300)); // Ensure the dialog is fully closed
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Input Error'),
+                                  content: const Text('Please fill out all of the input fields.'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // Close the dialog
+                                      },
+                                      child: const Text(
+                                        'Close',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        } catch (e) {
+                          print('add card error: $e');
+                        }
+                      },
                       () {
                     // when user clicks no
                     // add logic here
-                  },
+                      },
                 );
               },
               buttonText: 'Save Changes',
@@ -153,5 +153,11 @@ class _AddFlashcardPageState extends State<AddFlashcardPage> {
         ]),
       ),
     );
+  }
+  @override
+  void dispose() {
+    _descriptionOrAnswerController.dispose();
+    _questionOrTermController.dispose();
+    super.dispose();
   }
 }
