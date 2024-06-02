@@ -120,17 +120,27 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
                               "Are you sure you want to save changes you made on this flashcard?",
                               () async{
                                 try{
-                                  if(widget.card.question.toString() != _questionOrTermController.text.toString()) {
+                                  if(_questionOrTermController.text.trim().isEmpty){
+                                    await Future.delayed(const Duration(milliseconds: 300));
+                                    showInformationDialog(context, "Input Error", "This card requires a term/question");
+                                    return;
+                                  }
+                                  if(_descriptionOrAnswerController.text.trim().isEmpty){
+                                    await Future.delayed(const Duration(milliseconds: 300));
+                                    showInformationDialog(context, "Input Error", "This card requires a description/answer");
+                                    return;
+                                  }
+                                  if(widget.card.question.toString().trim() != _questionOrTermController.text.toString().trim()) {
                                     await widget.card.updateQuestion(
                                         _questionOrTermController.text
-                                            .toString(),
+                                            .toString().trim(),
                                         widget.deck.deckId
                                     );
                                   }
                                   if(widget.card.answer.toString() != _descriptionOrAnswerController.text.toString()) {
                                     await widget.card.updateAnswer(
                                         _descriptionOrAnswerController.text
-                                            .toString(),
+                                            .toString().trim(),
                                         widget.deck.deckId
                                     );
                                   }

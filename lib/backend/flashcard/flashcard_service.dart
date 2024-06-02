@@ -2,11 +2,13 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deck/backend/flashcard/flashcard_utils.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../models/deck.dart';
 
 class FlashcardService{
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FlashcardUtils _flashcardUtils = FlashcardUtils();
 
   Future<List<Deck>> getDecksByUserId(String userId) async {
     List<Deck> decks = [];
@@ -25,7 +27,7 @@ class FlashcardService{
       // Iterate through the query snapshot to extract document data
       for (var doc in querySnapshot.docs) {
         // Extract data from the document
-        String title = doc['title'];
+        String title = _flashcardUtils.capitalizeFirstLetterOfWords(doc['title']);
         String userId = doc['user_id'];
         String coverPhoto = doc['cover_photo'];
         bool isDeleted = doc['is_deleted'];
@@ -62,7 +64,7 @@ class FlashcardService{
       // Iterate through the query snapshot to extract document data
       for (var doc in querySnapshot.docs) {
         // Extract data from the document
-        String title = doc['title'];
+        String title = _flashcardUtils.capitalizeFirstLetterOfWords(doc['title']);
         String userId = doc['user_id'];
         String coverPhoto = doc['cover_photo'];
         bool isDeleted = doc['is_deleted'];
@@ -100,7 +102,7 @@ class FlashcardService{
       // Iterate through the query snapshot to extract document data
       for (var doc in querySnapshot.docs) {
         // Extract data from the document
-        String title = doc['title'];
+        String title = _flashcardUtils.capitalizeFirstLetterOfWords(doc['title']);
         String userId = doc['user_id'];
         String coverPhoto = doc['cover_photo'];
         bool isDeleted = doc['is_deleted'];
@@ -141,7 +143,7 @@ class FlashcardService{
 
         // Check if the deck belongs to the user and is not deleted
         if (deckUserId == userId && !isDeleted) {
-          String title = deckData['title'];
+          String title = _flashcardUtils.capitalizeFirstLetterOfWords(deckData['title']);
           String coverPhoto = deckData['cover_photo'];
           bool isPrivate = deckData['is_private'];
           Timestamp createdAtTimestamp = deckData['created_at'];
@@ -225,13 +227,13 @@ class FlashcardService{
     try {
       // Get the reference to the collection
       CollectionReference questionsRef = _firestore.collection('decks');
-
+      String cleanTitle = _flashcardUtils.cleanSpaces(title.toLowerCase().trim());
       // Add the question to the collection
       DocumentReference docRef = await questionsRef.add({
         'created_at': DateTime.now(),
         'is_deleted': false,
         'is_private': false,
-        'title': title,
+        'title': cleanTitle,
         'user_id': userId,
         'cover_photo':coverPhoto
       });
@@ -239,7 +241,7 @@ class FlashcardService{
       String newDeckId = docRef.id;
 
       print('Deck added successfully!');
-      return Deck(title, userId, newDeckId, false, false, DateTime.now(), coverPhoto);
+      return Deck(cleanTitle, userId, newDeckId, false, false, DateTime.now(), coverPhoto);
     } catch (e) {
       print('Error adding deck: $e');
       return null;
@@ -308,5 +310,28 @@ class FlashcardService{
       return false;
     }
   }
+  Future<bool> checkIfDeckWithTitleExists(String userId, String title) async {
+    try {
+      // Get a reference to the decks collection
+      CollectionReference decksRef = _firestore.collection('decks');
 
+      // Convert the provided title to lowercase and trim any trailing spaces
+      String formattedTitle = title.toLowerCase().trim();
+
+      // Query for documents where the title field matches the formatted title and user_id matches the provided userId
+      QuerySnapshot querySnapshot = await decksRef
+          .where('user_id', isEqualTo: userId)
+          .where('title', isEqualTo: formattedTitle)
+          .where('is_deleted', isEqualTo: false)
+          .get();
+
+      // If there are any documents returned, it means a deck with the same title and user_id exists
+      print(querySnapshot.docs.isNotEmpty);
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      // Handle any errors that occur during the process
+      print('Error checking deck title: $e');
+      return false; // Return false by default in case of errors
+    }
+  }
 }
