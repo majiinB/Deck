@@ -108,11 +108,8 @@ class _HomePageState extends State<HomePage> {
   void _initGreeting() {
     _user?.reload();
     String? firstName = _user?.displayName?.split(" ").first ?? 'User';
-    print(firstName);
-    print(_user?.displayName);
     setState(() {
       greeting = "hi, $firstName!";
-      print(greeting);
     });
   }
 
@@ -155,21 +152,33 @@ class _HomePageState extends State<HomePage> {
               delegate: SliverChildBuilderDelegate(
                   childCount: _tasks.length,
                       (context, index) {
-                    return LayoutBuilder(builder: (context, BoxConstraints constraints){
-                      double cardWidth = constraints.maxWidth;
-                      return Padding(padding: const EdgeInsets.symmetric(vertical: 10),
-                        child:  HomeTaskTile(
-                          taskName: _tasks[index].title,
-                          deadline: _tasks[index].deadline.toString().split(" ")[0],
-                          onPressed: () {
-                            print('YOU TOUCHED THE TASK!');
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => /*ViewDeckPage*/ ViewTaskPage(task: _tasks[index],)),
-                            );
-                          },
-                        ),);
-                    });
+                    DateTime deadline = DateTime(_tasks[index].deadline.year, _tasks[index].deadline.month, _tasks[index].deadline.day);
+                    DateTime notifyRange = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).add(const Duration(days: 1));
+                    DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+                    if(!_tasks[index].isDone && deadline.isBefore(notifyRange) && deadline.isAtSameMomentAs(today)){
+                      return LayoutBuilder(
+                          builder: (context, BoxConstraints constraints) {
+                            double cardWidth = constraints.maxWidth;
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: HomeTaskTile(
+                                taskName: _tasks[index].title,
+                                deadline: _tasks[index].deadline.toString()
+                                    .split(" ")[0],
+                                onPressed: () {
+                                  print('YOU TOUCHED THE TASK!');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (
+                                        context) => /*ViewDeckPage*/ ViewTaskPage(
+                                      task: _tasks[index],)),
+                                  );
+                                },
+                              ),);
+                          });
+                    } else {
+                      return const SizedBox();
+                    }
                   }),
             ) ,
 
