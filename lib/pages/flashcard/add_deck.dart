@@ -30,7 +30,7 @@ class AddDeckPage extends StatefulWidget {
 class _AddDeckPageState extends State<AddDeckPage> {
   bool _isToggled = false;
   String coverPhoto = "no_photo";
-  final TextEditingController _deckTitleContoller = TextEditingController();
+  final TextEditingController _deckTitleController = TextEditingController();
   final TextEditingController _pickedFileController = TextEditingController();
   final TextEditingController _subjectController = TextEditingController();
   final TextEditingController _topicController = TextEditingController();
@@ -168,7 +168,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: BuildTextBox(
-                    controller: _deckTitleContoller,
+                    controller: _deckTitleController,
                     hintText: 'Enter Deck Title'
                 ),
               ),
@@ -298,7 +298,7 @@ class _AddDeckPageState extends State<AddDeckPage> {
                       try{
                         if(_isToggled){
                           //  START OF AI
-                          if(_deckTitleContoller.text.isNotEmpty && _numCardsController.text.isNotEmpty){
+                          if(_deckTitleController.text.isNotEmpty && _numCardsController.text.isNotEmpty){
                             try {
                               FlashcardAiService _flashcardAiService = FlashcardAiService();
                               FlashcardService _flashcardService = FlashcardService();
@@ -392,13 +392,13 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                 );
                               } else {
                                 // If sendData is successful, navigate to ViewDeckPage
-                                if(_deckTitleContoller.text.isNotEmpty){
+                                if(_deckTitleController.text.isNotEmpty){
                                   FlashcardService _flashCardService = FlashcardService();
                                   String uploadedPhotoUrl = 'https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=de6ac50d-13d0-411c-934e-fbeac5b9f6e0';
                                   if(coverPhoto != 'no_photo'){
                                     uploadedPhotoUrl = await _flashCardService.uploadImageToFirebase(coverPhoto, widget.userId.toString());
                                   }
-                                  Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleContoller.text.toString(), uploadedPhotoUrl);
+                                  Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleController.text.toString(), uploadedPhotoUrl);
                                   if(newDeck != null){
                                     //Loop through the list and transfer info from response to the deck
                                     for(Cardai aiResponse in flashCardDataList){
@@ -476,13 +476,13 @@ class _AddDeckPageState extends State<AddDeckPage> {
                           // END OF AI
                         }else{
                           // START OF NON AI
-                          if(_deckTitleContoller.text.isNotEmpty){
+                          if(_deckTitleController.text.isNotEmpty){
                             FlashcardService _flashCardService = FlashcardService();
                             String uploadedPhotoUrl = 'https://firebasestorage.googleapis.com/v0/b/deck-f429c.appspot.com/o/deckCovers%2Fdefault%2FdeckDefault.png?alt=media&token=de6ac50d-13d0-411c-934e-fbeac5b9f6e0';
                             if(coverPhoto != 'no_photo'){
                               uploadedPhotoUrl = await _flashCardService.uploadImageToFirebase(coverPhoto, widget.userId.toString());
                             }
-                            Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleContoller.text.toString(), uploadedPhotoUrl);
+                            Deck? newDeck = await _flashCardService.addDeck(widget.userId, _deckTitleController.text.toString(), uploadedPhotoUrl);
                             if(newDeck != null){
                               Navigator.pop(context, newDeck);
 
@@ -560,5 +560,15 @@ class _AddDeckPageState extends State<AddDeckPage> {
             ],
           )),
     );
+  }
+  @override
+  void dispose() {
+    _deckTitleController.dispose();
+    _pickedFileController.dispose();
+    _subjectController.dispose();
+    _topicController.dispose();
+    _descriptionController.dispose();
+    _numCardsController.dispose();
+    super.dispose();
   }
 }

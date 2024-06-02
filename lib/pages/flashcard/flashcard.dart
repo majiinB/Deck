@@ -40,14 +40,6 @@ class _FlashcardPageState extends State<FlashcardPage> {
     _searchController.addListener(_onSearchChanged);
   }
 
-  @override
-  void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    FlashcardUtils.updateLatestReview.removeListener(_updateLatestReview);
-    _searchController.dispose();
-    super.dispose();
-  }
-
   void _initUserDecks(User? user) async {
     if (user != null) {
       String userId = user.uid;
@@ -276,5 +268,12 @@ class _FlashcardPageState extends State<FlashcardPage> {
         ),
       ),
     );
+  }
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    FlashcardUtils.updateLatestReview.removeListener(_updateLatestReview);
+    _searchController.dispose();
+    super.dispose();
   }
 }
