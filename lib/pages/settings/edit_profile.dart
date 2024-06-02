@@ -285,11 +285,13 @@ class EditProfileState extends State<EditProfile> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
-              child: BuildTextBox(
+              child: !AuthService().getCurrentUser()!.providerData[0].providerId.contains('google.com') ?
+                BuildTextBox(
                   showPassword: false,
                   hintText: "Email",
                   controller: emailController,
-              ),
+                ) :
+                const SizedBox()
             ),
             Padding(
               padding: const EdgeInsets.only(top: 40, left: 16, right: 16),
