@@ -12,10 +12,6 @@ class FCMService {
 
   void handleMessage(RemoteMessage? message){
     if(message == null) return;
-
-    navigatorKey.currentState?.push(
-        RouteGenerator.createRoute(MainPage(index: 1))
-    );
   }
 
   Future<void> initializeNotifications() async{

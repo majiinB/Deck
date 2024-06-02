@@ -1,4 +1,6 @@
 import 'package:deck/backend/auth/auth_gate.dart';
+import 'package:deck/backend/fcm/notifications_service.dart';
+import 'package:deck/backend/models/task.dart';
 import 'package:deck/backend/profile/profile_provider.dart';
 import 'package:deck/pages/flashcard/flashcard.dart';
 import 'package:deck/pages/home/home.dart';
@@ -24,6 +26,8 @@ void main () async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FCMService().initializeNotifications();
+  NotificationService().initLocalNotifications();
+
   runApp(
     MultiProvider(
       providers: [
@@ -36,8 +40,23 @@ void main () async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  _myAppState createState() => _myAppState();
+}
+
+class _myAppState extends State<MyApp> {
+
+  @override
+  void initState(){
+    super.initState();
+    listenNotifications();
+  }
+
+  void listenNotifications() => NotificationService().onNotifications.listen(onClickedNotification);
+  void onClickedNotification(String? payload) {}
 
   // This widget is the root of your application.
   @override
