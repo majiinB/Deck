@@ -224,9 +224,9 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                     ///
                     /// ------------------------- START OF TAB 'ALL' CONTENT ----------------------------
                     if (_filteredCardsCollection.isEmpty)
-                      IfDeckEmpty(
-                        ifDeckEmptyText: 'No Flashcard(s) Available',
-                        ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.3,
+                      ifCollectionEmpty(
+                        ifCollectionEmptyText: 'No Flashcard(s) Available',
+                        ifCollectionEmptyheight: MediaQuery.of(context).size.height * 0.3,
                       )
                     else
                       Padding(
@@ -334,9 +334,9 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                     ///
                     /// ------------------------- START OF TAB 'STARRED' CONTENT ----------------------------
                     if (_filteredStarredCardCollection.isEmpty)
-                      IfDeckEmpty(
-                        ifDeckEmptyText: 'No Starred Flashcard(s) Available',
-                        ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.3,
+                      ifCollectionEmpty(
+                        ifCollectionEmptyText: 'No Starred Flashcard(s) Available',
+                        ifCollectionEmptyheight: MediaQuery.of(context).size.height * 0.3,
                       )
                     else
                       SingleChildScrollView(
