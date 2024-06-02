@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/auth/auth_gate.dart';
+import 'package:deck/backend/fcm/fcm_service.dart';
 import 'package:deck/pages/auth/recover_account.dart';
 import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
@@ -119,6 +120,7 @@ class LoginPage extends StatelessWidget {
                 onPressed: () async {
                   try{
                     await AuthService().signInWithEmail(emailController.text, passwordController.text);
+                    await FCMService().renewToken();
                     Navigator.of(context).push(
                       RouteGenerator.createRoute(const AuthGate()),
                     );
@@ -197,12 +199,15 @@ class LoginPage extends StatelessWidget {
                       "name": currentUser?.displayName,
                       "uid": currentUser?.uid,
                       "cover_photo": "",
+                      "fcm_token": await FCMService().getToken(),
                     };
 
                     final db = FirebaseFirestore.instance;
                     final snap = await db.collection("users").where('email',isEqualTo: currentUser?.email).get();
                     if(snap.docs.isEmpty){
                       await db.collection("users").add(user);
+                    } else {
+                      await FCMService().renewToken();
                     }
                     Navigator.of(context).push(
                       RouteGenerator.createRoute(const AuthGate()),
