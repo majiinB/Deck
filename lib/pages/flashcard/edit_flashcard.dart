@@ -15,7 +15,7 @@ class EditFlashcardPage extends StatefulWidget {
   const EditFlashcardPage({
     Key? key,
     required this.deck,
-    required this.card
+    required this.card,
   }) : super(key: key);
 
   @override
@@ -33,7 +33,14 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
     _descriptionOrAnswerController = TextEditingController(text: widget.card.answer.toString());
     _questionOrTermController = TextEditingController(text: widget.card.question.toString());
   }
-  
+
+  @override
+  void dispose() {
+    _descriptionOrAnswerController.dispose();
+    _questionOrTermController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,9 +84,7 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
             Padding(
               padding: const EdgeInsets.only(top: 40.0),
               child: Opacity(
-                opacity: buttonsEnabled
-                    ? 1.0
-                    : 0.7, // Set opacity based on button state
+                opacity: buttonsEnabled ? 1.0 : 0.7, // Set opacity based on button state
                 child: IgnorePointer(
                   ignoring: !buttonsEnabled,
                   child: BuildTextBox(
@@ -92,9 +97,7 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Opacity(
-                opacity: buttonsEnabled
-                    ? 1.0
-                    : 0.7, // Set opacity based on button state
+                opacity: buttonsEnabled ? 1.0 : 0.7, // Set opacity based on button state
                 child: IgnorePointer(
                   ignoring: !buttonsEnabled,
                   child: BuildTextBox(
@@ -114,52 +117,49 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
                   child: BuildButton(
                     onPressed: buttonsEnabled
                         ? () {
-                            showConfirmationDialog(
-                              context,
-                              "Save Changes",
-                              "Are you sure you want to save changes you made on this flashcard?",
-                              () async{
-                                try{
-                                  if(_questionOrTermController.text.trim().isEmpty){
-                                    await Future.delayed(const Duration(milliseconds: 300));
-                                    showInformationDialog(context, "Input Error", "This card requires a term/question");
-                                    return;
-                                  }
-                                  if(_descriptionOrAnswerController.text.trim().isEmpty){
-                                    await Future.delayed(const Duration(milliseconds: 300));
-                                    showInformationDialog(context, "Input Error", "This card requires a description/answer");
-                                    return;
-                                  }
-                                  if(widget.card.question.toString().trim() != _questionOrTermController.text.toString().trim()) {
-                                    await widget.card.updateQuestion(
-                                        _questionOrTermController.text
-                                            .toString().trim(),
-                                        widget.deck.deckId
-                                    );
-                                  }
-                                  if(widget.card.answer.toString() != _descriptionOrAnswerController.text.toString()) {
-                                    await widget.card.updateAnswer(
-                                        _descriptionOrAnswerController.text
-                                            .toString().trim(),
-                                        widget.deck.deckId
-                                    );
-                                  }
-                                  await Future.delayed(const Duration(milliseconds: 300));
-                                  showInformationDialog(context, "Card Edit Successful", "Card info changed");
-                                  setState(() {
-                                    buttonsEnabled = !buttonsEnabled;
-                                  });
-                                }catch(e){
-                                  print('Error saving changes $e');
-                                }
-                              },
-                              () {
-                                //when user clicks no
-                                //add logic here
-                              },
-                            );
+                      showConfirmationDialog(
+                        context,
+                        "Save Changes",
+                        "Are you sure you want to save changes you made on this flashcard?",
+                            () async {
+                          try {
+                            if (_questionOrTermController.text.trim().isEmpty) {
+                              await Future.delayed(const Duration(milliseconds: 300));
+                              showInformationDialog(context, "Input Error", "This card requires a term/question");
+                              return;
+                            }
+                            if (_descriptionOrAnswerController.text.trim().isEmpty) {
+                              await Future.delayed(const Duration(milliseconds: 300));
+                              showInformationDialog(context, "Input Error", "This card requires a description/answer");
+                              return;
+                            }
+                            if (widget.card.question.toString().trim() != _questionOrTermController.text.toString().trim()) {
+                              await widget.card.updateQuestion(
+                                _questionOrTermController.text.toString().trim(),
+                                widget.deck.deckId,
+                              );
+                            }
+                            if (widget.card.answer.toString() != _descriptionOrAnswerController.text.toString()) {
+                              await widget.card.updateAnswer(
+                                _descriptionOrAnswerController.text.toString().trim(),
+                                widget.deck.deckId,
+                              );
+                            }
+                            await Future.delayed(const Duration(milliseconds: 300));
+                            showInformationDialog(context, "Card Edit Successful", "Card info changed");
+                            setState(() {
+                              buttonsEnabled = !buttonsEnabled;
+                            });
+                          } catch (e) {
+                            print('Error saving changes $e');
                           }
-                        : () {}, //this line enables the button when user clicks the pencil icon, bawal kasi null e
+                        },
+                            () {
+                          // Add logic here when user clicks 'No'
+                        },
+                      );
+                    }
+                        : () {}, // Enable button when user clicks the pencil icon
                     buttonText: 'Save Flash Card',
                     height: 50.0,
                     width: MediaQuery.of(context).size.width,
@@ -177,8 +177,7 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
               padding: const EdgeInsets.only(top: 10),
               child: BuildButton(
                 onPressed: () {
-                  print(
-                      "cancel button clicked"); //line to test if working ung onPressedLogic XD
+                  print("cancel button clicked");
                   Navigator.pop(context);
                 },
                 buttonText: 'Cancel',
