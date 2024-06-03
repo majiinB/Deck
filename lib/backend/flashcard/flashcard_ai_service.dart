@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:deck/backend/custom_exceptions/api_exception.dart';
+import 'package:deck/backend/flashcard/flashcard_utils.dart';
 import 'package:deck/backend/models/cardAi.dart';
 import 'package:http/http.dart' as http;
 
 class FlashcardAiService{
+  String ipAddress = "192.168.0.102";
 
   Future<String> testFunction() async {
     final res = await http.get(
@@ -28,6 +30,9 @@ class FlashcardAiService{
     bool isNewMessage = true,
     String threadID = "no_thread_id",
   }) async {
+
+    print(ipAddress);
+
     // Define request body
     Map<String, dynamic> requestBody = {
       'subject': subject,
@@ -41,7 +46,7 @@ class FlashcardAiService{
 
     // Make the API call
     final response = await http.post(
-      Uri.parse('http://192.168.0.26:8080/message/$id'), //API endpoint
+      Uri.parse('http://$ipAddress:8080/message/$id'), //API endpoint
       body: jsonEncode(requestBody),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -79,10 +84,10 @@ class FlashcardAiService{
     required String threadID,
     required String runID,
   }) async {
-
+    print(ipAddress);
     // Make the API call
     final response = await http.get(
-      Uri.parse('http://192.168.0.26:8080/response/$id?thread_id=$threadID&run_id=$runID'), //API endpoint
+      Uri.parse('http://$ipAddress:8080/response/$id?thread_id=$threadID&run_id=$runID'), //API endpoint
     );
 
     // Check if the response is successful

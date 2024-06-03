@@ -228,6 +228,7 @@ class FlashcardService{
       // Get the reference to the collection
       CollectionReference questionsRef = _firestore.collection('decks');
       String cleanTitle = _flashcardUtils.cleanSpaces(title.toLowerCase().trim());
+      String upperCaseTitle = _flashcardUtils.capitalizeFirstLetterOfWords(cleanTitle);
       // Add the question to the collection
       DocumentReference docRef = await questionsRef.add({
         'created_at': DateTime.now(),
@@ -241,7 +242,7 @@ class FlashcardService{
       String newDeckId = docRef.id;
 
       print('Deck added successfully!');
-      return Deck(cleanTitle, userId, newDeckId, false, false, DateTime.now(), coverPhoto);
+      return Deck(upperCaseTitle, userId, newDeckId, false, false, DateTime.now(), coverPhoto);
     } catch (e) {
       print('Error adding deck: $e');
       return null;

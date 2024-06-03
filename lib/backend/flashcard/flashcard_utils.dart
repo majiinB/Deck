@@ -1,6 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:network_info_plus/network_info_plus.dart';
+
+import '../../pages/misc/widget_method.dart';
 
 class FlashcardUtils{
   static final ValueNotifier<bool> updateSettingsNeeded = ValueNotifier<bool>(false);
@@ -37,5 +40,15 @@ class FlashcardUtils{
   String cleanSpaces(String input) {
     // Use a regular expression to replace multiple consecutive spaces with a single space
     return input.replaceAll(RegExp(r'\s+'), ' ');
+  }
+  Future<String?> getIPAddress() async {
+    final NetworkInfo networkInfo = NetworkInfo();
+    try {
+      String? ipAddress = await networkInfo.getWifiIP();
+      return ipAddress;
+    } catch (e) {
+      print('Failed to get IP address: $e');
+      return null;
+    }
   }
 }

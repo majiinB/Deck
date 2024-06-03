@@ -621,7 +621,6 @@ void showInformationDialog(BuildContext context, String title, String message) {
     },
   );
 }
-
 /// -------------------------- E N D ---------------------------
 /// ---------------------- A C C O U N T -----------------------
 
@@ -1290,7 +1289,7 @@ class CustomExpansionTileState extends State<CustomExpansionTile> {
               ),
               ListTile(
                 title: Text(
-                  'Note: You have the ability to employ both features simultaneously. Moreover, rest assured that AI-generated flashcards content can be edited by the user.',
+                  'Note: You have the ability to employ both features simultaneously. Also, the AI may generate less flashcards than what you have indicated due to lack of information. Moreover, rest assured that AI-generated flashcards content can be edited by the user.',
                   style: GoogleFonts.nunito(
                     color: DeckColors.white,
                     fontSize: 16,

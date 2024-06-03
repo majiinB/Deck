@@ -391,7 +391,8 @@ class _AddDeckPageState extends State<AddDeckPage> {
                           }catch(e){
                             await Future.delayed(const Duration(milliseconds: 300));
                             showInformationDialog(context, "Unknown Error Occurred",
-                                'An unknown error has occure while generating your deck please try again later');
+                                'An unknown error has occurred while generating your deck please try again later');
+                            return;
                           }
 
                           if (flashCardDataList.isEmpty) {
@@ -445,17 +446,10 @@ class _AddDeckPageState extends State<AddDeckPage> {
                                   );
                                 }
 
-                                if(flashCardDataList.length != int.tryParse(_numCardsController.text.trim())){
-                                  await Future.delayed(const Duration(milliseconds: 300));
-                                  showInformationDialog(context, "AI Has Generated Your Cards But...", 'It did not match your required number of decks.\n'
-                                      'This happens if the provided information is not sufficient to generate the required number of cards');
-                                }
-
                                 Navigator.pop(context, newDeck);
-
                                 widget.decks.add(newDeck);
 
-                                Navigator.push(
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => ViewDeckPage(deck: newDeck)),
                                 );

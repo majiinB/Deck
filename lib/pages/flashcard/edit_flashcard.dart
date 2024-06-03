@@ -1,3 +1,4 @@
+import 'package:deck/backend/flashcard/flashcard_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
@@ -154,8 +155,7 @@ class _EditFlashcardPageState extends State<EditFlashcardPage> {
                             print('Error saving changes $e');
                           }
                         },
-                            () {
-                          // Add logic here when user clicks 'No'
+                          () {
                         },
                       );
                     }
