@@ -66,7 +66,8 @@ class _SettingPageState extends State<SettingPage> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 15),
-              child: BuildSettingsContainer(
+              child: !AuthService().getCurrentUser()!.providerData[0].providerId.contains('google.com') ?
+              BuildSettingsContainer(
                 selectedIcon: DeckIcons.lock,
                 nameOfTheContainer: 'Change Password',
                 showArrow: true,
@@ -80,7 +81,7 @@ class _SettingPageState extends State<SettingPage> {
                     RouteGenerator.createRoute(const ChangePasswordPage()),
                   );
                 },
-              ),
+              ) : const SizedBox()
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),

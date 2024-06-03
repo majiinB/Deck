@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/auth/auth_gate.dart';
+import 'package:deck/backend/fcm/fcm_service.dart';
 import 'package:deck/pages/auth/create_account.dart';
 import 'package:deck/pages/auth/login.dart';
 import 'package:deck/pages/misc/colors.dart';
@@ -49,12 +50,15 @@ class SignUpPage extends StatelessWidget {
                         "name": currentUser?.displayName,
                         "user_id": currentUser?.uid,
                         "cover_photo": "",
+                        "fcm_token": await FCMService().getToken(),
                       };
 
                       final db = FirebaseFirestore.instance;
                       final snap = await db.collection("users").where('email',isEqualTo: currentUser?.email).get();
                       if(snap.docs.isEmpty){
                         await db.collection("users").add(user);
+                      } else {
+                        await FCMService().renewToken();
                       }
 
                       Navigator.of(context).push(

@@ -52,7 +52,7 @@ class AccountPageState extends State<AccountPage> {
 
   void getCoverUrl() async {
     coverUrl = await AuthUtils().getCoverPhotoUrl();
-    setState(() {});
+    setState(() { print(coverUrl);});
   }
 
   void _initUserDecks(User? user) async {
@@ -168,10 +168,10 @@ class AccountPageState extends State<AccountPage> {
                         final result = await Navigator.of(context).push(
                           RouteGenerator.createRoute(const EditProfile()),
                         );
-                        if(result) {
+                        if(result != null && result['updated'] == true) {
                           _updateAccountPage();
                          Provider.of<ProfileProvider>(context, listen: false).addListener(_updateAccountPage);
-                         setState(() {});
+                         setState(() { coverUrl = result['file']; });
                         }
                       },
                       buttonText: 'edit profile',
@@ -199,9 +199,9 @@ class AccountPageState extends State<AccountPage> {
                 ),
               ),
               if (_decks.isEmpty)
-                IfDeckEmpty(
-                    ifDeckEmptyText: 'No Deck(s) Available',
-                    ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.4),
+                ifCollectionEmpty(
+                    ifCollectionEmptyText: 'No Deck(s) Available',
+                    ifCollectionEmptyheight: MediaQuery.of(context).size.height * 0.4),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ListView.builder(

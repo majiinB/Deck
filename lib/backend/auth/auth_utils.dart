@@ -67,6 +67,7 @@ class AuthUtils {
       // Update the existing document with the new field
       final snap = await db.collection('users').doc(docId).get();
       if(snap.exists){
+        if(snap.get('cover_photo') == '') return Image.asset('assets/images/Deck-Logo.png');
         return Image.network(snap.get('cover_photo'));
       } else {
         return null;

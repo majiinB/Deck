@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/auth/auth_service.dart';
@@ -66,11 +65,13 @@ class EditProfileState extends State<EditProfile> {
 
     Provider.of<ProfileProvider>(context, listen: false).updateProfile();
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Updated account information!')));
-    Navigator.pop(context,true);
+    Navigator.pop(context, {'updated': true, 'file': coverUrl});
   }
 
   String getNewName() {
-    return "${firstNameController.text} ${lastNameController.text}";
+    String firstName = firstNameController.text.trim();
+    String lastName = lastNameController.text.trim();
+    return "$firstName $lastName";
   }
 
   Future<void> _updateDisplayName(User? user, String newName) async {
@@ -95,28 +96,32 @@ class EditProfileState extends State<EditProfile> {
   }
 
   Future<void> _updateProfilePhoto(User? user, String uniqueFileName) async {
-    if (photoUrl != null && pfpFile != null) {
+    if (photoUrl != null) {
       Reference refRoot = FirebaseStorage.instance.ref();
       Reference refDirPfpImg = refRoot.child('userProfiles/${user?.uid}');
       Reference refPfpUpload = refDirPfpImg.child(uniqueFileName);
 
       bool pfpExists = await ProfileUtils().doesFileExist(refPfpUpload);
-      if (!pfpExists) {
+      if (!pfpExists && pfpFile != null) {
         await refPfpUpload.putFile(File(pfpFile!.path));
         String newPhotoUrl = await refPfpUpload.getDownloadURL();
         await user?.updatePhotoURL(newPhotoUrl);
       }
+    } else {
+      await user!.updatePhotoURL(null);
     }
+    await user?.reload();
+    setState(() {});
   }
 
   Future<void> _updateCoverPhoto(String uniqueFileName, BuildContext context) async {
-    if (coverUrl != null && coverFile != null) {
+    if (coverUrl != null) {
       Reference refRoot = FirebaseStorage.instance.ref();
       Reference refDirCoverImg = refRoot.child('userCovers/${AuthService().getCurrentUser()?.uid}');
       Reference refCoverUpload = refDirCoverImg.child(uniqueFileName);
 
       bool coverExists = await ProfileUtils().doesFileExist(refCoverUpload);
-      if (!coverExists) {
+      if (!coverExists && coverFile != null) {
         await refCoverUpload.putFile(File(coverFile!.path));
         String photoCover = await refCoverUpload.getDownloadURL();
 
@@ -130,7 +135,18 @@ class EditProfileState extends State<EditProfile> {
           await db.collection('users').doc(docId).update({'cover_photo': photoCover});
         }
       }
+    } else {
+      final db = FirebaseFirestore.instance;
+      var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        String docId = doc.id;
+
+        await db.collection('users').doc(docId).update({'cover_photo': ''});
+      }
     }
+    setState(() {});
   }
 
   @override
@@ -187,6 +203,7 @@ class EditProfileState extends State<EditProfile> {
                                       setState(() {
                                         coverUrl = Image.file(File(file!.path));
                                         coverFile = file;
+                                        print(coverUrl);
                                       });
                                     },
                                   ),
@@ -198,9 +215,10 @@ class EditProfileState extends State<EditProfile> {
                                     bottomSheetButtonIcon: Icons.remove_circle,
                                     onPressed: () {
                                       setState(() {
-                                        coverUrl = null;
+                                        coverUrl = Image.asset('assets/images/Deck-Logo.png');
+                                        coverFile = null;
+                                        print(coverUrl);
                                       });
-                                      coverFile = null;
                                     },
                                   ),
                                 ),
@@ -260,8 +278,9 @@ class EditProfileState extends State<EditProfile> {
                                   onPressed: () {
                                     setState(() {
                                       photoUrl = null;
+                                      pfpFile = null;
+                                      print(photoUrl);
                                     });
-                                    pfpFile = null;
                                   },
                                 ),
                               ),
@@ -285,11 +304,13 @@ class EditProfileState extends State<EditProfile> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
-              child: BuildTextBox(
+              child: !AuthService().getCurrentUser()!.providerData[0].providerId.contains('google.com') ?
+                BuildTextBox(
                   showPassword: false,
                   hintText: "Email",
                   controller: emailController,
-              ),
+                ) :
+                const SizedBox()
             ),
             Padding(
               padding: const EdgeInsets.only(top: 40, left: 16, right: 16),

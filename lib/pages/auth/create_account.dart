@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/auth/auth_gate.dart';
 import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/backend/fcm/fcm_service.dart';
 import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
@@ -217,6 +218,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         "name": name,
                         "user_id":  authService.getCurrentUser()?.uid,
                         "cover_photo": "",
+                        "fcm_token": await FCMService().getToken(),
                       };
 
                       final db = FirebaseFirestore.instance;

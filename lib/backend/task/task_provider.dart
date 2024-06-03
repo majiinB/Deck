@@ -68,4 +68,8 @@ class TaskProvider extends ChangeNotifier {
     await loadTasks();
   }
 
+  bool checkIfDeadlineIsToday() {
+    return list.any((element) => DateTime(element.deadline.month, element.deadline.day, 0, 0, 0).isAtSameMomentAs(DateTime(DateTime.now().month, DateTime.now().day, 0, 0, 0))) ? true : false;
+  }
+
 }

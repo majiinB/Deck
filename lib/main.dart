@@ -1,4 +1,6 @@
 import 'package:deck/backend/auth/auth_gate.dart';
+import 'package:deck/backend/fcm/notifications_service.dart';
+import 'package:deck/backend/models/task.dart';
 import 'package:deck/backend/profile/profile_provider.dart';
 import 'package:deck/pages/flashcard/flashcard.dart';
 import 'package:deck/pages/home/home.dart';
@@ -14,12 +16,18 @@ import 'package:deck/pages/misc/colors.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'backend/fcm/fcm_service.dart';
 import 'backend/task/task_provider.dart';
 import 'firebase_options.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main () async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FCMService().initializeNotifications();
+  NotificationService().initLocalNotifications();
+
   runApp(
     MultiProvider(
       providers: [
@@ -32,8 +40,23 @@ void main () async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  _myAppState createState() => _myAppState();
+}
+
+class _myAppState extends State<MyApp> {
+
+  @override
+  void initState(){
+    super.initState();
+    listenNotifications();
+  }
+
+  void listenNotifications() => NotificationService().onNotifications.listen(onClickedNotification);
+  void onClickedNotification(String? payload) {}
 
   // This widget is the root of your application.
   @override
@@ -42,6 +65,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Deck',
       theme: Provider.of<ThemeProvider>(context).themeData,
+      navigatorKey: navigatorKey,
       // theme: ThemeData(
       //   colorScheme: lightColorScheme,
       //   brightness: Brightness.dark,
@@ -61,14 +85,14 @@ class MyApp extends StatelessWidget {
 /// Main Page
 // ignore: must_be_immutable
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  int index = 0;
+  MainPage({super.key, required this.index});
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  int index = 0;
   final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   final screens = const [
@@ -134,7 +158,7 @@ class _MainPageState extends State<MainPage> {
       child: Scaffold(
         extendBody: true,
         appBar: null,
-        body: screens[index],
+        body: screens[widget.index],
         bottomNavigationBar: curvedNavigationBar(),
       ),
     );
@@ -149,9 +173,9 @@ class _MainPageState extends State<MainPage> {
       animationDuration: const Duration(milliseconds: 300),
       animationCurve: Curves.easeInOut,
       height: 80,
-      index: index,
+      index: widget.index,
       items: items,
-      onTap: (index) => setState(() => this.index = index),
+      onTap: (index) => setState(() => widget.index = index),
     );
   }
 }

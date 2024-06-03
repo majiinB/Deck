@@ -173,9 +173,9 @@ class _FlashcardPageState extends State<FlashcardPage> {
                 ),
               ),
             if (_decks.isEmpty)
-              IfDeckEmpty(
-                  ifDeckEmptyText: 'No Deck(s) Available',
-                  ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.7),
+              ifCollectionEmpty(
+                  ifCollectionEmptyText: 'No Deck(s) Available',
+                  ifCollectionEmptyheight: MediaQuery.of(context).size.height * 0.7),
             if (_decks.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),

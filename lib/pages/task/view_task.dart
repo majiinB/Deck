@@ -6,7 +6,8 @@ import 'package:deck/pages/task/edit_task.dart';
 
 class ViewTaskPage extends StatefulWidget {
   final Task task;
-  const ViewTaskPage({super.key, required this.task});
+  final bool isEditable;
+  const ViewTaskPage({super.key, required this.task, required this.isEditable});
 
   @override
   State<ViewTaskPage> createState() => _ViewTaskPageState();
@@ -38,7 +39,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
         title: "Task",
         color: DeckColors.white,
         fontSize: 24,
-        icon: Icons.edit,
+        icon: widget.isEditable ? Icons.edit : null,
         // icon: DeckIcons.pencil,
         iconColor: Colors.white,
         onPressed: () async {
