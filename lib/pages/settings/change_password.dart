@@ -101,17 +101,15 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                                 await user?.reauthenticateWithCredential(credential);
 
                                 if(newPasswordController.text != newConfirmPasswordController.text){
-                                  showDialog(context: context, builder: (context) => const AlertDialog(
-                                    title: Text("Password mismatch!"),
-                                  ));
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords mismatch!')));
                                   return;
                                 } else if(newPasswordController.text == oldPasswordController.text || oldPasswordController.text == newConfirmPasswordController.text){
-                                  showDialog(context: context, builder: (context) => const AlertDialog(
-                                    title: Text("You cannot change your password as your current password!"),
-                                  ));
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You cannot set the same password as your new password!')));
                                   return;
                                 }
                                 AuthService().resetPass(newPasswordController.text);
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Success! Please check your email.')));
+                                Navigator.pop(context);
                               } on FirebaseAuthException catch (e){
                                 String message = '';
                                 if(e.code == 'user-mismatch'){
@@ -130,14 +128,10 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                                   message = 'Error changing your password!';
                                 }
                                 print(e.toString());
-                                showDialog(context: context, builder: (context) => AlertDialog(
-                                  title: Text(message),
-                                ));
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
                               } catch (e) {
                                 print(e.toString());
-                                showDialog(context: context, builder: (context) => AlertDialog(
-                                  title: Text(e.toString()),
-                                ));
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('There seems to be an error!')));
                               }
                             },
                             () {

@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deck/backend/task/task_provider.dart';
-
 import '../auth/auth_service.dart';
 import '../models/task.dart';
 
@@ -11,7 +9,6 @@ class TaskService {
     List<Task> list = [];
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('tasks').where('user_id', isEqualTo: AuthService().getCurrentUser()?.uid).get();
-      print(AuthService().getCurrentUser()?.uid);
       // Iterate through the query snapshot to extract document data
       for (var doc in querySnapshot.docs) {
         String uid = doc.id;
@@ -22,7 +19,8 @@ class TaskService {
         DateTime setDate = doc['set_date'].toDate();
         DateTime endDate = doc['end_date'].toDate();
         bool isDeleted = doc['is_deleted'];
-        list.add(Task(uid, title, description, userId, isDone, setDate, endDate, isDeleted));
+        DateTime doneDate = doc['done_date'].toDate();
+        list.add(Task(uid, title, description, userId, isDone, setDate, endDate, isDeleted, doneDate));
       }
     } catch (e) {
       print(e);
@@ -32,9 +30,7 @@ class TaskService {
 
   Future<void> updateTaskFromLoadedTasks(List<Task> list, Task task) async {
     try {
-      print(task.uid);
       DocumentSnapshot snapshot = await _firestore.collection('tasks').doc(task.uid).get();
-      print(snapshot);
       if (!snapshot.exists) { return; }
       var data = snapshot.data() as Map<String, dynamic>;
       Task loadedTask = Task(
@@ -46,13 +42,12 @@ class TaskService {
         data['set_date'].toDate(),
         data['end_date'].toDate(),
         data['is_deleted'],
+        data['done_date'],
       );
       print(list.length);
         for (int i = 0; i < list.length; i++) {
-          print(list[i].uid);
           if (list[i].uid == task.uid) {
             list[i] = loadedTask;
-            print('Task updated: ${loadedTask.toString()}');
           }
         }
     } catch (e){
@@ -72,9 +67,27 @@ class TaskService {
       taskData['is_done'],
       taskData['set_date'],
       taskData['end_date'],
-      taskData['is_deleted']
+      taskData['is_deleted'],
+      taskData['done_date'],
     );
     list.add(task);
+  }
+
+  Future<Task> getTaskById(String id) async {
+    final db = FirebaseFirestore.instance;
+    DocumentSnapshot snapshot = await db.collection('tasks').doc(id).get();
+    var data = snapshot.data() as Map<String, dynamic>;
+    return Task(
+      id,
+      data['title'],
+      data['description'],
+      data['user_id'],
+      data['is_done'],
+      data['set_date'].toDate(),
+      data['end_date'].toDate(),
+      data['is_deleted'],
+      data['done_date'].toDate(),
+    );
   }
 
 }
