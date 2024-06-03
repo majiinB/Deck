@@ -1,6 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:network_info_plus/network_info_plus.dart';
+
+import '../../pages/misc/widget_method.dart';
 
 class FlashcardUtils{
   static final ValueNotifier<bool> updateSettingsNeeded = ValueNotifier<bool>(false);
@@ -13,5 +16,29 @@ class FlashcardUtils{
       items[i] = items[j];
       items[j] = temp;
     }
+  }
+  String capitalizeFirstLetterOfWords(String input) {
+    if (input.isEmpty) {
+      return input;
+    }
+
+    // Split the input string into words
+    List<String> words = input.split(' ');
+
+    // Capitalize the first letter of each word
+    List<String> capitalizedWords = words.map((word) {
+      if (word.isEmpty) {
+        return word; // Return empty string as is
+      }
+      // Capitalize the first letter and concatenate with the rest of the word
+      return '${word[0].toUpperCase()}${word.substring(1)}';
+    }).toList();
+
+    // Join the capitalized words back into a single string
+    return capitalizedWords.join(' ');
+  }
+  String cleanSpaces(String input) {
+    // Use a regular expression to replace multiple consecutive spaces with a single space
+    return input.replaceAll(RegExp(r'\s+'), ' ');
   }
 }
