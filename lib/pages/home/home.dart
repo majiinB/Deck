@@ -167,12 +167,7 @@ class _HomePageState extends State<HomePage> {
                                     .split(" ")[0],
                                 onPressed: () {
                                   print('YOU TOUCHED THE TASK!');
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (
-                                        context) => /*ViewDeckPage*/ ViewTaskPage(
-                                      task: _tasks[index],)),
-                                  );
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTaskPage(task: _tasks[index], isEditable: false)),);
                                 },
                               ),);
                           });

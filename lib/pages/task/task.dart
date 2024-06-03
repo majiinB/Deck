@@ -242,7 +242,7 @@ class _TaskPageState extends State<TaskPage> {
                                 enableRetrieve: false,
                                 onTap: () {
                                   print("Clicked task tile!");
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTaskPage(task: tasks[index])),);
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTaskPage(task: tasks[index], isEditable: true,)),);
                                 },
                               ),
                             );
@@ -289,7 +289,7 @@ class _TaskPageState extends State<TaskPage> {
                                 enableRetrieve: false,
                                 onTap: () {
                                   print("Clicked task tile!");
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTaskPage(task: tasks[index])),);
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTaskPage(task: tasks[index], isEditable: true,)),);
                                 },
                               ),
                             );
