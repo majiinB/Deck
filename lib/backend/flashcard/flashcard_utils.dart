@@ -41,14 +41,4 @@ class FlashcardUtils{
     // Use a regular expression to replace multiple consecutive spaces with a single space
     return input.replaceAll(RegExp(r'\s+'), ' ');
   }
-  Future<String?> getIPAddress() async {
-    final NetworkInfo networkInfo = NetworkInfo();
-    try {
-      String? ipAddress = await networkInfo.getWifiIP();
-      return ipAddress;
-    } catch (e) {
-      print('Failed to get IP address: $e');
-      return null;
-    }
-  }
 }
