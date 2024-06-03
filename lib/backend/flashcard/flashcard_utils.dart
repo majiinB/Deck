@@ -1,9 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:network_info_plus/network_info_plus.dart';
-
-import '../../pages/misc/widget_method.dart';
 
 class FlashcardUtils{
   static final ValueNotifier<bool> updateSettingsNeeded = ValueNotifier<bool>(false);
