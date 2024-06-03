@@ -69,7 +69,9 @@ class EditProfileState extends State<EditProfile> {
   }
 
   String getNewName() {
-    return "${firstNameController.text} ${lastNameController.text}";
+    String firstName = firstNameController.text.trim();
+    String lastName = lastNameController.text.trim();
+    return "$firstName $lastName";
   }
 
   Future<void> _updateDisplayName(User? user, String newName) async {

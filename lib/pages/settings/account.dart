@@ -168,7 +168,7 @@ class AccountPageState extends State<AccountPage> {
                         final result = await Navigator.of(context).push(
                           RouteGenerator.createRoute(const EditProfile()),
                         );
-                        if(result['updated']) {
+                        if(result != null && result['updated'] == true) {
                           _updateAccountPage();
                          Provider.of<ProfileProvider>(context, listen: false).addListener(_updateAccountPage);
                          setState(() { coverUrl = result['file']; });
