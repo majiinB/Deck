@@ -52,7 +52,7 @@ class AccountPageState extends State<AccountPage> {
 
   void getCoverUrl() async {
     coverUrl = await AuthUtils().getCoverPhotoUrl();
-    setState(() {});
+    setState(() { print(coverUrl);});
   }
 
   void _initUserDecks(User? user) async {
@@ -168,10 +168,10 @@ class AccountPageState extends State<AccountPage> {
                         final result = await Navigator.of(context).push(
                           RouteGenerator.createRoute(const EditProfile()),
                         );
-                        if(result) {
+                        if(result['updated']) {
                           _updateAccountPage();
                          Provider.of<ProfileProvider>(context, listen: false).addListener(_updateAccountPage);
-                         setState(() {});
+                         setState(() { coverUrl = result['file']; });
                         }
                       },
                       buttonText: 'edit profile',
