@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:msh_checkbox/msh_checkbox.dart';
+import 'package:provider/provider.dart';
+
+import '../theme/theme_provider.dart';
 
 ///updated methods as of 05/11/24 1:34AM
 ///
@@ -672,14 +675,14 @@ class BuildSettingsContainerState extends State<BuildSettingsContainer> {
   @override
   void initState() {
     super.initState();
-    _isToggled = false;
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    _isToggled = themeProvider.isDarkMode;
   }
-
   @override
   Widget build(BuildContext context) {
     return Material(
       borderRadius: BorderRadius.circular(15.0),
-      color: widget.containerColor,
+      color: _isToggled ? widget.toggledColor : widget.containerColor,
       child: InkWell(
         borderRadius: BorderRadius.circular(15.0),
         onTap: () {
@@ -699,21 +702,20 @@ class BuildSettingsContainerState extends State<BuildSettingsContainer> {
               Row(
                 children: [
                   Icon(
-                    _isToggled ? widget.alternateIcon! : widget.selectedIcon,
-                    color:
-                        _isToggled ? widget.toggledColor : widget.selectedColor,
+                    _isToggled ? (widget.alternateIcon ?? widget.selectedIcon) : widget.selectedIcon,
+                    color: _isToggled ? DeckColors.primaryColor : widget.selectedColor,
                     size: 30,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 16.0),
                     child: Text(
                       _isToggled
-                          ? widget.alternateText!
+                          ? (widget.alternateText ?? widget.nameOfTheContainer)
                           : widget.nameOfTheContainer,
                       style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
-                        color: _isToggled ? widget.textColor : widget.textColor,
+                        color: _isToggled ? (widget.textColor ?? widget.textColor) : widget.textColor,
                       ),
                     ),
                   ),
@@ -727,7 +729,7 @@ class BuildSettingsContainerState extends State<BuildSettingsContainer> {
                       _isToggled = value;
                     });
                     if (widget.onToggleChanged != null) {
-                      widget.onToggleChanged!(value); // Call the callback
+                      widget.onToggleChanged!(value);
                     }
                   },
                   activeColor: DeckColors.primaryColor,

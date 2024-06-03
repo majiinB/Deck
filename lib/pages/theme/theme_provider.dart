@@ -1,5 +1,7 @@
-import 'package:deck/pages/theme/theme.dart';
 import 'package:flutter/material.dart';
+
+final ThemeData darkMode = ThemeData.dark();
+final ThemeData lightMode = ThemeData.light();
 
 class ThemeProvider with ChangeNotifier {
   ThemeData _themeData = darkMode;
@@ -10,6 +12,8 @@ class ThemeProvider with ChangeNotifier {
     _themeData = themeData;
     notifyListeners();
   }
+
+  bool get isDarkMode => _themeData == darkMode;
 
   void toggleTheme() {
     if (_themeData == darkMode) {
