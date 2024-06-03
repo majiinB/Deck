@@ -3,7 +3,7 @@ class Task {
   final String _title;
   final String _description;
   final String _userId;
-  bool isDone;
+  bool isDone = false;
   final DateTime _createdAt, _deadline;
   bool isDeleted;
   final DateTime _doneDate;

@@ -19,6 +19,7 @@ class NotificationService {
           'name',
           channelDescription: 'desc',
           importance: Importance.max,
+          icon: '@mipmap/launcher_icon',
       ),
     );
   }
