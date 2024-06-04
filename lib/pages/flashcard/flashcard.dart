@@ -175,7 +175,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
             if (_decks.isEmpty)
               ifCollectionEmpty(
                   ifCollectionEmptyText: 'No Deck(s) Available',
-                  ifCollectionEmptyheight: MediaQuery.of(context).size.height * 0.7),
+                  ifCollectionEmptyheight: MediaQuery.of(context).size.height*0.7),
             if (_decks.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
@@ -264,6 +264,11 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   },
                 ),
               ),
+            if(_decks.isNotEmpty && _filteredDecks.isEmpty)ifCollectionEmpty(
+              ifCollectionEmptyText: 'No Results Found',
+              ifCollectionEmptySubText: 'Try adjusting your search to \nfind what your looking for.',
+              ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.4,
+            ),
           ],
         ),
       ),
