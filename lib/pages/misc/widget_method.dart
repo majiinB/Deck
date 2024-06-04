@@ -1194,8 +1194,8 @@ class ifCollectionEmpty extends StatelessWidget {
                     ),
                   )
               ),
-              SizedBox(
-                  height: 15
+              const SizedBox(
+                  height: 5
               ),
               Text(
                 ifCollectionEmptyText,
@@ -1206,7 +1206,7 @@ class ifCollectionEmpty extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(
+              const SizedBox(
                   height: 5
               ),
               Text(
