@@ -95,7 +95,7 @@ class _TaskPageState extends State<TaskPage> {
         child: CustomScrollView(
           slivers: <Widget>[
             DeckSliverHeader(
-              backgroundColor: DeckColors.backgroundColor,
+              backgroundColor: Colors.pinkAccent ,
               headerTitle: showAllTask? "All Task" : DateFormat('EEEE, MMMM dd').format(selectedDay),
               textStyle: const TextStyle(
                 color: DeckColors.primaryColor,
@@ -246,17 +246,15 @@ class _TaskPageState extends State<TaskPage> {
                                 },
                               ),
                             );
-                          } else {
-                            return const SizedBox(
-                                height: 0); // Placeholder for empty space
                           }
                         },
                       )
                     else
                       ifCollectionEmpty(
-                      ifCollectionEmptyText: 'No Task for Today.',
+                      ifCollectionEmptyText: 'No new task',
+                      ifCollectionEmptySubText: 'To create another Task, \nsimply Click the "+" button  ',
                       ifCollectionEmptyheight:
-                      MediaQuery.of(context).size.height * 0.2,
+                      MediaQuery.of(context).size.height * 0.1,
                     ),
 
                     // Done Tab
@@ -301,9 +299,9 @@ class _TaskPageState extends State<TaskPage> {
                       )
                     else
                       ifCollectionEmpty(
-                      ifCollectionEmptyText: 'No Task for Today.',
+                      ifCollectionEmptyText: 'No new task',
                       ifCollectionEmptyheight:
-                      MediaQuery.of(context).size.height * 0.2,
+                      MediaQuery.of(context).size.height * 0.1,
                     )
                   ],
                 ),

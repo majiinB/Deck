@@ -1169,16 +1169,18 @@ class ifCollectionEmpty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child:
-      // Container(
-      //     height: MediaQuery.of(context).size.width,
-      //     width: MediaQuery.of(context).size.width - 100, // dunno what size
-      //     decoration: BoxDecoration(
-      //       shape: BoxShape.circle,
-      //       color: Colors.pinkAccent
-      //     ),
-      //     child:
+    return Container(
+      height: ifCollectionEmptyheight,
+      child: Center(
+          child:
+          // Container(
+          //     height: MediaQuery.of(context).size.width,
+          //     width: MediaQuery.of(context).size.width - 100, // dunno what size
+          //     decoration: BoxDecoration(
+          //       shape: BoxShape.circle,
+          //       color: Colors.pinkAccent
+          //     ),
+          //     child:
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -1189,13 +1191,13 @@ class ifCollectionEmpty extends StatelessWidget {
                     aspectRatio: 1,
                     child:
                     Image.asset(
-                      'assets/images/HDR-Branding.png',
-                      // 'assets/images/Deck-Branding7.png',
+                      // 'assets/images/HDR-Branding.png',
+                      'assets/images/Deck-Branding7.png',
                     ),
                   )
               ),
-              SizedBox(
-                  height: 15
+              const SizedBox(
+                  height: 5
               ),
               Text(
                 ifCollectionEmptyText,
@@ -1206,7 +1208,7 @@ class ifCollectionEmpty extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(
+              const SizedBox(
                   height: 5
               ),
               Text(
@@ -1222,6 +1224,7 @@ class ifCollectionEmpty extends StatelessWidget {
             ],
           )
         // )
+      ),
     );
   }
 }
@@ -1324,7 +1327,7 @@ class CustomExpansionTileState extends State<CustomExpansionTile> {
               ),
               ListTile(
                 title: Text(
-                  'Note: You have the ability to employ both features simultaneously. Moreover, rest assured that AI-generated flashcards content can be edited by the user.',
+                  'Note: You have the ability to employ both features simultaneously. Also, the AI may generate less flashcards than what you have indicated due to lack of information. Moreover, rest assured that AI-generated flashcards content can be edited by the user.',
                   style: GoogleFonts.nunito(
                     color: DeckColors.white,
                     fontSize: 16,
@@ -1791,6 +1794,7 @@ class DeckDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
+      color: backgroundColor,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1877,8 +1881,7 @@ class HomeTaskTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-
-                    width: 150,
+                    width: 100,
                     child: Text(
                       taskName,
                       maxLines: 1,
@@ -2086,51 +2089,71 @@ class DeckTaskTileState extends State<DeckTaskTile> {
           _containerColor = Colors.pinkAccent;
         });
       },
-      child: SwipeToDeleteAndRetrieve(
-        onRetrieve: widget.enableRetrieve ? widget.onRetrieve : null,
-        enableRetrieve: widget.enableRetrieve,
-        onDelete: widget.onDelete,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15.0),
-            color: _containerColor,
-          ),
-          child: Row(
-            children: [
-              Checkbox(
-                value: widget.isChecked,
-                onChanged: widget.onChanged,
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: DeckColors.white,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0),
-                        child: Text(
-                          widget.deadline,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: DeckColors.white,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: SwipeToDeleteAndRetrieve(
+          onRetrieve: widget.enableRetrieve ? widget.onRetrieve : null,
+          enableRetrieve: widget.enableRetrieve,
+          onDelete: widget.onDelete,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              color: _containerColor,
+            ),
+            child: Row(
+              children: [
+                Checkbox(
+                    activeColor: Colors.transparent,
+                    checkColor: DeckColors.primaryColor,
+                    value: widget.isChecked,
+                    onChanged: widget.onChanged,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                    side: BorderSide(
+                      color: DeckColors.white,
+                      width: 3.0,
+                    )
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          child: Text(
+                            widget.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: DeckColors.white,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          width: 100,
+                          child: Text(
+                            widget.deadline,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: DeckColors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -2141,3 +2164,6 @@ class DeckTaskTileState extends State<DeckTaskTile> {
 
 /// ------------------------- E N D ----------------------------
 /// ------------ D E C K  T A S K T I L E ----------------------
+
+
+

@@ -40,19 +40,12 @@ class _FlashcardPageState extends State<FlashcardPage> {
     _searchController.addListener(_onSearchChanged);
   }
 
-  @override
-  void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    FlashcardUtils.updateSettingsNeeded.removeListener(_updateLatestReview);
-    _searchController.dispose();
-    super.dispose();
-  }
-
   void _initUserDecks(User? user) async {
     if (user != null) {
       String userId = user.uid;
       List<Deck> decks = await _flashcardService.getDecksByUserId(userId); // Call method to fetch decks
       Deck? latest = await _flashcardService.getLatestDeckLog(userId);
+      if (!mounted) return;
       setState(() {
         _decks = decks; // Update state with fetched decks
         _filteredDecks = decks; // Initialize filtered decks
@@ -70,12 +63,15 @@ class _FlashcardPageState extends State<FlashcardPage> {
           .toList();
     });
   }
-  void _updateLatestReview() async{
+
+  void _updateLatestReview() async {
     if (FlashcardUtils.updateLatestReview.value) {
       Deck? latest = await _flashcardService.getLatestDeckLog(_user!.uid);
+      if (!mounted) return;
       setState(() {
-        _initUserDecks(_user);
+        _latestDeck = latest;
       });
+      _initUserDecks(_user); // This already has its own setState
       FlashcardUtils.updateLatestReview.value = false; // Reset the notifier
     }
   }
@@ -91,16 +87,16 @@ class _FlashcardPageState extends State<FlashcardPage> {
           icon: Icons.add,
           foregroundColor: DeckColors.primaryColor,
           backgroundColor: DeckColors.gray,
-          onPressed: () async{
-            if(_user != null){
-              try{
+          onPressed: () async {
+            if (_user != null) {
+              try {
                 String userId = _user!.uid.toString();
                 await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddDeckPage(decks: _decks, userId: userId)),
                 );
                 _onSearchChanged();
-              }catch(e){
+              } catch (e) {
                 print('error in navigating add deck $e');
               }
             }
@@ -179,7 +175,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
             if (_decks.isEmpty)
               ifCollectionEmpty(
                   ifCollectionEmptyText: 'No Deck(s) Available',
-                  ifCollectionEmptyheight: MediaQuery.of(context).size.height * 0.7),
+                  ifCollectionEmptyheight: MediaQuery.of(context).size.height*0.7),
             if (_decks.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
@@ -217,7 +213,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                         deckCoverPhotoUrl: _filteredDecks[index].coverPhoto,
                         titleOfDeck: _filteredDecks[index].title,
                         onDelete: () {
-                          Deck removedDeck =  _filteredDecks[index];
+                          Deck removedDeck = _filteredDecks[index];
                           final String deletedTitle = removedDeck.title.toString();
                           setState(() {
                             _filteredDecks.removeAt(index);
@@ -227,26 +223,26 @@ class _FlashcardPageState extends State<FlashcardPage> {
                             context,
                             "Delete Item",
                             "Are you sure you want to delete '$deletedTitle'?",
-                            () async{
-                              try{
-                                if(await removedDeck.updateDeleteStatus(true)){
-                                    if(_latestDeck != null){
-                                      if(_latestDeck?.deckId == removedDeck.deckId){
-                                        Deck? latest = await _flashcardService.getLatestDeckLog(_user!.uid);
-                                        setState(() {
-                                          _latestDeck = latest;
-                                        });
+                                () async {
+                                  try {
+                                    if (await removedDeck.updateDeleteStatus(true)) {
+                                      if (_latestDeck != null) {
+                                        if (_latestDeck?.deckId == removedDeck.deckId) {
+                                          Deck? latest = await _flashcardService.getLatestDeckLog(_user!.uid);
+                                          setState(() {
+                                            _latestDeck = latest;
+                                          });
+                                        }
                                       }
                                     }
+                                  } catch (e) {
+                                    print('Flash Card Page Deletion Error: $e');
+                                    setState(() {
+                                      _decks.insert(index, removedDeck);
+                                    });
                                   }
-                              }catch(e){
-                                print('Flash Card Page Deletion Error: $e');
-                                setState(() {
-                                  _decks.insert(index, removedDeck);
-                                });
-                              }
-                            },
-                            () {
+                                },
+                                () {
                               setState(() {
                                 _decks.insert(index, removedDeck);
                               });
@@ -268,9 +264,21 @@ class _FlashcardPageState extends State<FlashcardPage> {
                   },
                 ),
               ),
+            if(_decks.isNotEmpty && _filteredDecks.isEmpty)ifCollectionEmpty(
+              ifCollectionEmptyText: 'No Results Found',
+              ifCollectionEmptySubText: 'Try adjusting your search to \nfind what your looking for.',
+              ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.4,
+            ),
           ],
         ),
       ),
     );
+  }
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    FlashcardUtils.updateLatestReview.removeListener(_updateLatestReview);
+    _searchController.dispose();
+    super.dispose();
   }
 }
