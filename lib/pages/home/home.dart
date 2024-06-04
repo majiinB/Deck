@@ -114,11 +114,11 @@ class _HomePageState extends State<HomePage> {
             if (taskToday.isEmpty && _decks.isEmpty) SliverToBoxAdapter(
                 child: ifCollectionEmpty(ifCollectionEmptyText: "Start Creating Your\nTask and Flashcards!",
                     ifCollectionEmptySubText: "No content is currently\navailable",
-                    ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 1)
+                    ifCollectionEmptyheight: MediaQuery.of(context).size.height*0.7)
             )
             else if (taskToday.isEmpty && _decks.isNotEmpty ) SliverToBoxAdapter(
                 child: ifCollectionEmpty(ifCollectionEmptyText: "No Task(s) Available",
-                    ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.3)
+                    ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.5)
             )
             else if(taskToday.isNotEmpty) SliverList(
               delegate: SliverChildBuilderDelegate(
@@ -165,7 +165,7 @@ class _HomePageState extends State<HomePage> {
 
             if (_decks.isEmpty  && taskToday.isNotEmpty ) SliverToBoxAdapter(
               child: ifCollectionEmpty(ifCollectionEmptyText: "No Deck(s) Available",
-                  ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.3)
+                  ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.5)
             )
             else if(_decks.isNotEmpty) SliverGrid(
                 delegate: SliverChildBuilderDelegate(

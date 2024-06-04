@@ -246,21 +246,18 @@ class _TaskPageState extends State<TaskPage> {
                                 },
                               ),
                             );
-                          } else {
-                            return const SizedBox(
-                                height: 0); // Placeholder for empty space
                           }
                         },
                       )
                     else
                       ifCollectionEmpty(
-                      ifCollectionEmptyText: 'No have no Task(s).',
+                      ifCollectionEmptyText: 'No Task(s) for Today.',
                       ifCollectionEmptyheight:
-                      MediaQuery.of(context).size.height * 0.2,
+                      MediaQuery.of(context).size.height * 0.1,
                     ),
 
                     // Done Tab
-                    if (isThereTaskForDay(today,true) || showAllTask)
+                    if (isThereTaskForDay(today,false) || showAllTask)
                       ListView.builder(
                         shrinkWrap:
                         true, // Allow the ListView to wrap its content
@@ -301,9 +298,9 @@ class _TaskPageState extends State<TaskPage> {
                       )
                     else
                       ifCollectionEmpty(
-                      ifCollectionEmptyText: 'No Task for Today.',
+                      ifCollectionEmptyText: 'No Task(s) for Today.',
                       ifCollectionEmptyheight:
-                      MediaQuery.of(context).size.height * 0.2,
+                      MediaQuery.of(context).size.height * 0.1,
                     )
                   ],
                 ),
