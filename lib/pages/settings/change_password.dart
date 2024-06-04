@@ -108,7 +108,7 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                                   return;
                                 }
                                 AuthService().resetPass(newPasswordController.text);
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Success! Please check your email.')));
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Success!')));
                                 Navigator.pop(context);
                               } on FirebaseAuthException catch (e){
                                 String message = '';
