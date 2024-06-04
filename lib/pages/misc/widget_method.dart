@@ -1790,6 +1790,7 @@ class DeckDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
+      color: backgroundColor,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1876,8 +1877,7 @@ class HomeTaskTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-
-                    width: 150,
+                    width: 100,
                     child: Text(
                       taskName,
                       maxLines: 1,
@@ -2107,20 +2107,28 @@ class DeckTaskTileState extends State<DeckTaskTile> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        widget.title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: DeckColors.white,
+                      SizedBox(
+                        width: 150,
+                        child: Text(
+                          widget.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: DeckColors.white,
+                          ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0),
+                      SizedBox(
+                        width: 150,
                         child: Text(
                           widget.deadline,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
                             color: DeckColors.white,
                           ),
                         ),

@@ -95,7 +95,7 @@ class _TaskPageState extends State<TaskPage> {
         child: CustomScrollView(
           slivers: <Widget>[
             DeckSliverHeader(
-              backgroundColor: DeckColors.backgroundColor,
+              backgroundColor: Colors.pinkAccent ,
               headerTitle: showAllTask? "All Task" : DateFormat('EEEE, MMMM dd').format(selectedDay),
               textStyle: const TextStyle(
                 color: DeckColors.primaryColor,
@@ -254,7 +254,7 @@ class _TaskPageState extends State<TaskPage> {
                       )
                     else
                       ifCollectionEmpty(
-                      ifCollectionEmptyText: 'No Task for Today.',
+                      ifCollectionEmptyText: 'No have no Task(s).',
                       ifCollectionEmptyheight:
                       MediaQuery.of(context).size.height * 0.2,
                     ),
