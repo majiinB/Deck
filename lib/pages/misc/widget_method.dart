@@ -1197,7 +1197,7 @@ class ifCollectionEmpty extends StatelessWidget {
                   )
               ),
               SizedBox(
-                  height: 15
+                  height: 5
               ),
               Text(
                 ifCollectionEmptyText,

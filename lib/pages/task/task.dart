@@ -251,7 +251,8 @@ class _TaskPageState extends State<TaskPage> {
                       )
                     else
                       ifCollectionEmpty(
-                      ifCollectionEmptyText: 'No Task(s) for Today.',
+                      ifCollectionEmptyText: 'No new task',
+                      ifCollectionEmptySubText: 'To create another Task, \nsimply Click the "+" button  ',
                       ifCollectionEmptyheight:
                       MediaQuery.of(context).size.height * 0.1,
                     ),
@@ -298,7 +299,7 @@ class _TaskPageState extends State<TaskPage> {
                       )
                     else
                       ifCollectionEmpty(
-                      ifCollectionEmptyText: 'No Task(s) for Today.',
+                      ifCollectionEmptyText: 'No new task',
                       ifCollectionEmptyheight:
                       MediaQuery.of(context).size.height * 0.1,
                     )
