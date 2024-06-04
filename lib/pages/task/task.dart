@@ -66,7 +66,7 @@ class _TaskPageState extends State<TaskPage> {
     }
 
     List<Task> _eventLoader(DateTime day) {
-      return tasks.where((task) => isSameDay(task.deadline, day)).toList();
+      return tasks.where((task) => !task.isDone && isSameDay(task.deadline, day)).toList();
     }
 
     return Scaffold(
@@ -260,7 +260,7 @@ class _TaskPageState extends State<TaskPage> {
                     ),
 
                     // Done Tab
-                    if (isThereTaskForDay(today,true) || showAllTask)
+                    if (isThereTaskForDay(today,false) || showAllTask)
                       ListView.builder(
                         shrinkWrap:
                         true, // Allow the ListView to wrap its content
