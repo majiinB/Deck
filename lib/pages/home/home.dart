@@ -34,39 +34,6 @@ class _HomePageState extends State<HomePage> {
   //Initial values for testing
   String greeting = "";
 
-
-  // List upcomingTask = [
-  //   //title, deadline, ischecked
-  //  [ 'taskTitle1',DateTime(2024, 5, 14), true],
-  //   ['taskTitle2',DateTime(2024, 5, 14),false],
-  // ['taskTitle3',DateTime(2024, 5, 15),false]
-  // ];
-
-  // List<String> taskTitles = [
-  //   'taskTitle1','taskTitle2','taskTitle3',
-  //   'a long taskTitle4','a very very very long taskTitle5',
-  //   'taskTitle6','taskTitle7','taskTitle8',
-  //   'a long taskTitl9','a very very very long taskTitle10',
-  // ];
-  // List<DateTime> taskDeadlines = [
-  //   DateTime(2024, 5, 14), // May 14, 2024
-  //   DateTime(2024, 5, 14), // May 14, 2024
-  //   DateTime(2024, 5, 15), // May 14, 2024
-  //   DateTime(2024, 5, 14), // May 14, 2024
-  //   DateTime(2024, 5, 15), // May 12, 2024
-  //   DateTime(2024, 5, 14), // May 14, 2024
-  //   DateTime(2024, 5, 14), // May 14, 2024
-  //   DateTime(2024, 5, 15), // May 14, 2024
-  //   DateTime(2024, 5, 14), // May 14, 2024
-  //   DateTime(2024, 5, 15), // May 12, 2024
-  // ];
-  // List<bool> isDone = [
-  //   false, false,false,
-  //   false,false,
-  //   false, false,false,
-  //   false,false
-  // ];
-
   DateTime today = DateTime.now();
   DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
   DateTime selectedDay = DateTime.now();
@@ -105,6 +72,8 @@ class _HomePageState extends State<HomePage> {
     await Provider.of<TaskProvider>(context, listen:false).loadTasks();
   }
 
+
+
   void _initGreeting() {
     _user?.reload();
     String? firstName = _user?.displayName?.split(" ").first ?? 'User';
@@ -113,10 +82,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<TaskProvider>(context);
     final _tasks = provider.getList;
+     List<Task> taskToday = _tasks.where((task) => isSameDay(task.deadline, selectedDay) && !task.isDone).toList();
 
     return Scaffold(
         body:SafeArea(
@@ -139,16 +111,16 @@ class _HomePageState extends State<HomePage> {
                 min: 100,
                 hasIcon: false,
               ),
-            if (_tasks.isEmpty && _decks.isEmpty) SliverToBoxAdapter(
+            if (taskToday.isEmpty && _decks.isEmpty) SliverToBoxAdapter(
                 child: ifCollectionEmpty(ifCollectionEmptyText: "Start Creating Your\nTask and Flashcards!",
                     ifCollectionEmptySubText: "No content is currently\navailable",
                     ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 1)
             )
-            else if (_tasks.isEmpty && _decks.isNotEmpty ) SliverToBoxAdapter(
+            else if (taskToday.isEmpty && _decks.isNotEmpty ) SliverToBoxAdapter(
                 child: ifCollectionEmpty(ifCollectionEmptyText: "No Task(s) Available",
                     ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.3)
             )
-            else if(_tasks.isNotEmpty) SliverList(
+            else if(taskToday.isNotEmpty) SliverList(
               delegate: SliverChildBuilderDelegate(
                   childCount: _tasks.length,
                       (context, index) {
@@ -177,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                   }),
             ) ,
 
-            if((_tasks.isNotEmpty || _decks.isNotEmpty)) const DeckSliverHeader(
+            if((taskToday.isNotEmpty || _decks.isNotEmpty)) const DeckSliverHeader(
               backgroundColor:  Colors.transparent,
               headerTitle: "Recently Added",
               textStyle: TextStyle(  color: DeckColors.white,
@@ -191,7 +163,7 @@ class _HomePageState extends State<HomePage> {
                 hasIcon: false,
             ),
 
-            if (_decks.isEmpty  && _tasks.isNotEmpty ) SliverToBoxAdapter(
+            if (_decks.isEmpty  && taskToday.isNotEmpty ) SliverToBoxAdapter(
               child: ifCollectionEmpty(ifCollectionEmptyText: "No Deck(s) Available",
                   ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.3)
             )
@@ -210,7 +182,7 @@ class _HomePageState extends State<HomePage> {
                             print('U TOUCHED MI DECK!');
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => ViewDeckPage(deck: _decks[index])), /// WALA PALA SAKEN MGA PAGES NI GAB HEHE
+                              MaterialPageRoute(builder: (context) => ViewDeckPage(deck: _decks[index])),
                             );
                           },
                         );
