@@ -213,7 +213,7 @@ class _TaskPageState extends State<TaskPage> {
                   length: 2,
                   tabContent: [
                     // To Do Tab
-                    if (isThereTaskForDay(today,true))
+                    if (isThereTaskForDay(today,true) || showAllTask)
                       ListView.builder(
                         shrinkWrap:
                         true, // Allow the ListView to wrap its content
@@ -260,7 +260,7 @@ class _TaskPageState extends State<TaskPage> {
                     ),
 
                     // Done Tab
-                    if (isThereTaskForDay(today,true))
+                    if (isThereTaskForDay(today,true) || showAllTask)
                       ListView.builder(
                         shrinkWrap:
                         true, // Allow the ListView to wrap its content
