@@ -66,7 +66,7 @@ class _TaskPageState extends State<TaskPage> {
     }
 
     List<Task> _eventLoader(DateTime day) {
-      return tasks.where((task) => isSameDay(task.deadline, day)).toList();
+      return tasks.where((task) => !task.isDone && isSameDay(task.deadline, day)).toList();
     }
 
     return Scaffold(
@@ -246,6 +246,8 @@ class _TaskPageState extends State<TaskPage> {
                                 },
                               ),
                             );
+                          } else {
+                            return const SizedBox(height: 0); // do not remove. tasks will not show up.
                           }
                         },
                       )

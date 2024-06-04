@@ -6,7 +6,7 @@ import 'package:deck/backend/models/cardAi.dart';
 import 'package:http/http.dart' as http;
 
 class FlashcardAiService{
-  String ipAddress = "192.168.0.102";
+  String ipAddress = "192.168.0.26";
 
   Future<String> testFunction() async {
     final res = await http.get(
