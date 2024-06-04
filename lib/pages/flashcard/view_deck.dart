@@ -231,13 +231,16 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                     ///
                     ///
                     /// ------------------------- START OF TAB 'ALL' CONTENT ----------------------------
-                    if (_filteredCardsCollection.isEmpty)
-                      ifCollectionEmpty(
+
+                    if (_cardsCollection.isEmpty) ifCollectionEmpty(
                         ifCollectionEmptyText: 'No Flashcard(s) Available',
                         ifCollectionEmptyheight: MediaQuery.of(context).size.height * 0.3,
                       )
-                    else
-                      Padding(
+                    else if(_cardsCollection.isNotEmpty && _filteredCardsCollection.isEmpty) ifCollectionEmpty(
+                        ifCollectionEmptyText: 'No Results Found',
+                        ifCollectionEmptySubText: 'Try adjusting your search to \nfind what your looking for.',
+                        ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.4,
+                      )else Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: SingleChildScrollView(
                           child: Padding(
@@ -341,10 +344,16 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                     ///
                     ///
                     /// ------------------------- START OF TAB 'STARRED' CONTENT ----------------------------
-                    if (_filteredStarredCardCollection.isEmpty)
+                    if (_starredCardCollection.isEmpty)
                       ifCollectionEmpty(
                         ifCollectionEmptyText: 'No Starred Flashcard(s) Available',
                         ifCollectionEmptyheight: MediaQuery.of(context).size.height * 0.3,
+                      )
+                    else if(_starredCardCollection.isNotEmpty && _filteredStarredCardCollection.isEmpty)
+                      ifCollectionEmpty(
+                        ifCollectionEmptyText: 'No Results Found',
+                        ifCollectionEmptySubText: 'Try adjusting your search to \nfind what your looking for.',
+                        ifCollectionEmptyheight:  MediaQuery.of(context).size.height * 0.4,
                       )
                     else
                       Padding(
@@ -365,7 +374,6 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                                     onDelete: () {
                                       Cards removedCard = _filteredStarredCardCollection[index];
                                       final String starredDeletedTitle = removedCard.question;
-
                                       setState(() {
                                         _cardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
                                         _filteredCardsCollection.removeWhere((card) => card.cardId == removedCard.cardId);
@@ -434,6 +442,7 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
                             ),
                           ),
                         ),
+                      ),
                       ),
                   ],
                 ),

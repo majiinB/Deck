@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 
 import '../../backend/profile/profile_provider.dart';
 import '../../backend/profile/profile_utils.dart';
+import '../auth/signup.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -55,16 +56,30 @@ class EditProfileState extends State<EditProfile> {
       return;
     }
 
-    await _updateDisplayName(user, newName);
-    bool isEmailValid = await _updateEmail(user);
-    if(!isEmailValid) {
-      return;
+    if(newName != '${firstNameController.text} ${lastNameController.text}') await _updateDisplayName(user, newName);
+    if(user?.email != emailController.text) {
+      bool isEmailValid = await _updateEmail(user);
+      if (!isEmailValid) {
+        return;
+      }
     }
-    await _updateProfilePhoto(user, uniqueFileName);
-    await _updateCoverPhoto(uniqueFileName, context);
+    if(pfpFile != null) await _updateProfilePhoto(user, uniqueFileName);
+    if(coverFile != null) await _updateCoverPhoto(uniqueFileName, context);
 
     Provider.of<ProfileProvider>(context, listen: false).updateProfile();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Updated account information!')));
+    String message = 'Updated user information!';
+    if(user?.email != emailController.text) {
+      message = "Updated user information! Please check your new email in order to change.";
+    }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    if(user?.email != emailController.text) {
+      AuthService().signOut();
+      Navigator.of(context).pushAndRemoveUntil(
+        RouteGenerator.createRoute(const SignUpPage()),
+            (Route<dynamic> route) => false,
+      );
+      return;
+    }
     Navigator.pop(context, {'updated': true, 'file': coverUrl});
   }
 
@@ -82,14 +97,21 @@ class EditProfileState extends State<EditProfile> {
 
   Future<bool> _updateEmail(User? user) async {
     try {
-      await user?.updateEmail(emailController.text);
+      await user?.verifyBeforeUpdateEmail(emailController.text);
       return true;
     } on FirebaseAuthException catch (e){
       String message = '';
       if(e.code == 'invalid-email'){
         message = 'Invalid email format!';
+      } else {
+        message = e.toString();
       }
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      return false;
+    } catch (e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
       return false;
     }
 
@@ -102,7 +124,7 @@ class EditProfileState extends State<EditProfile> {
       Reference refPfpUpload = refDirPfpImg.child(uniqueFileName);
 
       bool pfpExists = await ProfileUtils().doesFileExist(refPfpUpload);
-      if (!pfpExists && pfpFile != null) {
+      if (!pfpExists) {
         await refPfpUpload.putFile(File(pfpFile!.path));
         String newPhotoUrl = await refPfpUpload.getDownloadURL();
         await user?.updatePhotoURL(newPhotoUrl);
@@ -121,7 +143,7 @@ class EditProfileState extends State<EditProfile> {
       Reference refCoverUpload = refDirCoverImg.child(uniqueFileName);
 
       bool coverExists = await ProfileUtils().doesFileExist(refCoverUpload);
-      if (!coverExists && coverFile != null) {
+      if (!coverExists) {
         await refCoverUpload.putFile(File(coverFile!.path));
         String photoCover = await refCoverUpload.getDownloadURL();
 
@@ -134,16 +156,16 @@ class EditProfileState extends State<EditProfile> {
 
           await db.collection('users').doc(docId).update({'cover_photo': photoCover});
         }
-      }
-    } else {
-      final db = FirebaseFirestore.instance;
-      var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
+      } else {
+        final db = FirebaseFirestore.instance;
+        var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        var doc = querySnapshot.docs.first;
-        String docId = doc.id;
+        if (querySnapshot.docs.isNotEmpty) {
+          var doc = querySnapshot.docs.first;
+          String docId = doc.id;
 
-        await db.collection('users').doc(docId).update({'cover_photo': ''});
+          await db.collection('users').doc(docId).update({'cover_photo': ''});
+        }
       }
     }
     setState(() {});

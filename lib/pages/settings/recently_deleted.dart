@@ -86,6 +86,7 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -175,7 +176,11 @@ class RecentlyDeletedPageState extends State<RecentlyDeletedPage> {
                 ],
               ),
             ),
-            Padding(
+            if(_filteredDecks.isEmpty) ifCollectionEmpty(ifCollectionEmptyText: "Nothing in Trash",
+                  ifCollectionEmptySubText: "Deleted Items go here",
+                  ifCollectionEmptyheight: MediaQuery.of(context).size.height*0.7),
+
+            if(_filteredDecks.isNotEmpty) Padding(
               padding: const EdgeInsets.only(top: 20),
               child: ListView.builder(
                 shrinkWrap: true,
