@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 
 import '../../backend/profile/profile_provider.dart';
 import '../../backend/profile/profile_utils.dart';
+import '../auth/signup.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -66,7 +67,19 @@ class EditProfileState extends State<EditProfile> {
     if(coverFile != null) await _updateCoverPhoto(uniqueFileName, context);
 
     Provider.of<ProfileProvider>(context, listen: false).updateProfile();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Updated account information!')));
+    String message = 'Updated user information!';
+    if(user?.email != emailController.text) {
+      message = "Updated user information! Please check your new email in order to change.";
+    }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    if(user?.email != emailController.text) {
+      AuthService().signOut();
+      Navigator.of(context).pushAndRemoveUntil(
+        RouteGenerator.createRoute(const SignUpPage()),
+            (Route<dynamic> route) => false,
+      );
+      return;
+    }
     Navigator.pop(context, {'updated': true, 'file': coverUrl});
   }
 
@@ -84,14 +97,21 @@ class EditProfileState extends State<EditProfile> {
 
   Future<bool> _updateEmail(User? user) async {
     try {
-      await user?.updateEmail(emailController.text);
+      await user?.verifyBeforeUpdateEmail(emailController.text);
       return true;
     } on FirebaseAuthException catch (e){
       String message = '';
       if(e.code == 'invalid-email'){
         message = 'Invalid email format!';
+      } else {
+        message = e.toString();
       }
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      return false;
+    } catch (e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
       return false;
     }
 
