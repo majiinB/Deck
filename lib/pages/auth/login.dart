@@ -22,7 +22,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  bool isLoading = false;
 
 
   @override
@@ -125,8 +124,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               BuildButton(
                 onPressed: () async {
-                  ///loading dialog
-                  showLoad(context);
+
                   try{
                     await AuthService().signInWithEmail(emailController.text, passwordController.text);
                     await FCMService().renewToken();
@@ -146,15 +144,11 @@ class _LoginPageState extends State<LoginPage> {
                     } else {
                       message = 'Error logging in user!';
                     }
-                    /// stop loading
-                    hideLoad(context);
 
                     ///display error
                     showInformationDialog(context, message, "A problem occured while signing in. Please try again.");
 
                   } catch (e) {
-                    /// stop loading
-                    hideLoad(context);
 
                     ///display error
                     print(e.toString());
@@ -202,7 +196,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               BuildButton(
                 onPressed: () async{
-                  showLoad(context);
 
                   final authService = AuthService();
                   try {
@@ -227,8 +220,7 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   } catch (e){
                     print(e.toString());
-                    /// stop loading
-                    hideLoad(context);
+
                     ///display error
                     showInformationDialog(context, "Error signing in.","A problem occured while signing in. Please try again.");
                   }

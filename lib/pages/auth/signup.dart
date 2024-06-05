@@ -19,7 +19,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +48,6 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               BuildButton(
                 onPressed: () async {
-                  ///loading dialog
-                  showLoad(context);
-
 
                     final authService = AuthService();
                     try {
@@ -75,14 +71,10 @@ class _SignUpPageState extends State<SignUpPage> {
                       Navigator.of(context).push(
                         RouteGenerator.createRoute(const AuthGate()),
                       );
-                      /// stop loading
-                      hideLoad(context);
-
 
                     } catch (e){
                       print(e.toString());
-                      /// stop loading
-                      hideLoad(context);
+
 
                       ///display error
                       showInformationDialog(context, "Error signing up", "A problem occured while signing up. Please try again.");
