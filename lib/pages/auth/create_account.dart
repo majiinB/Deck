@@ -25,6 +25,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
   final DeckBox checkBox = DeckBox();
+  bool isLoading = false;
 
   String getAdjective(){
 
