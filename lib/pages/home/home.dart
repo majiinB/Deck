@@ -44,6 +44,8 @@ class _HomePageState extends State<HomePage> {
   // }
   @override
   void initState() {
+    /// stop loading
+    hideLoad(context);
     super.initState();
     _user = _authService.getCurrentUser();
     _initUserDecks(_user);
