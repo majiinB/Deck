@@ -60,27 +60,12 @@ dependencies:
   rxdart: ^0.27.7
   flutter_launcher_icons: ^0.13.1
   liquid_progress_indicator_v2: ^0.5.0
-  
+  flutter_native_splash: ^2.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_native_splash: ^2.4.0
-
-flutter_native_splash:
-  android: true
-  ios: false
-  web: false
-
-  # color: "#99F3BD"
-  image: "assets/images/Deck-Branding5.png"
-  background_image: "assets/images/Deck-SplashScreen.png"
-
-android 12:
-  # color: "#99F3BD"
-  image: "assets/images/Deck-Branding5.png"
-  background_image: "assets/images/Deck-SplashScreen.png"
-
+    
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
