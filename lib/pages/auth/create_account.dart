@@ -145,7 +145,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     ),
                     const Text(
                       "I accept Deck's",
-                      style: TextStyle(fontSize: 12.0),
+                      style: TextStyle(fontSize: 16.0),
                     ),
                     InkWell(
                       onTap: () {
@@ -161,7 +161,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         child: Text(
                           'Terms of Use',
                           style: GoogleFonts.nunito(
-                            fontSize: 12,
+                            fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: DeckColors.white,
                           ),
@@ -170,7 +170,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     ),
                     const Text(
                       "and",
-                      style: TextStyle(fontSize: 12.0),
+                      style: TextStyle(fontSize: 16.0),
                     ),
                     InkWell(
                       onTap: () {
@@ -186,7 +186,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         child: Text(
                           'Privacy Policy',
                           style: GoogleFonts.nunito(
-                            fontSize: 12,
+                            fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: DeckColors.white,
                           ),
