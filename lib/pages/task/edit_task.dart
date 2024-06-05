@@ -34,7 +34,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     _titleController = TextEditingController(text: widget.task.title);
     _descriptionController = TextEditingController(text: widget.task.description.toString());
   }
-  
+
   Future<DateTime?> _getDeadline() async {
     final db = FirebaseFirestore.instance;
     var querySnapshot = await db.collection('tasks').where('user_id', isEqualTo: AuthService().getCurrentUser()?.uid).get();
@@ -44,7 +44,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     }
     return null;
   }
-  
+
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -79,13 +79,13 @@ class _EditTaskPageState extends State<EditTaskPage> {
               ),
             ),
             colorScheme: Theme.of(context).colorScheme.copyWith(
-                  // Title, selected date and day selection background (dark and light mode)
-                  surface: DeckColors.backgroundColor,
-                  primary: DeckColors.primaryColor,
-                  // Title, selected date and month/year picker color (dark and light mode)
-                  onSurface: DeckColors.white,
-                  onPrimary: DeckColors.white,
-                ),
+              // Title, selected date and day selection background (dark and light mode)
+              surface: DeckColors.backgroundColor,
+              primary: DeckColors.primaryColor,
+              // Title, selected date and month/year picker color (dark and light mode)
+              onSurface: DeckColors.white,
+              onPrimary: DeckColors.white,
+            ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                 textStyle: const TextStyle(
@@ -186,7 +186,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
                           context,
                           "Save Task Information",
                           "Are you sure you want to change this task's information?",
-                          () async{
+                              () async{
                             if(_dateController.text.isEmpty || _titleController.text.isEmpty || _descriptionController.text.isEmpty){
                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fill all the text fields before saving!')));
                               return;
