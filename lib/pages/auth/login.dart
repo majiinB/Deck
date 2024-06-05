@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/auth/auth_gate.dart';
+import 'package:deck/backend/fcm/fcm_service.dart';
 import 'package:deck/pages/auth/recover_account.dart';
 import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
@@ -11,11 +12,18 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../backend/auth/auth_service.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool isLoading = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -117,8 +125,11 @@ class LoginPage extends StatelessWidget {
               ),
               BuildButton(
                 onPressed: () async {
+                  ///loading dialog
+                  showLoad(context);
                   try{
                     await AuthService().signInWithEmail(emailController.text, passwordController.text);
+                    await FCMService().renewToken();
                     Navigator.of(context).push(
                       RouteGenerator.createRoute(const AuthGate()),
                     );
@@ -135,16 +146,19 @@ class LoginPage extends StatelessWidget {
                     } else {
                       message = 'Error logging in user!';
                     }
-                    showDialog(context: context, builder: (context) =>
-                     AlertDialog(
-                      title: Text(message),
-                    ));
+                    /// stop loading
+                    hideLoad(context);
+
+                    ///display error
+                    showInformationDialog(context, message, "A problem occured while signing in. Please try again.");
+
                   } catch (e) {
+                    /// stop loading
+                    hideLoad(context);
+
+                    ///display error
                     print(e.toString());
-                    showDialog(context: context, builder: (context) =>
-                    const AlertDialog(
-                      title: Text("Error logging in user!"),
-                    ));
+                    showInformationDialog(context, "Error signing in.","A problem occured while signing in. Please try again.");
                   }
                 },
                 buttonText: 'Log In',
@@ -188,6 +202,8 @@ class LoginPage extends StatelessWidget {
               ),
               BuildButton(
                 onPressed: () async{
+                  showLoad(context);
+
                   final authService = AuthService();
                   try {
                     final currentUser = await authService.signUpWithGoogle();
@@ -197,21 +213,24 @@ class LoginPage extends StatelessWidget {
                       "name": currentUser?.displayName,
                       "uid": currentUser?.uid,
                       "cover_photo": "",
+                      "fcm_token": await FCMService().getToken(),
                     };
-
                     final db = FirebaseFirestore.instance;
                     final snap = await db.collection("users").where('email',isEqualTo: currentUser?.email).get();
                     if(snap.docs.isEmpty){
                       await db.collection("users").add(user);
+                    } else {
+                      await FCMService().renewToken();
                     }
                     Navigator.of(context).push(
                       RouteGenerator.createRoute(const AuthGate()),
                     );
                   } catch (e){
                     print(e.toString());
-                    showDialog(context: context, builder: (context) => const AlertDialog(
-                      title: Text("Error signing in."),
-                    ));
+                    /// stop loading
+                    hideLoad(context);
+                    ///display error
+                    showInformationDialog(context, "Error signing in.","A problem occured while signing in. Please try again.");
                   }
                 },
                 buttonText: 'Continue with Google',
@@ -261,8 +280,8 @@ class LoginPage extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
+        )
+      )
     );
   }
 }

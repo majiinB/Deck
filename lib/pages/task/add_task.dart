@@ -155,13 +155,15 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     borderWidth: 0,
                     borderColor: Colors.transparent,
                     onPressed: () async {
+                      if(_dateController.text.isEmpty || _titleController.text.isEmpty || _descriptionController.text.isEmpty){
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fill all the text fields!')));
+                        return;
+                      }
+
                       print(DateTime.parse(_dateController.text));
                       print(DateTime.now());
                       if(DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)).isBefore(DateTime.now())){
-                        showDialog(context: context, builder: (context) =>
-                            const AlertDialog(
-                              title: Text("You cannot set the deadline that's already in the past!"),
-                            ));
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You cannot set the deadline that\'s already in the past!')));
                         return;
                       }
 
@@ -173,6 +175,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         "end_date": DateTime.parse(_dateController.text).add(const Duration(hours: 23, minutes: 59, seconds: 59)),
                         "is_done": false,
                         "is_deleted": false,
+                        "done_date": DateTime.now(),
                       };
 
                       Provider.of<TaskProvider>(context, listen: false).addTask(data);

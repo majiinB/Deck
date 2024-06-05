@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/auth/auth_gate.dart';
 import 'package:deck/backend/auth/auth_service.dart';
+import 'package:deck/backend/fcm/fcm_service.dart';
 import 'package:deck/pages/auth/signup.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
@@ -23,6 +24,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+  final DeckBox checkBox = DeckBox();
+  bool isLoading = false;
 
   String getAdjective(){
 
@@ -134,7 +137,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   children: [
                     SizedBox(
                       width: 30,
-                      child: DeckBox(),
+                      child: checkBox,
                     ),
                     const SizedBox(
                       width: 5,
@@ -196,23 +199,27 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 padding: const EdgeInsets.only(top: 30),
                 child: BuildButton(
                   onPressed: () async {
+                    if(!checkBox.isChecked){
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please check the checkbox!')));
+                      return;
+                    }
+
                     if(passwordController.text != confirmPasswordController.text) {
-                      showDialog(context: context, builder: (context) =>
-                      const AlertDialog(
-                        title: Text("Passwords do not match!"),
-                      ));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords do not match!')));
                       return;
                     }
 
                     try{
                       final authService = AuthService();
-                      await authService.signUpWithEmail(emailController.text, passwordController.text);
+                      String name = "Anon ${getAdjective()}";
+                      await authService.signUpWithEmail(emailController.text, passwordController.text, name);
 
                       final user = <String, dynamic> {
                         "email": emailController.text,
-                        "name": "Anonymous ${getAdjective()}",
+                        "name": name,
                         "user_id":  authService.getCurrentUser()?.uid,
                         "cover_photo": "",
+                        "fcm_token": await FCMService().getToken(),
                       };
 
                       final db = FirebaseFirestore.instance;
@@ -235,16 +242,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       } else {
                         message = "Error creating your account!";
                       }
-                      showDialog(context: context, builder: (context) =>
-                          AlertDialog(
-                            title: Text(message),
-                      ));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
                     } catch (e) {
                       print(e.toString());
-                      showDialog(context: context, builder: (context) =>
-                          const AlertDialog(
-                            title: Text("Error creating your account!"),
-                          ));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something is wrong!')));
                     }
 
                   },

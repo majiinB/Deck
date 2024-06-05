@@ -44,9 +44,9 @@ class _SettingPageState extends State<SettingPage> {
               alternateText: 'Dark Mode',
               containerColor:
               _isToggled ? Colors.green : Colors.blue, // Container Color
-              selectedColor: DeckColors.primaryColor, // Left Icon Color
+              selectedColor: Colors.amber, // Left Icon Color
               textColor: Colors.white, // Text Color
-              toggledColor: Colors.amber,
+              toggledColor: DeckColors.primaryColor,
               onTap: () {},
               onToggleChanged: (bool value) {
                 Provider.of<ThemeProvider>(context, listen: false)
@@ -66,7 +66,8 @@ class _SettingPageState extends State<SettingPage> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 15),
-              child: BuildSettingsContainer(
+              child: !AuthService().getCurrentUser()!.providerData[0].providerId.contains('google.com') ?
+              BuildSettingsContainer(
                 selectedIcon: DeckIcons.lock,
                 nameOfTheContainer: 'Change Password',
                 showArrow: true,
@@ -74,13 +75,13 @@ class _SettingPageState extends State<SettingPage> {
                 containerColor: DeckColors.accentColor, // Container Color
                 selectedColor: DeckColors.primaryColor, // Left Icon Color
                 textColor: Colors.white, // Text Color
-                toggledColor: Colors.amber, // Left Icon Color when Toggled
+                toggledColor: DeckColors.accentColor, // Left Icon Color when Toggled
                 onTap: () {
                   Navigator.of(context).push(
-                    RouteGenerator.createRoute(const ChangePasswordPage()),
+                    RouteGenerator.createRoute (const ChangePasswordPage()),
                   );
                 },
-              ),
+              ) : const SizedBox()
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
@@ -92,7 +93,7 @@ class _SettingPageState extends State<SettingPage> {
                 containerColor: DeckColors.accentColor, // Container Color
                 selectedColor: DeckColors.primaryColor, // Left Icon Color
                 textColor: Colors.white, // Text Color
-                toggledColor: Colors.amber, // Left Icon Color when Toggled
+                toggledColor: DeckColors.accentColor, // Left Icon Color when Toggled
                 onTap: () {
                   Navigator.of(context).push(
                     RouteGenerator.createRoute(const RecentlyDeletedPage()),
@@ -108,7 +109,7 @@ class _SettingPageState extends State<SettingPage> {
               containerColor: DeckColors.accentColor, // Container Color
               selectedColor: DeckColors.primaryColor, // Left Icon Color
               textColor: Colors.white, // Text Color
-              toggledColor: Colors.amber, // Left Icon Color when Toggled
+              toggledColor: DeckColors.accentColor, // Left Icon Color when Toggled
               onTap: () async {
                 final authService = AuthService();
                 authService.signOut();

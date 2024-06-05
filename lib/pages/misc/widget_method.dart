@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:msh_checkbox/msh_checkbox.dart';
-
+import 'package:provider/provider.dart';
+import '../theme/theme_provider.dart';
 ///updated methods as of 05/11/24 1:34AM
 ///
 ///
@@ -487,7 +488,7 @@ class BuildListOfDecksState extends State<BuildListOfDecks> {
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
                     color: DeckColors.white,
-                    child: Icon(Icons.broken_image, color: Colors.grey),
+                    child: Center(child: Icon(Icons.broken_image, color: Colors.grey)),
                   );
                 },
               )
@@ -621,7 +622,6 @@ void showInformationDialog(BuildContext context, String title, String message) {
     },
   );
 }
-
 /// -------------------------- E N D ---------------------------
 /// ---------------------- A C C O U N T -----------------------
 
@@ -672,14 +672,14 @@ class BuildSettingsContainerState extends State<BuildSettingsContainer> {
   @override
   void initState() {
     super.initState();
-    _isToggled = false;
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    _isToggled = themeProvider.isDarkMode;
   }
-
   @override
   Widget build(BuildContext context) {
     return Material(
       borderRadius: BorderRadius.circular(15.0),
-      color: widget.containerColor,
+      color: _isToggled ? widget.toggledColor : widget.containerColor,
       child: InkWell(
         borderRadius: BorderRadius.circular(15.0),
         onTap: () {
@@ -699,21 +699,20 @@ class BuildSettingsContainerState extends State<BuildSettingsContainer> {
               Row(
                 children: [
                   Icon(
-                    _isToggled ? widget.alternateIcon! : widget.selectedIcon,
-                    color:
-                        _isToggled ? widget.toggledColor : widget.selectedColor,
+                    _isToggled ? (widget.alternateIcon ?? widget.selectedIcon) : widget.selectedIcon,
+                    color: _isToggled ? DeckColors.primaryColor : widget.selectedColor,
                     size: 30,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 16.0),
                     child: Text(
                       _isToggled
-                          ? widget.alternateText!
+                          ? (widget.alternateText ?? widget.nameOfTheContainer)
                           : widget.nameOfTheContainer,
                       style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
-                        color: _isToggled ? widget.textColor : widget.textColor,
+                        color: _isToggled ? (widget.textColor ?? widget.textColor) : widget.textColor,
                       ),
                     ),
                   ),
@@ -727,7 +726,7 @@ class BuildSettingsContainerState extends State<BuildSettingsContainer> {
                       _isToggled = value;
                     });
                     if (widget.onToggleChanged != null) {
-                      widget.onToggleChanged!(value); // Call the callback
+                      widget.onToggleChanged!(value);
                     }
                   },
                   activeColor: DeckColors.primaryColor,
@@ -852,9 +851,7 @@ class BuildTextBoxState extends State<BuildTextBox> {
             : widget.rightIcon != null
                 ? IconButton(
                     icon: Icon(widget.rightIcon),
-                    onPressed: () {
-                      // Perform action on right icon tap
-                    },
+                    onPressed: widget.onTap,
                   )
                 : null,
       ),
@@ -906,7 +903,6 @@ class BuildIconButton extends StatelessWidget {
     );
   }
 }
-
 /// ------------------------- E N D ----------------------------
 /// --------------- E D I T  P R O F I L E ---------------------
 
@@ -1009,6 +1005,7 @@ class CustomDropdown extends StatelessWidget {
 ///
 ///Checkbox Widget
 class DeckBox extends StatefulWidget {
+  bool isChecked = false;
   DeckBox({Key? key}) : super(key: key);
 
   @override
@@ -1016,21 +1013,24 @@ class DeckBox extends StatefulWidget {
 }
 
 class DeckBoxState extends State<DeckBox> {
-  bool isChecked = false;
+
+  bool isChecked() {
+    return widget.isChecked;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: MSHCheckbox(
         size: 24,
-        value: isChecked,
+        value: widget.isChecked,
         colorConfig: MSHColorConfig.fromCheckedUncheckedDisabled(
           checkedColor: DeckColors.primaryColor,
         ),
         style: MSHCheckboxStyle.stroke,
         onChanged: (selected) {
           setState(() {
-            isChecked = selected;
+            widget.isChecked = selected;
           });
         },
       ),
@@ -1156,37 +1156,78 @@ class DeckFAB extends StatelessWidget {
 /// ---------------------- S T A R T ---------------------------
 /// --------------- B O T T O M  S H E E T ---------------------
 
-class IfDeckEmpty extends StatelessWidget {
-  final String ifDeckEmptyText;
-  final double ifDeckEmptyheight;
+class ifCollectionEmpty extends StatelessWidget {
+  final String ifCollectionEmptyText;
+  final String? ifCollectionEmptySubText;
+  final double ifCollectionEmptyheight;
 
-  const IfDeckEmpty(
+  const ifCollectionEmpty(
       {super.key,
-      required this.ifDeckEmptyText,
-      required this.ifDeckEmptyheight});
+        required this.ifCollectionEmptyText,
+        this.ifCollectionEmptySubText,
+        required this.ifCollectionEmptyheight});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: ifDeckEmptyheight,
-        child: Center(
-          child: Text(
-            ifDeckEmptyText,
-            style: GoogleFonts.nunito(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
+    return Container(
+      height: ifCollectionEmptyheight,
+      child: Center(
+          child:
+          // Container(
+          //     height: MediaQuery.of(context).size.width,
+          //     width: MediaQuery.of(context).size.width - 100, // dunno what size
+          //     decoration: BoxDecoration(
+          //       shape: BoxShape.circle,
+          //       color: Colors.pinkAccent
+          //     ),
+          //     child:
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                  height: MediaQuery.of(context).size.width/2.5,
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child:
+                    Image.asset(
+                      // 'assets/images/HDR-Branding.png',
+                      'assets/images/Deck-Branding7.png',
+                    ),
+                  )
+              ),
+              const SizedBox(
+                  height: 5
+              ),
+              Text(
+                ifCollectionEmptyText,
+                style: GoogleFonts.nunito(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white54,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(
+                  height: 5
+              ),
+              Text(
+                ifCollectionEmptySubText ?? "",
+                style: GoogleFonts.nunito(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+
+                  color: Colors.white54,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          )
+        // )
       ),
     );
   }
 }
-
 /// ------------------------ E N D -----------------------------
 /// --------------- B O T T O M  S H E E T ---------------------
 
@@ -1286,7 +1327,7 @@ class CustomExpansionTileState extends State<CustomExpansionTile> {
               ),
               ListTile(
                 title: Text(
-                  'Note: You have the ability to employ both features simultaneously. Moreover, rest assured that AI-generated flashcards content can be edited by the user.',
+                  'Note: You have the ability to employ both features simultaneously. Also, the AI may generate less flashcards than what you have indicated due to lack of information. Moreover, rest assured that AI-generated flashcards content can be edited by the user.',
                   style: GoogleFonts.nunito(
                     color: DeckColors.white,
                     fontSize: 16,
@@ -1406,7 +1447,7 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
                             errorBuilder: (context, error, stackTrace) {
                             return Container(
                               color: DeckColors.coverImageColorSettings,
-                              child: const Icon(Icons.broken_image, color: Colors.grey),
+                              child: const Center(child: Icon(Icons.broken_image, color: Colors.grey),),
                             );
                           },
                         );
@@ -1420,7 +1461,9 @@ class BuildDeckContainerState extends State<BuildDeckContainer> {
                           errorBuilder: (context, error, stackTrace) {
                           return Container(
                             color: DeckColors.coverImageColorSettings,
-                            child: const Icon(Icons.broken_image, color: Colors.grey),
+                            child: const Center(
+                              child: Icon(Icons.image_not_supported, color: Colors.white),
+                            ),
                           );
                         },
                       ),
@@ -1688,18 +1731,23 @@ class DeckSliverHeader extends StatelessWidget {
   final Color backgroundColor;
   final String headerTitle;
   final bool? isPinned;
+  final bool hasIcon;
   final TextStyle textStyle;
   final double? max;
   final double? min;
-
+  final VoidCallback? onPressed;
+  final IconData? icon;
   const DeckSliverHeader({
     super.key,
     required this.backgroundColor,
     required this.headerTitle,
     required this.textStyle,
+    this.onPressed,
+    required this.hasIcon,
     this.isPinned,
     this.max,
     this.min,
+    this.icon,
   });
 
   @override
@@ -1707,7 +1755,16 @@ class DeckSliverHeader extends StatelessWidget {
     return SliverPersistentHeader(
       pinned: isPinned ?? true,
       floating: false,
-      delegate: DeckDelegate(backgroundColor, headerTitle, textStyle, max, min),
+      delegate: DeckDelegate(
+        backgroundColor,
+        headerTitle,
+        onPressed ?? () {},
+        hasIcon,
+        textStyle,
+        max,
+        min,
+        icon ?? Icons.calendar_month_rounded,
+      ),
     );
   }
 }
@@ -1718,26 +1775,47 @@ class DeckDelegate extends SliverPersistentHeaderDelegate {
   final TextStyle textStyle;
   final double? max;
   final double? min;
+  final VoidCallback onPressed;
+  final bool hasIcon;
+  final IconData icon;
 
   DeckDelegate(
-    this.backgroundColor,
-    this.headerTitle,
-    this.textStyle,
-    this.max,
-    this.min,
-  );
+      this.backgroundColor,
+      this.headerTitle,
+      this.onPressed,
+      this.hasIcon,
+      this.textStyle,
+      this.max,
+      this.min,
+      this.icon
+      );
 
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: backgroundColor,
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          headerTitle,
-          style: textStyle,
-        ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              headerTitle,
+              style: textStyle,
+            ),
+          ),
+          Spacer(),
+          if (hasIcon)
+            BuildIconButton(
+              onPressed: onPressed,
+              icon: icon,
+              iconColor: DeckColors.white,
+              backgroundColor: backgroundColor,
+              containerWidth: 50,
+              containerHeight: 50,
+            ),
+        ],
       ),
     );
   }
@@ -1753,6 +1831,7 @@ class DeckDelegate extends SliverPersistentHeaderDelegate {
     return true;
   }
 }
+
 
 /// ------------------------ E N D -----------------------------
 /// ------------ D E C K  S L I V E R H E A D E R --------------
@@ -1782,52 +1861,58 @@ class HomeTaskTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
-          color: DeckColors.gray,
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: 200,
-                      child: Text(
-                        taskName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: DeckColors.white,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 5.0),
-                      child: Text(
-                        deadline,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: DeckColors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+    return Material(
+      borderRadius: BorderRadius.circular(15.0),
+      color:  Colors.pinkAccent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(15.0),
+
+            onTap: () {
+              if (onPressed != null) {
+                onPressed!();
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.only(left: 20.0,right:20,top: 20,bottom:20 ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
               ),
-            ),
-          ],
-        ),
-      ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: 100,
+                    child: Text(
+                      taskName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                              color: DeckColors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 100,
+                          child: Text(
+                            deadline,
+                            textAlign: TextAlign.end,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: DeckColors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+          ),
+
     );
   }
 }
@@ -1858,80 +1943,88 @@ class HomeDeckTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Padding(
-        padding: const EdgeInsets.all(0),
-        child: Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: SizedBox(
-            width: cardWidth,
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: DeckColors.gray,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: deckImageUrl != null
-                        ? Image.network(
-                      deckImageUrl!,
-                      width: cardWidth,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: DeckColors.gray,
-                          child: const Icon(Icons.broken_image, color: Colors.white),
-                        );
-                      },
-                    )
-                        : Container(
+    return Material(
+      borderRadius: BorderRadius.circular(15.0),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15.0),
+        onTap: () {
+          if (onPressed != null) {
+            onPressed!();
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(0),
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: SizedBox(
+              width: cardWidth,
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
                       color: DeckColors.gray,
-                      child: const Icon(Icons.image_not_supported, color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  child: SizedBox(
-                    width: cardWidth,
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withOpacity(0.8),
-                          ],
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(10),
-                          bottomRight: Radius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        deckName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: deckImageUrl != null
+                          ? Image.network(
+                        deckImageUrl!,
+                        width: cardWidth,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: DeckColors.gray,
+                            child: const Center(child: Icon(Icons.broken_image, color: Colors.white)),
+                          );
+                        },
+                      )
+                          : Container(
+                        color: DeckColors.gray,
+                        child: const Center(child: Icon(Icons.image_not_supported, color: Colors.white)),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: SizedBox(
+                      width: cardWidth,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.9),
+                            ],
+                          ),
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          deckName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -1939,7 +2032,6 @@ class HomeDeckTile extends StatelessWidget {
     );
   }
 }
-
 
 /// ------------------------- E N D ----------------------------
 /// ------------ D E C K  T I L E  I N  H O M E-----------------
@@ -1975,73 +2067,93 @@ class DeckTaskTile extends StatefulWidget {
 }
 
 class DeckTaskTileState extends State<DeckTaskTile> {
-  Color _containerColor = DeckColors.gray;
+  Color _containerColor = Colors.pinkAccent;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (_) {
         setState(() {
           if (widget.onTap != null) {
-            _containerColor = Colors.grey.withOpacity(0.7);
+            _containerColor = Colors.pinkAccent.withOpacity(0.7);
           }
         });
       },
       onTapUp: (_) {
         setState(() {
-          _containerColor = DeckColors.gray;
+          _containerColor =Colors.pinkAccent;
         });
         widget.onTap?.call();
       },
       onTapCancel: () {
         setState(() {
-          _containerColor = DeckColors.gray;
+          _containerColor = Colors.pinkAccent;
         });
       },
-      child: SwipeToDeleteAndRetrieve(
-        onRetrieve: widget.enableRetrieve ? widget.onRetrieve : null,
-        enableRetrieve: widget.enableRetrieve,
-        onDelete: widget.onDelete,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15.0),
-            color: DeckColors.gray,
-          ),
-          child: Row(
-            children: [
-              Checkbox(
-                value: widget.isChecked,
-                onChanged: widget.onChanged,
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: DeckColors.white,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0),
-                        child: Text(
-                          widget.deadline,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: DeckColors.white,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: SwipeToDeleteAndRetrieve(
+          onRetrieve: widget.enableRetrieve ? widget.onRetrieve : null,
+          enableRetrieve: widget.enableRetrieve,
+          onDelete: widget.onDelete,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              color: _containerColor,
+            ),
+            child: Row(
+              children: [
+                Checkbox(
+                    activeColor: Colors.transparent,
+                    checkColor: DeckColors.primaryColor,
+                    value: widget.isChecked,
+                    onChanged: widget.onChanged,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                    side: BorderSide(
+                      color: DeckColors.white,
+                      width: 3.0,
+                    )
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          child: Text(
+                            widget.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: DeckColors.white,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          width: 100,
+                          child: Text(
+                            widget.deadline,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: DeckColors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -2052,3 +2164,33 @@ class DeckTaskTileState extends State<DeckTaskTile> {
 
 /// ------------------------- E N D ----------------------------
 /// ------------ D E C K  T A S K T I L E ----------------------
+
+
+
+///
+/// M E T H O D  T O  C A L L  L O A D I N G
+///
+
+
+void showLoad(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Center(
+        child:
+        CircularProgressIndicator(
+          color:DeckColors.primaryColor,
+        ),
+      );
+    },
+  );
+}
+
+
+///
+/// M E T H O D  T O  H I D E  L O A D I N G
+///
+
+void hideLoad(BuildContext context) {
+  Navigator.of(context).pop();
+}

@@ -1,12 +1,15 @@
 import 'package:deck/backend/models/task.dart';
+import 'package:deck/backend/task/task_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/widget_method.dart';
 import 'package:deck/pages/task/edit_task.dart';
+import 'package:provider/provider.dart';
 
 class ViewTaskPage extends StatefulWidget {
   final Task task;
-  const ViewTaskPage({super.key, required this.task});
+  final bool isEditable;
+  const ViewTaskPage({super.key, required this.task, required this.isEditable});
 
   @override
   State<ViewTaskPage> createState() => _ViewTaskPageState();
@@ -15,12 +18,20 @@ class ViewTaskPage extends StatefulWidget {
 class _ViewTaskPageState extends State<ViewTaskPage> {
   //initial values
   late final TextEditingController _dateController;
+  late Task _task;
 
   @override
   void initState() {
     super.initState();
-
+    _task = widget.task;
     _dateController = TextEditingController(text: widget.task.deadline.toString().split(" ")[0]);
+  }
+
+  void _updateTask(Task updatedTask) {
+    setState(() {
+      _task = updatedTask;
+      _dateController.text = _task.deadline.toString().split(" ")[0];
+    });
   }
 
   @override
@@ -30,15 +41,19 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
         title: "Task",
         color: DeckColors.white,
         fontSize: 24,
-        icon: Icons.edit,
+        icon: widget.isEditable ? Icons.edit : null,
         // icon: DeckIcons.pencil,
         iconColor: Colors.white,
-        onPressed: () {
+        onPressed: () async {
           // Navigate to the second page
-          Navigator.push(
+          final updatedTask = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => EditTaskPage(task: widget.task,)),
+            MaterialPageRoute(builder: (context) => EditTaskPage(task: _task)),
           );
+          if (updatedTask != null) {
+            _updateTask(updatedTask);
+            await Provider.of<TaskProvider>(context,listen: false).loadTasks();
+          }
         },
       ),
       body: SafeArea(
@@ -54,7 +69,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  widget.task.title,
+                  _task.title,
                   style: const TextStyle(
                     fontFamily: 'Fraiche',
                     fontSize: 20,
@@ -82,7 +97,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
                       ),
                     ),
                     Text(
-                      widget.task.deadline.toString().split(" ")[0],
+                      _task.deadline.toString().split(" ")[0],
                       style: const TextStyle(
                         fontFamily: 'nunito',
                         fontSize: 16,
@@ -99,7 +114,7 @@ class _ViewTaskPageState extends State<ViewTaskPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  widget.task.description,
+                  _task.description,
                   style: const TextStyle(
                     fontFamily: 'nunito',
                     fontSize: 16,

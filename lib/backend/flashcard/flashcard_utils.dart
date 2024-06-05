@@ -14,4 +14,28 @@ class FlashcardUtils{
       items[j] = temp;
     }
   }
+  String capitalizeFirstLetterOfWords(String input) {
+    if (input.isEmpty) {
+      return input;
+    }
+
+    // Split the input string into words
+    List<String> words = input.split(' ');
+
+    // Capitalize the first letter of each word
+    List<String> capitalizedWords = words.map((word) {
+      if (word.isEmpty) {
+        return word; // Return empty string as is
+      }
+      // Capitalize the first letter and concatenate with the rest of the word
+      return '${word[0].toUpperCase()}${word.substring(1)}';
+    }).toList();
+
+    // Join the capitalized words back into a single string
+    return capitalizedWords.join(' ');
+  }
+  String cleanSpaces(String input) {
+    // Use a regular expression to replace multiple consecutive spaces with a single space
+    return input.replaceAll(RegExp(r'\s+'), ' ');
+  }
 }

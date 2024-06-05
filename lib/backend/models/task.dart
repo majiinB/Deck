@@ -3,11 +3,12 @@ class Task {
   final String _title;
   final String _description;
   final String _userId;
-  bool isDone;
+  bool isDone = false;
   final DateTime _createdAt, _deadline;
   bool isDeleted;
+  final DateTime _doneDate;
 
-  Task(this._uid, this._title, this._description, this._userId, this.isDone, this._createdAt, this._deadline, this.isDeleted);
+  Task(this._uid, this._title, this._description, this._userId, this.isDone, this._createdAt, this._deadline, this.isDeleted, this._doneDate);
   String get uid => _uid;
   String get userId => _userId;
   String get title => _title;
@@ -22,4 +23,5 @@ class Task {
   set setIsDeleted (bool value) {
     isDeleted = value;
   }
+  DateTime get doneDate => _doneDate;
 }

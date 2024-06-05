@@ -11,9 +11,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:deck/pages/misc/deck_icons.dart';
 import 'package:deck/pages/misc/widget_method.dart';
+import 'package:provider/provider.dart';
 import '../../backend/flashcard/flashcard_service.dart';
 import '../../backend/flashcard/flashcard_utils.dart';
 import '../../backend/models/deck.dart';
+import '../../backend/profile/profile_provider.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -39,6 +41,7 @@ class AccountPageState extends State<AccountPage> {
     FlashcardUtils.updateSettingsNeeded.addListener(_updateAccountPage);
     _user = _authService.getCurrentUser();
     _initUserDecks(_user);
+    Provider.of<ProfileProvider>(context, listen: false).addListener(_updateAccountPage);
   }
 
   @override
@@ -49,7 +52,7 @@ class AccountPageState extends State<AccountPage> {
 
   void getCoverUrl() async {
     coverUrl = await AuthUtils().getCoverPhotoUrl();
-    setState(() {});
+    setState(() { print(coverUrl);});
   }
 
   void _initUserDecks(User? user) async {
@@ -161,10 +164,15 @@ class AccountPageState extends State<AccountPage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 12, right: 7.0),
                     child: BuildButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
+                      onPressed: () async {
+                        final result = await Navigator.of(context).push(
                           RouteGenerator.createRoute(const EditProfile()),
                         );
+                        if(result != null && result['updated'] == true) {
+                          _updateAccountPage();
+                         Provider.of<ProfileProvider>(context, listen: false).addListener(_updateAccountPage);
+                         setState(() { coverUrl = result['file']; });
+                        }
                       },
                       buttonText: 'edit profile',
                       height: 40,
@@ -191,9 +199,9 @@ class AccountPageState extends State<AccountPage> {
                 ),
               ),
               if (_decks.isEmpty)
-                IfDeckEmpty(
-                    ifDeckEmptyText: 'No Deck(s) Available',
-                    ifDeckEmptyheight: MediaQuery.of(context).size.height * 0.4),
+                ifCollectionEmpty(
+                    ifCollectionEmptyText: 'No Deck(s) Available',
+                    ifCollectionEmptyheight: MediaQuery.of(context).size.height * 0.4),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ListView.builder(

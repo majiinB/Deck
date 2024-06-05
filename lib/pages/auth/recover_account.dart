@@ -60,10 +60,10 @@ class RecoverAccountPage extends StatelessWidget {
               BuildButton(
                 onPressed: () async {
                   try {
-                    await AuthService().sendResetPass(emailController.text);
-                    Navigator.of(context).pop(
-                      RouteGenerator.createRoute(LoginPage()),
-                    );
+                    await AuthService().sendResetPass(emailController.text).then((_) => {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Success! Please check your email'))),
+                      Navigator.of(context).pop(RouteGenerator.createRoute(LoginPage()),)
+                    });
                   } on FirebaseAuthException catch (e) {
                     print(e.toString());
                     String message = '';
@@ -74,16 +74,10 @@ class RecoverAccountPage extends StatelessWidget {
                     } else {
                       message = 'Error finding email!';
                     }
-                    showDialog(context: context, builder: (context) =>
-                        AlertDialog(
-                          title: Text(message),
-                        ));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
                   } catch (e){
                     print(e.toString());
-                    showDialog(context: context, builder: (context) =>
-                        AlertDialog(
-                          title: Text(e.toString()),
-                        ));
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something is wrong!')));
                   }
                 },
                 buttonText: 'Enter Email',

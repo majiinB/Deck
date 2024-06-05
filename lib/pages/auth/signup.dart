@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deck/backend/auth/auth_gate.dart';
+import 'package:deck/backend/fcm/fcm_service.dart';
 import 'package:deck/pages/auth/create_account.dart';
 import 'package:deck/pages/auth/login.dart';
 import 'package:deck/pages/misc/colors.dart';
@@ -10,8 +11,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../backend/auth/auth_service.dart';
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
+
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +49,10 @@ class SignUpPage extends StatelessWidget {
               ),
               BuildButton(
                 onPressed: () async {
+                  ///loading dialog
+                  showLoad(context);
+
+
                     final authService = AuthService();
                     try {
                       final currentUser = await authService.signUpWithGoogle();
@@ -49,23 +61,32 @@ class SignUpPage extends StatelessWidget {
                         "name": currentUser?.displayName,
                         "user_id": currentUser?.uid,
                         "cover_photo": "",
+                        "fcm_token": await FCMService().getToken(),
                       };
 
                       final db = FirebaseFirestore.instance;
                       final snap = await db.collection("users").where('email',isEqualTo: currentUser?.email).get();
                       if(snap.docs.isEmpty){
                         await db.collection("users").add(user);
+                      } else {
+                        await FCMService().renewToken();
                       }
 
                       Navigator.of(context).push(
                         RouteGenerator.createRoute(const AuthGate()),
                       );
+                      /// stop loading
+                      hideLoad(context);
+
 
                     } catch (e){
                       print(e.toString());
-                      showDialog(context: context, builder: (context) => const AlertDialog(
-                      title: Text("Error signing in."),
-                      ));
+                      /// stop loading
+                      hideLoad(context);
+
+                      ///display error
+                      showInformationDialog(context, "Error signing up", "A problem occured while signing up. Please try again.");
+
                     }
                   },
                 buttonText: 'Continue with Google',
@@ -110,14 +131,16 @@ class SignUpPage extends StatelessWidget {
                 ),
               ),
 
-              ///
-              /// TAMA NA KAYO LAPAG NG MGA DEADLINES!
-              ///
               BuildButton(
                 onPressed: () {
+                  ///loading dialog
+                  showLoad(context);
+
                   Navigator.of(context).push(
                     RouteGenerator.createRoute(const CreateAccountPage()),
                   );
+                  /// stop loading
+                  hideLoad(context);
                 },
                 buttonText: 'Continue with Email',
                 height: 60,
