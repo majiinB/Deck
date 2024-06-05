@@ -121,6 +121,10 @@ class _SettingPageState extends State<SettingPage> {
                   RouteGenerator.createRoute(const SignUpPage()),
                       (Route<dynamic> route) => false,
                 );
+                // Navigator.of(context).pop()
+                // Navigator.of(context).push(
+                //   RouteGenerator.createRoute(const SignUpPage()),
+                // );
                 // ignore: avoid_print
                 print("Log Out Clicked");
               },
