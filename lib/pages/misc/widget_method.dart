@@ -1870,7 +1870,7 @@ class HomeTaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       borderRadius: BorderRadius.circular(15.0),
-      color: Colors.pinkAccent,
+      color: DeckColors.gray,
       child: InkWell(
         borderRadius: BorderRadius.circular(15.0),
         onTap: () {
