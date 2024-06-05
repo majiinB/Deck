@@ -38,7 +38,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
-                    height: 450,
+                    height: 400,
                     width: MediaQuery.of(context).size.width,
                     color: defaultColorScheme.primary,
                     child: Image.asset('assets/images/Deck-Logo.png')),
@@ -150,7 +150,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   children: [
                     const Text(
                       'Already have an Account? ',
-                      style: TextStyle(fontSize: 16.0),
+                      style: TextStyle(fontSize: 12.0),
                     ),
                     InkWell(
                       onTap: () {
@@ -166,7 +166,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Text(
                           'Log In',
                           style: GoogleFonts.nunito(
-                            fontSize: 16,
+                            fontSize: 12,
                             fontWeight: FontWeight.w900,
                             color: DeckColors.white,
                           ),

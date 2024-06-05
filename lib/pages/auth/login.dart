@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     BuildTextBox(
                       hintText: 'Enter Password',
-                      showPassword: false,
+                      showPassword: true,
                       leftIcon: DeckIcons.lock,
                       rightIcon: Icons.search,
                       controller: passwordController,
@@ -120,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(
-                height: 100,
+                height: 50,
               ),
               BuildButton(
                 onPressed: () async {
@@ -244,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const Text(
                       "Don't have an account? ",
-                      style: TextStyle(fontSize: 16.0),
+                      style: TextStyle(fontSize: 12.0),
                     ),
                     InkWell(
                       onTap: () {
@@ -260,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Text(
                           'Sign Up',
                           style: GoogleFonts.nunito(
-                            fontSize: 16,
+                            fontSize: 12,
                             fontWeight: FontWeight.w900,
                             color: DeckColors.white,
                           ),

@@ -104,7 +104,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
         ),
       ),
       appBar: const DeckBar(
-        title: 'Flash Card',
+        title: 'flash card',
         color: DeckColors.white,
         fontSize: 24,
       ),
@@ -237,6 +237,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                                     }
                                   } catch (e) {
                                     print('Flash Card Page Deletion Error: $e');
+
                                     setState(() {
                                       _decks.insert(index, removedDeck);
                                     });
