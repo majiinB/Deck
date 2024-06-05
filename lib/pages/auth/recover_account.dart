@@ -15,8 +15,8 @@ class RecoverAccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AuthBar(
-        automaticallyImplyLeading: false,
-        title: 'Recover Account',
+        automaticallyImplyLeading: true,
+        title: 'recover account',
         color: DeckColors.white,
         fontSize: 24,
       ),
@@ -29,7 +29,13 @@ class RecoverAccountPage extends StatelessWidget {
                 padding: EdgeInsets.only(top: 30),
                 child: Text(
                     'Please enter the email address associated with your account. '
-                        'We will send you instructions on how to reset your password.'),
+                        'We will send you instructions on how to reset your password.',
+                  textAlign: TextAlign.justify,
+                  style: TextStyle(
+                    fontFamily: 'nunito',
+                    fontSize: 16
+                  ),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 30),
