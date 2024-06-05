@@ -49,13 +49,6 @@ class _HomePageState extends State<HomePage> {
     _initUserDecks(_user);
     _initUserTasks(_user);
     _initGreeting();
-    testNotif();
-  }
-
-  void testNotif(){
-    if(Provider.of<TaskProvider>(context, listen: false).checkIfDeadlineIsToday()) {
-      NotificationService().showNotification(title: 'You have due tasks today!', body: 'Finish them!', payload: 'load');
-    }
   }
 
   void _initUserDecks(User? user) async {
