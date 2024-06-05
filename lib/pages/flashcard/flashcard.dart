@@ -107,7 +107,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
         ),
       ),
       appBar: const DeckBar(
-        title: 'Flash Card',
+        title: 'flash card',
         color: DeckColors.white,
         fontSize: 24,
       ),
