@@ -14,7 +14,6 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:deck/pages/misc/colors.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 
 import 'backend/fcm/fcm_service.dart';
@@ -28,7 +27,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FCMService().initializeNotifications();
   NotificationService().initLocalNotifications();
-  FlutterNativeSplash.remove();
 
   runApp(
     MultiProvider(
