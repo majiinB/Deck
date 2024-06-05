@@ -52,6 +52,7 @@ class EditProfileState extends State<EditProfile> {
     String? lastName = userName?.removeLast();
     String newName = getNewName();
     String uniqueFileName = '${AuthService().getCurrentUser()?.uid}-${DateTime.now().millisecondsSinceEpoch}';
+    String coverUrlString = coverUrl.toString();
 
     if(firstNameController.text.isEmpty || lastNameController.text.isEmpty || emailController.text.isEmpty){
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fill all the text fields!')));
@@ -65,8 +66,13 @@ class EditProfileState extends State<EditProfile> {
         return;
       }
     }
+    print('pfpFile: $pfpFile');
+    print('photoUrl: $photoUrl');
+    print('coverFile: $coverFile');
+    print('coverUrl: $coverUrl');
+    print('coverUrlString: $coverUrlString');
     await _updateProfilePhoto(user, uniqueFileName);
-    await _updateCoverPhoto(uniqueFileName, context);
+    await _updateCoverPhoto(user, uniqueFileName, context, coverUrlString);
 
     Provider.of<ProfileProvider>(context, listen: false).updateProfile();
     String message = 'Updated user information!';
@@ -100,6 +106,15 @@ class EditProfileState extends State<EditProfile> {
   Future<bool> _updateEmail(User? user) async {
     try {
       await user?.verifyBeforeUpdateEmail(emailController.text);
+      final db = FirebaseFirestore.instance;
+      var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        String docId = doc.id;
+
+        await db.collection('users').doc(docId).update({'email': emailController.text, 'user_id': user?.uid});
+      }
       return true;
     } on FirebaseAuthException catch (e){
       String message = '';
@@ -131,43 +146,44 @@ class EditProfileState extends State<EditProfile> {
         String newPhotoUrl = await refPfpUpload.getDownloadURL();
         await user?.updatePhotoURL(newPhotoUrl);
       }
-    } else {
+    } else if (photoUrl == null) {
       await user!.updatePhotoURL(null);
     }
     await user?.reload();
     setState(() {});
   }
 
-  Future<void> _updateCoverPhoto(String uniqueFileName, BuildContext context) async {
-    if (coverUrl != null) {
+  Future<void> _updateCoverPhoto(User? user, String uniqueFileName, BuildContext context, String coverPhotoUrl) async {
+    if (coverPhotoUrl != Image.asset('assets/images/Deck-Logo.png').toString()) {
       Reference refRoot = FirebaseStorage.instance.ref();
-      Reference refDirCoverImg = refRoot.child('userCovers/${AuthService().getCurrentUser()?.uid}');
+      Reference refDirCoverImg = refRoot.child('userCovers/${user?.uid}');
       Reference refCoverUpload = refDirCoverImg.child(uniqueFileName);
 
       bool coverExists = await ProfileUtils().doesFileExist(refCoverUpload);
+      print(coverExists);
       if (!coverExists && coverFile != null) {
         await refCoverUpload.putFile(File(coverFile!.path));
         String photoCover = await refCoverUpload.getDownloadURL();
+        print(photoCover);
 
         final db = FirebaseFirestore.instance;
         var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
-
         if (querySnapshot.docs.isNotEmpty) {
           var doc = querySnapshot.docs.first;
           String docId = doc.id;
-
+          print(docId);
           await db.collection('users').doc(docId).update({'cover_photo': photoCover});
         }
-      } else {
-        final db = FirebaseFirestore.instance;
-        var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
+      }
+    } else if (coverPhotoUrl == Image.asset('assets/images/Deck-Logo.png').toString()) {
+      final db = FirebaseFirestore.instance;
+      var querySnapshot = await db.collection('users').where('email', isEqualTo: AuthUtils().getEmail()).limit(1).get();
 
-        if (querySnapshot.docs.isNotEmpty) {
-          var doc = querySnapshot.docs.first;
-          String docId = doc.id;
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        String docId = doc.id;
 
-          await db.collection('users').doc(docId).update({'cover_photo': ''});
-        }
+        await db.collection('users').doc(docId).update({'cover_photo': ''});
       }
     }
     setState(() {});
