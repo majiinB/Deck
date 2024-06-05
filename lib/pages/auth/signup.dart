@@ -133,14 +133,10 @@ class _SignUpPageState extends State<SignUpPage> {
 
               BuildButton(
                 onPressed: () {
-                  ///loading dialog
-                  showLoad(context);
-
                   Navigator.of(context).push(
                     RouteGenerator.createRoute(const CreateAccountPage()),
                   );
-                  /// stop loading
-                  hideLoad(context);
+
                 },
                 buttonText: 'Continue with Email',
                 height: 60,
