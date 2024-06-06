@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                     height: 100,
                     width: MediaQuery.of(context).size.width,
-                    color: DeckColors.accentColor,
+                    color: Colors.transparent,
                     child: Image.asset('assets/images/Deck-Logo.png')),
               ),
               Padding(
@@ -244,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const Text(
                       "Don't have an account? ",
-                      style: TextStyle(fontSize: 12.0),
+                      style: TextStyle(fontSize: 16.0),
                     ),
                     InkWell(
                       onTap: () {
@@ -260,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Text(
                           'Sign Up',
                           style: GoogleFonts.nunito(
-                            fontSize: 12,
+                            fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: DeckColors.white,
                           ),

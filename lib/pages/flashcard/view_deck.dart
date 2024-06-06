@@ -178,31 +178,15 @@ class _ViewDeckPageState extends State<ViewDeckPage> {
 
                       }catch(e){
                         print('View Deck Error: $e');
+
+                        ///display error
+                        showInformationDialog(context, "Error viewing deck", "A problem occured while trying to view deck. Please try again.");
+
                       }
                     }
                   }else{
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Deck Empty'),
-                          content: const Text('The deck has no card please add a card first before playing '),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // Close the dialog
-                              },
-                              child: const Text(
-                                'Close',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
+                    ///display error
+                    showInformationDialog(context, "Error viewing deck", "The deck has no card please add a card first before playing.");
                   }
                 },
                 buttonText: 'Play My Deck',
