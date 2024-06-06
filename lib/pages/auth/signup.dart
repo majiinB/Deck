@@ -40,11 +40,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Container(
                     height: 400,
                     width: MediaQuery.of(context).size.width,
-                    color: defaultColorScheme.primary,
+                    color: Colors.transparent,
                     child: Image.asset('assets/images/Deck-Logo.png')),
               ),
               const SizedBox(
-                height: 20,
+                height: 30,
               ),
               BuildButton(
                 onPressed: () async {

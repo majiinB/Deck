@@ -1806,11 +1806,16 @@ class DeckDelegate extends SliverPersistentHeaderDelegate {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              headerTitle,
-              style: textStyle,
+          SizedBox(
+            width: 300,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                headerTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textStyle,
+              ),
             ),
           ),
           Spacer(),

@@ -86,8 +86,7 @@ class EditProfileState extends State<EditProfile> {
       AuthService().signOut();
       Navigator.of(context).pushAndRemoveUntil(
         RouteGenerator.createRoute(const SignUpPage()),
-            (Route<dynamic> route) => false,
-      );
+            (Route<dynamic> route) => false);
       return;
     }
     Navigator.pop(context, {'updated': true, 'file': coverUrl});

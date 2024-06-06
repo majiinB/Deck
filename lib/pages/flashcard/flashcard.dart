@@ -162,7 +162,7 @@ class _FlashcardPageState extends State<FlashcardPage> {
                           height: 35,
                           width: 180,
                           radius: 20,
-                          backgroundColor: DeckColors.accentColor,
+                          backgroundColor: DeckColors.primaryColor,
                           textColor: DeckColors.white,
                           fontSize: 16,
                           borderWidth: 0,

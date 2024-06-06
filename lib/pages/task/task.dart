@@ -99,7 +99,7 @@ class _TaskPageState extends State<TaskPage> {
         child: CustomScrollView(
           slivers: <Widget>[
             DeckSliverHeader(
-              backgroundColor: Colors.transparent,
+              backgroundColor: DeckColors.backgroundColor,
               headerTitle: showAllTask
                   ? "All Task"
                   : DateFormat('EEEE, MMMM dd').format(selectedDay),
