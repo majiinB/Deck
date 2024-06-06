@@ -28,7 +28,7 @@ class TermsOfUsePage extends StatelessWidget {
                  child: Container(
                      height: 200,
                      width: MediaQuery.of(context).size.width,
-                     child: Image.asset('assets/images/Deck-branding1.png')),
+                     child: Image.asset('assets/images/Deck-Branding1.png')),
                ),
                const SizedBox( height: 20),
 

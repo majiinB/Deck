@@ -55,7 +55,8 @@ class EditProfileState extends State<EditProfile> {
     String coverUrlString = coverUrl.toString();
 
     if(firstNameController.text.isEmpty || lastNameController.text.isEmpty || emailController.text.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fill all the text fields!')));
+      ///display error
+      showInformationDialog(context, "Error changing information", "Please fill out all of the input fields and try again.");
       return;
     }
 
@@ -79,7 +80,8 @@ class EditProfileState extends State<EditProfile> {
     if(user?.email != emailController.text) {
       message = "Updated user information! Please check your new email in order to change.";
     }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    showInformationDialog(context, "Sucessfully updated information", message);
+
     if(user?.email != emailController.text) {
       AuthService().signOut();
       Navigator.of(context).pushAndRemoveUntil(
@@ -119,16 +121,18 @@ class EditProfileState extends State<EditProfile> {
     } on FirebaseAuthException catch (e){
       String message = '';
       if(e.code == 'invalid-email'){
-        message = 'Invalid email format!';
+        message = 'Invalid email format! Plewase try again.';
       } else {
         message = e.toString();
       }
       print(e);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      showInformationDialog(context, "Error changing information", message);
+
       return false;
     } catch (e){
       print(e);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      showInformationDialog(context, "Error changing information", e.toString());
+
       return false;
     }
 
@@ -367,7 +371,7 @@ class EditProfileState extends State<EditProfile> {
                         await updateAccountInformation(context);
                       } catch (e){
                         print(e);
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update account information: $e')));
+                        showInformationDialog(context, "Error changing information", e.toString());
                       }
                     } ,
                     () {

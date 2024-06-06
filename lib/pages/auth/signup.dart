@@ -150,7 +150,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   children: [
                     const Text(
                       'Already have an Account? ',
-                      style: TextStyle(fontSize: 12.0),
+                      style: TextStyle(fontSize: 16.0),
                     ),
                     InkWell(
                       onTap: () {
@@ -166,7 +166,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Text(
                           'Log In',
                           style: GoogleFonts.nunito(
-                            fontSize: 12,
+                            fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: DeckColors.white,
                           ),

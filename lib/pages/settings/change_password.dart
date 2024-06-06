@@ -101,37 +101,44 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                                 await user?.reauthenticateWithCredential(credential);
 
                                 if(newPasswordController.text != newConfirmPasswordController.text){
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords mismatch!')));
+                                  ///display error
+                                  showInformationDialog(context, "Error changing password", "Passwords mismatch. Please try again.");
                                   return;
                                 } else if(newPasswordController.text == oldPasswordController.text || oldPasswordController.text == newConfirmPasswordController.text){
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You cannot set the same password as your new password!')));
+                                  ///display error
+                                  showInformationDialog(context, "Error changing password", "You cannot set the same password as your new password. Please try again.");
                                   return;
                                 }
                                 AuthService().resetPass(newPasswordController.text);
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Success!')));
+                                ///display error
+                                showInformationDialog(context, "Successfully changed password","");
+
                                 Navigator.pop(context);
                               } on FirebaseAuthException catch (e){
                                 String message = '';
                                 if(e.code == 'user-mismatch'){
-                                  message = "User credential mismatch!";
+                                  message = "User credential mismatch! Please try again.";
                                 } else if (e.code == 'user-not-found'){
-                                  message = 'User not found!';
+                                  message = 'User not found! Please try again.';
                                 } else if (e.code == 'invalid-credential') {
-                                  message = 'Invalid credential!';
+                                  message = 'Invalid credential! Please try again.';
                                 } else if (e.code == 'invalid-email'){
-                                  message = 'Invalid email!';
+                                  message = 'Invalid email! Please try again.';
                                 } else if (e.code == 'wrong-password'){
-                                  message = 'Wrong password!';
+                                  message = 'Wrong password! Please try again.';
                                 } else if (e.code == 'weak-password'){
-                                  message = 'Password must be atleast 6 characters!';
+                                  message = 'Password must be atleast 6 characters! Please try again.';
                                 } else {
-                                  message = 'Error changing your password!';
+                                  message = 'Error changing your password! Please try again.';
                                 }
                                 print(e.toString());
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+                                ///display error
+                                showInformationDialog(context, "Error changing password", message);
+
                               } catch (e) {
                                 print(e.toString());
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('There seems to be an error!')));
+                                ///display error
+                                showInformationDialog(context, "Error changing password", "An Unknown error occured during the process. Please try again.");
                               }
                             },
                             () {

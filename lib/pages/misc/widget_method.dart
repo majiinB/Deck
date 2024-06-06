@@ -843,7 +843,7 @@ class BuildTextBoxState extends State<BuildTextBox> {
         hintText: widget.hintText,
         hintStyle: GoogleFonts.nunito(
           fontSize: 16,
-          color: Colors.amber,
+          color: Colors.white,
         ),
         filled: true,
         fillColor: DeckColors.backgroundColor,
@@ -972,7 +972,7 @@ class CustomDropdown extends StatelessWidget {
         'Select an option',
         style: TextStyle(
           fontSize: 16,
-          color: Colors.amber,
+          color: Colors.white,
         ),
       ),
       items: items
@@ -1870,7 +1870,7 @@ class HomeTaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       borderRadius: BorderRadius.circular(15.0),
-      color: Colors.pinkAccent,
+      color: DeckColors.gray,
       child: InkWell(
         borderRadius: BorderRadius.circular(15.0),
         onTap: () {
@@ -2196,3 +2196,41 @@ void showLoad(BuildContext context) {
 void hideLoad(BuildContext context) {
   Navigator.of(context).pop();
 }
+
+
+/// ------------------------- S T A R T ----------------------------
+/// ------------ D E C K  I N T R O P A G E----------------------
+///
+
+class DeckIntroPage extends StatelessWidget{
+
+  final String img;
+  final String text;
+
+  const DeckIntroPage({
+    super.key,
+    required this.img,
+    required this.text,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child:
+        Center(
+          child: Image.asset(img,
+              fit: BoxFit.contain
+          ),
+        )
+    );
+  }
+}
+
+
+
+
+
+
+
+///
+/// ------------------------- E N D ----------------------------
+/// ------------ D E C K  I N T R O P A G E----------------------
